@@ -1,0 +1,114 @@
+<section class="py-20 bg-[var(--color-muted)]/[0.30]">
+  <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center space-x-2 bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-full px-4 py-2 mb-4">
+          <lucide-icon [img]="icons.users" [size]="16"></lucide-icon>
+          <span class="text-sm font-medium font-body">Ponentes Destacados</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-foreground)] mb-6">
+          Aprende de los
+          <span class="block text-[var(--color-primary)]">Mejores Profesionales</span>
+        </h2>
+        <p class="text-lg text-[var(--color-muted-foreground)] max-w-3xl mx-auto leading-relaxed font-body">
+          Conoce a los expertos que compartirán sus conocimientos y experiencias
+          en las últimas tendencias tecnológicas y mejores prácticas de la industria.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        @for (speaker of speakers; track speaker.id) {
+          <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl overflow-hidden shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevation-2)] transition-all duration-300 group">
+            <div class="relative overflow-hidden">
+              <img
+                [src]="speaker.image"
+                [alt]="speaker.name"
+                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/[0.60] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              <div class="absolute bottom-4 left-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                @if (speaker.social.linkedin) {
+                  <a
+                    [href]="speaker.social.linkedin"
+                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <lucide-icon [img]="icons.linkedin" [size]="16"></lucide-icon>
+                  </a>
+                }
+                @if (speaker.social.twitter) {
+                  <a
+                    [href]="speaker.social.twitter"
+                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <lucide-icon [img]="icons.twitter" [size]="16"></lucide-icon>
+                  </a>
+                }
+                @if (speaker.social.github) {
+                  <a
+                    [href]="speaker.social.github"
+                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <lucide-icon [img]="icons.github" [size]="16"></lucide-icon>
+                  </a>
+                }
+                @if (speaker.social.dribbble) {
+                  <a
+                    [href]="speaker.social.dribbble"
+                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <lucide-icon [img]="icons.dribbble" [size]="16"></lucide-icon>
+                  </a>
+                }
+              </div>
+            </div>
+
+            <div class="p-6">
+              <h3 class="text-xl font-heading font-semibold text-[var(--color-foreground)] mb-1">
+                {{ speaker.name }}
+              </h3>
+              <p class="text-[var(--color-primary)] font-medium font-body mb-1">
+                {{ speaker.title }}
+              </p>
+              <p class="text-sm text-[var(--color-muted-foreground)] font-body mb-4">
+                {{ speaker.company }}
+              </p>
+
+              <p class="text-sm text-[var(--color-muted-foreground)] leading-relaxed font-body mb-4">
+                {{ speaker.bio }}
+              </p>
+
+              <div class="flex flex-wrap gap-2">
+                @for (skill of speaker.expertise; track $index) {
+                  <span
+                    class="inline-flex items-center px-2 py-1 text-xs font-medium bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-md"
+                  >
+                    {{ skill }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="text-center">
+        <a
+          routerLink="/workshop-activity-catalog"
+          class="inline-flex items-center space-x-2 text-[var(--color-primary)] hover:text-[var(--color-primary)]/[0.80] font-medium transition-colors duration-200 font-body"
+        >
+          <span>Ver todos los ponentes y actividades</span>
+          <lucide-icon [img]="icons.arrowRight" [size]="16"></lucide-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

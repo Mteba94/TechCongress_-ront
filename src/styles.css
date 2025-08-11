@@ -1,4 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
+
+/* src/styles.css */
+:root {
+  --color-background: #FAFBFC;
+  --color-foreground: #1F2937;
+  --color-border: #E5E7EB;
+  --color-input: #FFFFFF;
+  --color-ring: #1E3A8A;
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1F2937;
+
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #1F2937;
+
+  --color-muted: #F9FAFB;
+  --color-muted-foreground: #6B7280;
+
+  --color-primary: #1E3A8A;
+  --color-primary-foreground: #FFFFFF;
+
+  --color-secondary: #0F766E;
+  --color-secondary-foreground: #FFFFFF;
+
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FFFFFF;
+
+  --color-accent: #0F766E;
+  --color-accent-foreground: #FFFFFF;
+
+  --color-success: #059669;
+  --color-success-foreground: #FFFFFF;
+
+  --color-warning: #D97706;
+  --color-warning-foreground: #FFFFFF;
+
+  --color-error: #DC2626;
+  --color-error-foreground: #FFFFFF;
+}

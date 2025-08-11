@@ -1,0 +1,119 @@
+<section class="py-20 bg-[var(--color-background)]">
+  <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center space-x-2 bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-full px-4 py-2 mb-4">
+          <lucide-icon [img]="icons.calendar" [size]="16"></lucide-icon>
+          <span class="text-sm font-medium font-body">Agenda del Evento</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-foreground)] mb-6">
+          Programa Completo
+          <span class="block text-[var(--color-primary)]">Tres Días de Aprendizaje</span>
+        </h2>
+        <p class="text-lg text-[var(--color-muted-foreground)] max-w-3xl mx-auto leading-relaxed font-body">
+          Descubre la agenda completa del TechCongress 2025 con talleres especializados,
+          conferencias magistrales y actividades de networking.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-center mb-12">
+        <div class="bg-[var(--color-muted)] rounded-lg p-1 inline-flex space-x-2">
+          @for (day of agendaDays; track day.day) {
+            <button
+              (click)="selectDay(day.day)"
+              [ngClass]="{
+                'bg-[var(--color-primary)] text-[var(--color-primary-foreground)] shadow-sm': selectedDay === day.day,
+                'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-background)]': selectedDay !== day.day
+              }"
+              class="px-6 py-3 rounded-md font-medium transition-all duration-200"
+            >
+              <div class="text-center">
+                <div class="font-semibold font-body">Día {{ day.day }}</div>
+                <div class="text-xs opacity-80 font-body">{{ day.date }}</div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+
+      @for (day of agendaDays; track day.day) {
+        @if (selectedDay === day.day) {
+          <div class="space-y-8">
+            <div class="text-center bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-8">
+              <h3 class="text-2xl font-heading font-bold text-[var(--color-foreground)] mb-2">
+                {{ day.title }}
+              </h3>
+              <p class="text-lg text-[var(--color-primary)] font-medium font-body mb-2">
+                {{ day.date }}
+              </p>
+              <p class="text-[var(--color-muted-foreground)] font-body">
+                Tema: {{ day.theme }}
+              </p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-[var(--color-border)]"></div>
+
+              <div class="space-y-6">
+                @for (event of day.events; track $index) {
+                  <div class="relative flex items-start space-x-6">
+                    <div class="relative z-10 flex-shrink-0">
+                      <div [class]="'w-16 h-16 rounded-full border-4 border-[var(--color-background)] flex items-center justify-center ' + getEventColor(event.type)">
+                        <lucide-icon [img]="getEventIcon(event.type)" [size]="20"></lucide-icon>
+                      </div>
+                    </div>
+
+                    <div class="flex-1 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-[var(--shadow-subtle)]">
+                      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
+                        <div class="flex-1">
+                          <div class="flex items-center space-x-3 mb-2">
+                            <span class="text-sm font-medium text-[var(--color-primary)] bg-[var(--color-primary)]/[0.10] px-2 py-1 rounded-md font-body">
+                              {{ event.time }}
+                            </span>
+                            <span class="text-xs text-[var(--color-muted-foreground)] font-body">
+                              {{ event.location }}
+                            </span>
+                          </div>
+                          <h4 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-2">
+                            {{ event.title }}
+                          </h4>
+                          @if (event.speaker) {
+                            <p class="text-sm text-[var(--color-primary)] font-medium font-body mb-2">
+                              Ponente: {{ event.speaker }}
+                            </p>
+                          }
+                          <p class="text-[var(--color-muted-foreground)] font-body">
+                            {{ event.description }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+      
+      <div class="text-center mt-16">
+        <div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-xl p-8 text-white">
+          <h3 class="text-2xl font-heading font-bold mb-4">
+            ¿Listo para Participar?
+          </h3>
+          <p class="text-white/[0.90] mb-6 max-w-2xl mx-auto font-body">
+            No te pierdas esta oportunidad única de aprender, conectar y crecer
+            profesionalmente en el mundo de la tecnología.
+          </p>
+          <a
+            routerLink="/login-registration"
+            class="bg-white text-[var(--color-primary)] hover:bg-white/[0.90] font-semibold px-8 py-3 rounded-lg transition-colors duration-200 inline-flex items-center space-x-2 font-body"
+          >
+            <lucide-icon [img]="icons.userPlus" [size]="20"></lucide-icon>
+            <span>Registrarse Ahora</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
