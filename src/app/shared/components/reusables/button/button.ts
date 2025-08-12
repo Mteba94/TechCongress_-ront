@@ -80,6 +80,8 @@ export class Button {
       'xl': 'h-12 rounded-md px-10 text-base',
     };
 
+    const cursorClass = 'cursor-pointer';
+
     const combinedClasses = `${baseClasses} ${variantClasses[this.variant]} ${sizeClasses[this.size]}`;
     return this.fullWidth ? `${combinedClasses} w-full` : combinedClasses;
   }

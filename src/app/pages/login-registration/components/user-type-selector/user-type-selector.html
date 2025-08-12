@@ -1,0 +1,53 @@
+<div class="space-y-3 mb-6">
+  <label class="block text-sm font-body font-medium text-[var(--color-foreground)] mb-3">
+    Tipo de Usuario
+  </label>
+  
+  @for (type of userTypes; track type.id) {
+    <button
+      type="button"
+      (click)="selectType($any(type.id))" 
+      class="w-full p-4 rounded-lg border-2 text-left transition-all duration-200 cursor-pointer"
+      [ngClass]="[
+        selectedType === type.id
+          ? `${type.bgColor} border-current`
+          : 'bg-[var(--color-card)] border-[var(--color-border)] hover:border-[var(--color-muted-foreground)]'
+      ]"
+    >
+      <div class="flex items-start space-x-3">
+        <div 
+          class="p-2 rounded-lg"
+          [ngClass]="selectedType === type.id ? 'bg-white/50' : 'bg-[var(--color-muted)]'"
+        >
+          <lucide-icon
+            [img]="type.icon"
+            [size]="20"
+            [ngClass]="selectedType === type.id ? type.color : 'text-[var(--color-muted-foreground)]'"
+          ></lucide-icon>
+        </div>
+        <div class="flex-1">
+          <h3 
+            class="font-body font-semibold text-sm"
+            [ngClass]="selectedType === type.id ? type.color : 'text-[var(--color-foreground)]'"
+          >
+            {{ type.title }}
+          </h3>
+          <p class="font-caption text-xs text-[var(--color-muted-foreground)] mt-1">
+            {{ type.description }}
+          </p>
+        </div>
+        <div 
+          class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+          [ngClass]="selectedType === type.id ? `border-current ${type.color}` : 'border-[var(--color-muted-foreground)]'"
+        >
+          @if (selectedType === type.id) {
+            <div 
+              class="w-2 h-2 rounded-full"
+              [ngClass]="type.color.replace('text-', 'bg-')"
+            ></div>
+          }
+        </div>
+      </div>
+    </button>
+  }
+</div>

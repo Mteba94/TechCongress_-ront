@@ -1,1 +1,93 @@
-<p>login-form works!</p>
+<form (ngSubmit)="handleSubmit()" class="space-y-4">
+  @if (errors.general) {
+    <div class="p-4 bg-[var(--color-error)]/[0.10] border border-[var(--color-error)]/[0.20] rounded-lg">
+      <div class="flex items-start space-x-2">
+        <lucide-icon [img]="icons.alertCircle" [size]="16" class="text-[var(--color-error)] mt-0.5 flex-shrink-0"></lucide-icon>
+        <div>
+          <p class="font-body font-medium text-sm text-[var(--color-error)] mb-1">
+            Error de autenticación
+          </p>
+          <pre class="font-caption text-xs text-[var(--color-error)] whitespace-pre-wrap">
+            {{ errors.general }}
+          </pre>
+        </div>
+      </div>
+    </div>
+  }
+
+  <app-input
+    label="Correo Electrónico"
+    type="email"
+    name="email"
+    placeholder="tu@correo.com"
+    [value]="formData.email"
+    (valueChange)="handleInputChange('email', $event)"
+    [error]="errors.email"
+    [required]="true"
+  />
+
+  <div class="relative mt-4">
+    <app-input
+      label="Contraseña"
+      [type]="showPassword ? 'text' : 'password'"
+      name="password"
+      placeholder="Ingresa tu contraseña"
+      [value]="formData.password"
+      (valueChange)="handleInputChange('password', $event)"
+      [error]="errors.password"
+      [required]="true"
+    />
+    <button
+      type="button"
+      (click)="showPassword = !showPassword"
+      class="absolute right-3 top-9 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors duration-200"
+    >
+      <lucide-icon [img]="showPassword ? icons.eyeOff : icons.eye" [size]="18"></lucide-icon>
+    </button>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <app-check-point
+      label="Recordarme"
+      name="rememberMe"
+      [checked]="formData.rememberMe"
+      (checkedChange)="handleInputChange('rememberMe', $event)"
+    />
+
+    <button
+      type="button"
+      (click)="handleForgotPassword()"
+      class="text-sm font-body text-[var(--color-primary)] hover:text-[var(--color-primary)]/[0.80] transition-colors duration-200 cursor-pointer"
+    >
+      ¿Olvidaste tu contraseña?
+    </button>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+    
+  </div>
+  <app-button
+    type="submit"
+    variant="default"
+    [loading]="isLoading"
+    iconName="logIn"
+    iconPosition="left"
+    [fullWidth]="true"
+    class="cursor-pointer"
+  >
+    <span>{{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}</span>
+  </app-button>
+
+  <div class="text-center">
+    <p class="font-caption text-xs text-[var(--color-muted-foreground)]">
+      Al iniciar sesión, aceptas nuestros
+      <button class="text-[var(--color-primary)] hover:text-[var(--color-primary)]/[0.80] transition-colors duration-200 cursor-pointer">
+        Términos de Servicio
+      </button>
+      y
+      <button class="text-[var(--color-primary)] hover:text-[var(--color-primary)]/[0.80] transition-colors duration-200 cursor-pointer">
+        Política de Privacidad
+      </button>
+    </p>
+  </div>
+</form>

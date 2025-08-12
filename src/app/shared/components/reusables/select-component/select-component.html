@@ -1,0 +1,131 @@
+<div class="relative" [ngClass]="className">
+  @if (label) {
+    <label
+      [attr.for]="selectId"
+      [ngClass]="{
+        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 block': true,
+        'text-destructive': error,
+        'text-foreground': !error
+      }"
+    >
+      {{ label }}
+      @if (required) {
+        <span class="text-destructive ml-1">*</span>
+      }
+    </label>
+  }
+
+  <div class="relative">
+    <button
+      [id]="selectId"
+      type="button"
+      [ngClass]="{
+        'flex h-10 w-full items-center justify-between rounded-md border border-input bg-white text-black px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50': true,
+        'border-destructive focus:ring-destructive': error,
+        'text-muted-foreground': !hasValue
+      }"
+      (click)="handleToggle()"
+      [disabled]="disabled"
+      [attr.aria-expanded]="isOpen"
+      aria-haspopup="listbox"
+    >
+      <span class="truncate">{{ selectedDisplay }}</span>
+
+      <div class="flex items-center gap-1">
+        @if (loading) {
+          <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+        }
+
+        @if (clearable && hasValue && !loading) {
+          <app-button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4"
+            (click)="handleClear($event)"
+          >
+            <lucide-icon [img]="icons.x" [size]="12"></lucide-icon>
+          </app-button>
+        }
+
+        <lucide-icon [img]="icons.chevronDown" [size]="16" [ngClass]="{'transition-transform': true, 'rotate-180': isOpen}"></lucide-icon>
+      </div>
+    </button>
+
+    <select
+      [attr.name]="name"
+      [ngModel]="value"
+      (ngModelChange)="$event"
+      class="sr-only"
+      tabindex="-1"
+      [multiple]="multiple"
+      [required]="required"
+    >
+      <option value="">{{ placeholder }}</option>
+      @for (option of options; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+
+    @if (isOpen) {
+      <div class="absolute z-50 w-full mt-1 bg-white text-black border border-border rounded-md shadow-md">
+        @if (searchable) {
+          <div class="p-2 border-b">
+            <div class="relative">
+              <lucide-icon [img]="icons.search" [size]="16" class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground"></lucide-icon>
+              <app-input
+                placeholder="Buscar opciones..."
+                [value]="searchTerm"
+                (onChange)="handleSearchChange($event)"
+                className="pl-8"
+              />
+            </div>
+          </div>
+        }
+
+        <div class="py-1 max-h-60 overflow-auto">
+          @if (filteredOptions.length === 0) {
+            <div class="px-3 py-2 text-sm text-muted-foreground">
+              {{ searchTerm ? 'No se encontraron opciones' : 'No hay opciones disponibles' }}
+            </div>
+          } @else {
+            @for (option of filteredOptions; track option.value) {
+              <div
+                [ngClass]="{
+                  'relative flex cursor-pointer select-none items-center rounded-sm px-3 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground': true,
+                  'bg-primary text-primary-foreground': isSelected(option.value),
+                  'pointer-events-none opacity-50': option.disabled
+                }"
+                (click)="handleOptionSelect(option)"
+              >
+                <span class="flex-1">{{ option.label }}</span>
+                @if (multiple && isSelected(option.value)) {
+                  <lucide-icon [img]="icons.check" [size]="16"></lucide-icon>
+                }
+                @if (option.description) {
+                  <span class="text-xs text-muted-foreground ml-2">
+                    {{ option.description }}
+                  </span>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (description && !error) {
+    <p class="text-sm text-muted-foreground mt-1">
+      {{ description }}
+    </p>
+  }
+
+  @if (error) {
+    <p class="text-sm text-destructive mt-1">
+      {{ error }}
+    </p>
+  }
+</div>

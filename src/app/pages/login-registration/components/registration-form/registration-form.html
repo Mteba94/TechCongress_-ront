@@ -1,1 +1,163 @@
-<p>registration-form works!</p>
+<form [formGroup]="registrationForm" (ngSubmit)="handleSubmit()" class="space-y-4">
+  @if (generalError) {
+    <div class="p-4 bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 rounded-lg">
+      <div class="flex items-start space-x-2">
+        <lucide-icon [img]="icons.alertCircle" [size]="16" class="text-[var(--color-error)] mt-0.5"></lucide-icon>
+        <p class="font-body font-medium text-sm text-[var(--color-error)]">
+          {{ generalError }}
+        </p>
+      </div>
+    </div>
+  }
+
+  <app-user-type-selector
+    [selectedType]="userType"
+    (onTypeChange)="handleUserTypeChange($event)"
+  />
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-input
+      label="Nombre"
+      type="text"
+      formControlName="firstName"
+      placeholder="Tu nombre"
+      [error]="getControlError('firstName')"
+      [required]="true"
+    />
+
+    <app-input
+      label="Apellido"
+      type="text"
+      formControlName="lastName"
+      placeholder="Tu apellido"
+      [error]="getControlError('lastName')"
+      [required]="true"
+    />
+  </div>
+
+  <app-input
+    label="Correo Electrónico"
+    type="email"
+    formControlName="email"
+    [placeholder]="userType === 'internal' ? 'nombre@universidad.edu' : 'tu@correo.com'"
+    [description]="userType === 'internal' ? 'Debe ser un correo institucional' : 'Usaremos este correo para enviarte información del congreso'"
+    [error]="getControlError('email')"
+    [required]="true"
+  />
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="relative">
+      <app-input
+        label="Contraseña"
+        [type]="showPassword ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="Mínimo 8 caracteres"
+        [error]="getControlError('password')"
+        [required]="true"
+      />
+      <button
+        type="button"
+        (click)="togglePasswordVisibility()"
+        class="absolute right-3 top-9 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors duration-200"
+      >
+        <lucide-icon [img]="showPassword ? icons.eyeOff : icons.eye" [size]="18"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="relative">
+      <app-input
+        label="Confirmar Contraseña"
+        [type]="showConfirmPassword ? 'text' : 'password'"
+        formControlName="confirmPassword"
+        placeholder="Repite tu contraseña"
+        [error]="getControlError('confirmPassword')"
+        [required]="true"
+      />
+      <button
+        type="button"
+        (click)="toggleConfirmPasswordVisibility()"
+        class="absolute right-3 top-9 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors duration-200"
+      >
+        <lucide-icon [img]="showConfirmPassword ? icons.eyeOff : icons.eye" [size]="18"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (userType === 'external') {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-input
+        label="Teléfono"
+        type="tel"
+        formControlName="phone"
+        placeholder="+57 300 123 4567"
+        [error]="getControlError('phone')"
+        [required]="true"
+      />
+
+      <app-input
+        label="Fecha de Nacimiento"
+        type="date"
+        formControlName="birthDate"
+        [error]="getControlError('birthDate')"
+        [required]="true"
+      />
+    </div>
+
+    <app-input
+      label="Institución Educativa"
+      type="text"
+      formControlName="school"
+      placeholder="Nombre de tu colegio o institución"
+      [error]="getControlError('school')"
+      [required]="true"
+    />
+
+    <app-select
+      label="Grado Académico"
+      placeholder="Selecciona tu grado actual"
+      [options]="gradeOptions"
+      formControlName="grade"
+      [error]="getControlError('grade')"
+      [required]="true"
+    />
+  }
+
+  <div class="space-y-3 pt-4 border-t border-[var(--color-border)]">
+    <app-check-point
+      label="Acepto los términos y condiciones del TechCongress"
+      formControlName="acceptTerms"
+      [error]="getControlError('acceptTerms')"
+      [required]="true"
+    />
+
+    <app-check-point
+      label="Deseo recibir información sobre futuros eventos y oportunidades académicas"
+      formControlName="acceptMarketing"
+    />
+  </div>
+
+  <app-button
+    type="submit"
+    variant="default"
+    [loading]="isLoading"
+    iconName="UserPlus"
+    iconPosition="left"
+    [iconSize]="18"
+    [fullWidth]="true"
+  >
+    {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+  </app-button>
+
+  <div class="text-center">
+    <p class="font-caption text-xs text-[var(--color-muted-foreground)]">
+      Al registrarte, aceptas nuestros
+      <button class="text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 transition-colors duration-200">
+        Términos de Servicio
+      </button>
+      y
+      <button class="text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 transition-colors duration-200">
+        Política de Privacidad
+      </button>
+    </p>
+  </div>
+</form>

@@ -1,0 +1,16 @@
+<div class="flex bg-[var(--color-muted)] rounded-lg p-1 mb-6">
+  @for (tab of tabs; track tab.id) {
+    <button
+      type="button"
+      (click)="selectTab($any(tab.id))"
+      class="flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-md text-sm font-body font-medium transition-all duration-200"
+      [ngClass]="{
+        'bg-[var(--color-card)] text-[var(--color-foreground)] shadow-[0_1px_3px_rgba(0,0,0,0.1),_0_1px_2px_rgba(0,0,0,0.06)]': activeTab === tab.id,
+        'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]': activeTab !== tab.id
+      }"
+    >
+      <lucide-icon [img]="tab.icon" [size]="18"></lucide-icon>
+      <span>{{ tab.label }}</span>
+    </button>
+  }
+</div>

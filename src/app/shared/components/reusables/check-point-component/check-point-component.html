@@ -1,0 +1,62 @@
+<div class="flex items-start space-x-2" [ngClass]="className">
+  <div class="relative flex items-center">
+    <input
+      type="checkbox"
+      [id]="checkboxId"
+      [checked]="checked"
+      [disabled]="disabled"
+      [required]="required"
+      class="sr-only"
+      (change)="onModelChange($event)"
+    />
+
+    <label
+      [for]="checkboxId"
+      class="peer shrink-0 rounded-sm border border-[var(--color-primary)] ring-offset-[var(--color-background)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--color-primary)] data-[state=checked]:text-[var(--color-primary-foreground)] cursor-pointer transition-colors"
+      [ngClass]="{
+        'h-4 w-4': size === 'default',
+        'h-5 w-5': size === 'lg',
+        'bg-[var(--color-primary)] text-[var(--color-primary-foreground)] border-[var(--color-primary)]': checked || indeterminate,
+        'border-[var(--color-destructive)]': error,
+        'cursor-not-allowed opacity-50': disabled
+      }"
+    >
+      @if (checked && !indeterminate) {
+        <lucide-icon [img]="icons.check" class="h-3 w-3 text-current flex items-center justify-center"></lucide-icon>
+      }
+      @if (indeterminate) {
+        <lucide-icon [img]="icons.minus" class="h-3 w-3 text-current flex items-center justify-center"></lucide-icon>
+      }
+    </label>
+  </div>
+
+  @if (label || description || error) {
+    <div class="flex-1 space-y-1">
+      @if (label) {
+        <label
+          [for]="checkboxId"
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+          [ngClass]="{
+            'text-[var(--color-destructive)]': error,
+            'text-[var(--color-foreground)]': !error
+          }"
+        >
+          {{ label }}
+          @if (required) {
+            <span class="text-[var(--color-destructive)] ml-1">*</span>
+          }
+        </label>
+      }
+      @if (description && !error) {
+        <p class="text-sm text-[var(--color-muted-foreground)]">
+          {{ description }}
+        </p>
+      }
+      @if (error) {
+        <p class="text-sm text-[var(--color-destructive)]">
+          {{ error }}
+        </p>
+      }
+    </div>
+  }
+</div>

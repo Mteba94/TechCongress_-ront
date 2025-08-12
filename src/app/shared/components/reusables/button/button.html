@@ -4,7 +4,9 @@
 <!-- <app-icon *ngIf="iconName && iconPosition === 'right'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
 <!-- </button> -->
 
-<button [ngClass]="getButtonClasses()" (click)="onClick()" [attr.aria-label]="ariaLabel"
+<!-- <button 
+      [ngClass]="getButtonClasses()" (click)="onClick()" [attr.aria-label]="ariaLabel"
+      class="cursor-pointer"
       [disabled]="disabled || loading">
       @if (loading) {
       <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
@@ -16,4 +18,24 @@
       @if (!loading && iconName && iconPosition === 'right') {
       <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'ml-2': children}"></lucide-icon>
       }
+</button> -->
+
+<button
+  (click)="onClick()"
+  [attr.aria-label]="ariaLabel"
+  [disabled]="disabled || loading"
+  [class.w-full]="fullWidth"
+  [ngClass]="getButtonClasses()"
+  class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-body font-medium transition-colors duration-200"
+>
+  @if (loading) {
+    <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
+  } @else {
+    <div class="inline-flex items-center space-x-2" [class.flex-row-reverse]="iconPosition === 'right'">
+      @if (iconName) {
+        <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()"></lucide-icon>
+      }
+      <ng-content></ng-content>
+    </div>
+  }
 </button>

@@ -1,0 +1,92 @@
+<!-- <div class="space-y-2">
+  @if (label) {
+    <label
+      [for]="inputId"
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      [ngClass]="{
+        'text-[var(--color-destructive)]': error,
+        'text-[var(--color-foreground)]': !error
+      }"
+    >
+      {{ label }}
+      @if (required) {
+        <span class="text-[var(--color-destructive)] ml-1">*</span>
+      }
+    </label>
+  }
+
+  <input
+    [id]="inputId"
+    [type]="type"
+    [name]="name"
+    [placeholder]="placeholder"
+    [value]="value"
+    [required]="required"
+    [disabled]="disabled"
+    (input)="onInput($event)"
+    class="flex h-10 w-full rounded-md border border-[var(--color-input)] bg-[var(--color-background)] px-3 py-2 text-sm ring-offset-[var(--color-background)] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    [ngClass]="{
+        'border-[var(--color-destructive)] focus-visible:ring-[var(--color-destructive)]': error,
+        'border-[var(--color-input)]': !error,
+    }"
+    [class]="className"
+  />
+
+  @if (description && !error) {
+    <p class="text-sm text-[var(--color-muted-foreground)]">
+      {{ description }}
+    </p>
+  }
+
+  @if (error) {
+    <p class="text-sm text-[var(--color-destructive)]">
+      {{ error }}
+    </p>
+  }
+</div> -->
+
+<div class="space-y-2">
+  @if (label) {
+    <label
+      [for]="inputId"
+      class="block text-sm font-body font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2"
+      [ngClass]="{
+        'text-[var(--color-destructive)]': error,
+        'text-[var(--color-foreground)]': !error
+      }"
+    >
+      {{ label }}
+      @if (required) {
+        <span class="text-[var(--color-destructive)] ml-1">*</span>
+      }
+    </label>
+  }
+
+  <input
+    [id]="inputId"
+    [type]="type"
+    [name]="name"
+    [placeholder]="placeholder"
+    [value]="value"
+    [required]="required"
+    [disabled]="disabled"
+    (input)="onInput($event)"
+    class="flex h-10 w-full rounded-md border border-[var(--color-input)] bg-[var(--color-background)] px-3 py-2 text-sm ring-offset-[var(--color-background)] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    [ngClass]="{
+      'border-[var(--color-destructive)] focus-visible:ring-[var(--color-destructive)]': error
+    }"
+    [class]="className"
+  />
+
+  @if (description && !error) {
+    <p class="text-sm text-[var(--color-muted-foreground)]">
+      {{ description }}
+    </p>
+  }
+
+  @if (error) {
+    <p class="text-sm text-[var(--color-destructive)]">
+      {{ error }}
+    </p>
+  }
+</div>

@@ -1,0 +1,113 @@
+<div class="min-h-screen bg-[var(--color-background)]">
+  <header class="sticky top-0 z-50 w-full bg-[var(--color-card)] border-b border-[var(--color-border)] shadow-[var(--shadow-subtle)]">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <button
+          (click)="handleLogoClick()"
+          class="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+        >
+          <div class="w-10 h-10 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
+            <lucide-icon [img]="icons.zap" [size]="24" color="white"></lucide-icon>
+          </div>
+          <div class="hidden sm:block">
+            <h1 class="text-xl font-heading font-semibold text-[var(--color-foreground)]">
+              TechCongress
+            </h1>
+            <p class="text-xs font-caption text-[var(--color-muted-foreground)]">
+              Manager
+            </p>
+          </div>
+        </button>
+
+        <!-- <app-language-selector /> -->
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <div class="order-2 lg:order-1">
+        <div class="max-w-md mx-auto">
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <lucide-icon [img]="icons.users" [size]="32" color="white"></lucide-icon>
+            </div>
+            <h1 class="text-3xl font-heading font-bold text-[var(--color-foreground)] mb-2">
+              @if (activeTab === 'login') {
+                <span>Bienvenido de vuelta</span>
+              } @else {
+                <span>Únete al TechCongress</span>
+              }
+            </h1>
+            <p class="font-body text-[var(--color-muted-foreground)]">
+              @if (activeTab === 'login') {
+                <span>Accede a tu cuenta para continuar con tu experiencia en el congreso</span>
+              } @else {
+                <span>Crea tu cuenta y forma parte de la comunidad tecnológica más grande del país</span>
+              }
+            </p>
+          </div>
+
+          <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl shadow-[var(--shadow-subtle)] p-6">
+            <app-auth-tabs [activeTab]="activeTab" (onTabChange)="handleTabChange($event)" />
+            
+            @if (activeTab === 'login') {
+              <app-login-form (onSuccess)="handleAuthSuccess()" />
+            } @else {
+              <!-- <app-registration-form (onSuccess)="handleAuthSuccess()" /> -->
+            }
+          </div>
+
+          <div class="mt-6 text-center">
+            <p class="font-caption text-xs text-[var(--color-muted-foreground)]">
+              ¿Necesitas ayuda?
+              <button class="text-[var(--color-primary)] hover:text-[var(--color-primary)]/[0.80] transition-colors duration-200 cursor-pointer">
+                Contacta soporte técnico
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-1 lg:order-2">
+        <div class="sticky top-24">
+          <!-- <app-congress-highlights /> -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-[var(--color-card)] border-t border-[var(--color-border)] mt-16">
+    <div class="container mx-auto px-4 py-8">
+      <div class="text-center">
+        <div class="flex items-center justify-center space-x-2 mb-4">
+          <div class="w-8 h-8 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
+            <lucide-icon [img]="icons.zap" [size]="16" color="white"></lucide-icon>
+          </div>
+          <span class="font-heading font-semibold text-[var(--color-foreground)]">
+            TechCongress Manager
+          </span>
+        </div>
+        <p class="font-caption text-xs text-[var(--color-muted-foreground)] mb-4">
+          Plataforma oficial para la gestión del congreso tecnológico anual
+        </p>
+        <div class="flex items-center justify-center space-x-6 text-xs font-caption text-[var(--color-muted-foreground)]">
+          <button class="hover:text-[var(--color-foreground)] transition-colors duration-200 cursor-pointer">
+            Términos de Servicio
+          </button>
+          <button class="hover:text-[var(--color-foreground)] transition-colors duration-200 cursor-pointer">
+            Política de Privacidad
+          </button>
+          <button class="hover:text-[var(--color-foreground)] transition-colors duration-200 cursor-pointer">
+            Soporte
+          </button>
+        </div>
+        <div class="mt-4 pt-4 border-t border-[var(--color-border)]">
+          <p class="font-caption text-xs text-[var(--color-muted-foreground)]">
+            © {{ '2025' }} TechCongress Manager. Todos los derechos reservados.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
