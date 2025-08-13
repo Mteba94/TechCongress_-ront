@@ -17,41 +17,76 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <app-input
-      label="Nombre"
+      label="Primer Nombre"
       type="text"
-      formControlName="firstName"
-      placeholder="Tu nombre"
-      [error]="getControlError('firstName')"
+      name="pNombre"
+      placeholder="Primer nombre"
+      [value]="registrationForm.get('pNombre')?.value"
+      (valueChange)="handleInputChange('pNombre', $event)"
+      [error]="getControlError('pNombre')"
       [required]="true"
     />
 
     <app-input
-      label="Apellido"
+      label="Segundo Nombre"
       type="text"
-      formControlName="lastName"
-      placeholder="Tu apellido"
-      [error]="getControlError('lastName')"
-      [required]="true"
+      name="sNombre"
+      placeholder="Segundo nombre"
+      [value]="registrationForm.get('sNombre')?.value"
+      (valueChange)="handleInputChange('sNombre', $event)"
+      [error]="getControlError('sNombre')"
+      [required]="false"
     />
   </div>
 
-  <app-input
-    label="Correo Electrónico"
-    type="email"
-    formControlName="email"
-    [placeholder]="userType === 'internal' ? 'nombre@universidad.edu' : 'tu@correo.com'"
-    [description]="userType === 'internal' ? 'Debe ser un correo institucional' : 'Usaremos este correo para enviarte información del congreso'"
-    [error]="getControlError('email')"
-    [required]="true"
-  />
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-input
+      label="PrimerApellido"
+      type="text"
+      name="pApellido"
+      placeholder="Primer apellido"
+      [value]="registrationForm.get('pApellido')?.value"
+      (valueChange)="handleInputChange('pApellido', $event)"
+      [error]="getControlError('pApellido')"
+      [required]="true"
+    />
+
+    <app-input
+      label="Segundo Apellido"
+      type="text"
+      name="sApellido"
+      placeholder="Segundo apellido"
+      [value]="registrationForm.get('sApellido')?.value"
+      (valueChange)="handleInputChange('sApellido', $event)"
+      [error]="getControlError('sApellido')"
+      [required]="false"
+    />
+  </div>
+
+  <div class="gap-4">
+    <app-input
+      label="Correo Electrónico"
+      type="email"
+      name="email"
+      [placeholder]="userType === 'internal' ? 'nombre@miumg.edu.gt' : 'tu@correo.com'"
+      [description]="userType === 'internal' ? 'Debe ser un correo institucional' : 'Usaremos este correo para enviarte información del congreso'"
+      [value]="registrationForm.get('email')?.value"
+      (valueChange)="handleInputChange('email', $event)"
+      [error]="getControlError('email')"
+      [required]="true"
+    />
+  </div>
+  
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="relative">
       <app-input
         label="Contraseña"
         [type]="showPassword ? 'text' : 'password'"
-        formControlName="password"
+        name="password"
         placeholder="Mínimo 8 caracteres"
+        [value]="registrationForm.get('password')?.value"
+        (valueChange)="handleInputChange('password', $event)"
         [error]="getControlError('password')"
         [required]="true"
       />
@@ -68,8 +103,10 @@
       <app-input
         label="Confirmar Contraseña"
         [type]="showConfirmPassword ? 'text' : 'password'"
-        formControlName="confirmPassword"
+        name="confirmPassword"
         placeholder="Repite tu contraseña"
+        [value]="registrationForm.get('confirmPassword')?.value"
+        (valueChange)="handleInputChange('confirmPassword', $event)"
         [error]="getControlError('confirmPassword')"
         [required]="true"
       />
@@ -83,56 +120,67 @@
     </div>
   </div>
 
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-input
+      label="Teléfono"
+      type="tel"
+      name="telefono"
+      placeholder="5555 1234"
+      [value]="registrationForm.get('telefono')?.value"
+      (valueChange)="handleInputChange('telefono', $event)"
+      [error]="getControlError('telefono')"
+      [required]="true"
+    />
+
+    <app-input
+      label="Fecha de Nacimiento"
+      type="date"
+      name="fechaNacimiento"
+      [value]="registrationForm.get('fechaNacimiento')?.value"
+      (valueChange)="handleInputChange('fechaNacimiento', $event)"
+      [error]="getControlError('fechaNacimiento')"
+      [required]="true"
+    />
+  </div>
+
   @if (userType === 'external') {
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <app-input
-        label="Teléfono"
-        type="tel"
-        formControlName="phone"
-        placeholder="+57 300 123 4567"
-        [error]="getControlError('phone')"
-        [required]="true"
-      />
-
-      <app-input
-        label="Fecha de Nacimiento"
-        type="date"
-        formControlName="birthDate"
-        [error]="getControlError('birthDate')"
-        [required]="true"
-      />
-    </div>
-
     <app-input
       label="Institución Educativa"
       type="text"
-      formControlName="school"
+      name="school"
       placeholder="Nombre de tu colegio o institución"
+      [value]="registrationForm.get('school')?.value"
+      (valueChange)="handleInputChange('school', $event)"
       [error]="getControlError('school')"
       [required]="true"
     />
-
-    <app-select
-      label="Grado Académico"
-      placeholder="Selecciona tu grado actual"
-      [options]="gradeOptions"
-      formControlName="grade"
-      [error]="getControlError('grade')"
-      [required]="true"
-    />
   }
+  <br />
+  <app-select
+    label="Grado Académico"
+    placeholder="Selecciona tu grado actual"
+    [options]="gradeOptions"
+    formControlName="grade"
+    [error]="getControlError('grade')"
+    [required]="true"
+  />
 
   <div class="space-y-3 pt-4 border-t border-[var(--color-border)]">
     <app-check-point
       label="Acepto los términos y condiciones del TechCongress"
-      formControlName="acceptTerms"
+      name="acceptTerms"
+      [checked]="registrationForm.get('acceptTerms')?.value"
+      (checkedChange)="handleInputChange('acceptTerms', $event)"
       [error]="getControlError('acceptTerms')"
       [required]="true"
     />
 
     <app-check-point
       label="Deseo recibir información sobre futuros eventos y oportunidades académicas"
-      formControlName="acceptMarketing"
+      name="acceptMarketing"
+      [checked]="registrationForm.get('acceptMarketing')?.value"
+      (checkedChange)="handleInputChange('acceptMarketing', $event)"
     />
   </div>
 
@@ -142,10 +190,9 @@
     [loading]="isLoading"
     iconName="UserPlus"
     iconPosition="left"
-    [iconSize]="18"
     [fullWidth]="true"
   >
-    {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+    <span>{{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}</span>
   </app-button>
 
   <div class="text-center">

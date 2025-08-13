@@ -12,7 +12,7 @@ import { AuthTabs } from '../../login-registration/components/auth-tabs/auth-tab
   imports: [
     LucideAngularModule,
     LoginForm,
-    // RegistrationForm,
+    RegistrationForm,
     AuthTabs
   ],
   templateUrl: './login-registration.html',

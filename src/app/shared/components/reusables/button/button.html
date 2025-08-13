@@ -26,7 +26,7 @@
   [disabled]="disabled || loading"
   [class.w-full]="fullWidth"
   [ngClass]="getButtonClasses()"
-  class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-body font-medium transition-colors duration-200"
+  class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-body font-medium transition-colors duration-200 cursor-pointer"
 >
   @if (loading) {
     <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>

@@ -37,6 +37,7 @@ export class UserTypeSelector {
       icon: this.icons.graduationCap,
       color: 'text-[var(--color-blue-600)]',
       bgColor: 'bg-[var(--color-blue-50)] border-[var(--color-blue-200)]',
+      radioBgColor: 'bg-[var(--color-blue-600)]' 
     },
     {
       id: 'internal',
@@ -45,6 +46,7 @@ export class UserTypeSelector {
       icon: this.icons.school,
       color: 'text-[var(--color-teal-600)]',
       bgColor: 'bg-[var(--color-teal-50)] border-[var(--color-teal-200)]',
+      radioBgColor: 'bg-[var(--color-teal-600)]' 
     }
   ];
 

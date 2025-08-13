@@ -43,7 +43,7 @@
           @if (selectedType === type.id) {
             <div 
               class="w-2 h-2 rounded-full"
-              [ngClass]="type.color.replace('text-', 'bg-')"
+              [ngClass]="type.radioBgColor"
             ></div>
           }
         </div>
