@@ -1,83 +1,89 @@
 <section id="congress-overview" class="py-20 bg-[var(--color-background)]">
   <div class="container mx-auto px-4">
     <div class="max-w-6xl mx-auto">
+      <!-- Encabezado -->
       <div class="text-center mb-16">
-        <div class="inline-flex items-center space-x-2 bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-full px-4 py-2 mb-4">
+        <div class="inline-flex items-center space-x-2 bg-primary-soft text-primary rounded-full px-4 py-2 mb-4">
           <lucide-icon [img]="icons.info" [size]="16"></lucide-icon>
-          <span class="text-sm font-medium font-body">Sobre el Congreso</span>
+          <span class="text-sm font-body font-medium">Sobre el Congreso</span>
         </div>
+
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-foreground)] mb-6">
           El Evento Tecnológico
-          <span class="block text-[var(--color-primary)]">Más Importante del Año</span>
+          <span class="block text-primary">Más Importante del Año</span>
         </h2>
-        <p class="text-lg text-[var(--color-muted-foreground)] max-w-3xl mx-auto leading-relaxed font-body">
+
+        <p class="text-lg text-muted max-w-3xl mx-auto leading-relaxed font-body">
           TechCongress es la plataforma perfecta para estudiantes de bachillerato y universitarios
           que buscan explorar el fascinante mundo de la ingeniería de sistemas y las tecnologías emergentes.
         </p>
       </div>
 
+      <!-- Grid principal -->
       <div class="grid lg:grid-cols-2 gap-12 items-center mb-16">
         <div class="relative">
-          <div class="relative overflow-hidden rounded-2xl shadow-[var(--shadow-elevation-2)]">
+          <div class="relative overflow-hidden rounded-2xl shadow-2">
             <img
               src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
               alt="Estudiantes en TechCongress"
               class="w-full h-96 object-cover"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/[0.20] to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
 
-          <div class="absolute -bottom-6 -right-6 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-[var(--shadow-elevation-3)]">
+          <div class="absolute -bottom-6 -right-6 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-3">
             <div class="text-center">
-              <div class="text-2xl font-heading font-bold text-[var(--color-primary)] mb-1">2025</div>
-              <div class="text-sm text-[var(--color-muted-foreground)] font-body">7ª Edición</div>
+              <div class="text-2xl font-heading font-bold text-primary mb-1">2025</div>
+              <div class="text-sm text-muted font-body">7ª Edición</div>
             </div>
           </div>
         </div>
 
+        <!-- Texto lateral -->
         <div class="space-y-6">
           <div>
             <h3 class="text-2xl font-heading font-semibold text-[var(--color-foreground)] mb-4">
               Una Experiencia Transformadora
             </h3>
-            <p class="text-[var(--color-muted-foreground)] leading-relaxed mb-6 font-body">
+            <p class="text-muted leading-relaxed mb-6 font-body">
               Durante tres días intensivos, los participantes tendrán acceso a contenido de vanguardia,
               metodologías innovadoras y la oportunidad de interactuar con líderes de la industria tecnológica.
             </p>
           </div>
 
+          <!-- Lista de beneficios -->
           <div class="space-y-4">
             <div class="flex items-start space-x-3">
-              <div class="bg-[var(--color-primary)]/[0.10] rounded-full p-2 flex-shrink-0">
-                <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-[var(--color-primary)]"></lucide-icon>
+              <div class="bg-primary-soft rounded-full p-2 flex-shrink-0">
+                <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-primary"></lucide-icon>
               </div>
               <div>
                 <h4 class="font-heading font-semibold text-[var(--color-foreground)] mb-1">Metodología Práctica</h4>
-                <p class="text-sm text-[var(--color-muted-foreground)] font-body">
+                <p class="text-sm text-muted font-body">
                   Aprende haciendo con proyectos reales y casos de estudio actuales.
                 </p>
               </div>
             </div>
 
             <div class="flex items-start space-x-3">
-              <div class="bg-[var(--color-primary)]/[0.10] rounded-full p-2 flex-shrink-0">
-                <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-[var(--color-primary)]"></lucide-icon>
+              <div class="bg-primary-soft rounded-full p-2 flex-shrink-0">
+                <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-primary"></lucide-icon>
               </div>
               <div>
                 <h4 class="font-heading font-semibold text-[var(--color-foreground)] mb-1">Expertos Reconocidos</h4>
-                <p class="text-sm text-[var(--color-muted-foreground)] font-body">
+                <p class="text-sm text-muted font-body">
                   Ponentes con amplia experiencia en empresas tecnológicas líderes.
                 </p>
               </div>
             </div>
 
             <div class="flex items-start space-x-3">
-              <div class="bg-[var(--color-primary)]/[0.10] rounded-full p-2 flex-shrink-0">
-                <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-[var(--color-primary)]"></lucide-icon>
+              <div class="bg-primary-soft rounded-full p-2 flex-shrink-0">
+                <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-primary"></lucide-icon>
               </div>
               <div>
                 <h4 class="font-heading font-semibold text-[var(--color-foreground)] mb-1">Certificación Oficial</h4>
-                <p class="text-sm text-[var(--color-muted-foreground)] font-body">
+                <p class="text-sm text-muted font-body">
                   Documentos que validan tu participación y conocimientos adquiridos.
                 </p>
               </div>
@@ -86,16 +92,17 @@
         </div>
       </div>
 
+      <!-- Features -->
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         @for (feature of features; track feature.title) {
-          <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevation-1)] transition-shadow duration-300">
-            <div class="bg-[var(--color-primary)]/[0.10] rounded-full w-12 h-12 flex items-center justify-center mb-4">
-              <lucide-icon [img]="iconMap[feature.icon]" [size]="24" class="text-[var(--color-primary)]"></lucide-icon>
+          <div class="card">
+            <div class="bg-primary-soft rounded-full w-12 h-12 flex items-center justify-center mb-4">
+              <lucide-icon [img]="iconMap[feature.icon]" [size]="24" class="text-primary"></lucide-icon>
             </div>
             <h3 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-3">
               {{ feature.title }}
             </h3>
-            <p class="text-[var(--color-muted-foreground)] leading-relaxed font-body">
+            <p class="text-muted leading-relaxed font-body">
               {{ feature.description }}
             </p>
           </div>

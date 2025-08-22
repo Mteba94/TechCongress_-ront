@@ -6,6 +6,7 @@ import { FeaturedSpeakers } from "../../homepage/components/featured-speakers/fe
 import { EventAgenda } from "../../homepage/components/event-agenda/event-agenda";
 import { Meta, Title } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
+import { RegistrationCallToAction } from '../../../shared/components/reusables/registration-call-to-action/registration-call-to-action';
 
 @Component({
   selector: 'app-homepage',
@@ -14,7 +15,8 @@ import { isPlatformBrowser } from '@angular/common';
     Hero,
     Overview,
     FeaturedSpeakers,
-    EventAgenda
+    EventAgenda,
+    RegistrationCallToAction
 ],
   templateUrl: './homepage.html',
   //styleUrl: './homepage.css'
@@ -31,15 +33,17 @@ export class Homepage {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       // Set page title and meta description
-      this.titleService.setTitle('TechCongress 2025 - Innovación & Futuro Tecnológico');
+      this.titleService.setTitle('Congreso UMG 2025 - Innovación & Futuro Tecnológico');
       this.metaService.updateTag({
         name: 'description',
-        content: 'Únete al evento tecnológico más importante del año. Talleres especializados, conferencias magistrales y networking con profesionales de la industria.'
+        content: 'Únete a nuestro evento tecnológico más importante del año. Talleres especializados, conferencias magistrales y networking con profesionales de la industria.'
       });
 
       // Set up lazy loading for images (using IntersectionObserver)
       this.setupProgressiveImageLoading();
     }
+
+    localStorage.removeItem('ctaDismissed');
   }
 
   ngOnDestroy(): void {

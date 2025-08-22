@@ -26,14 +26,25 @@
   [disabled]="disabled || loading"
   [class.w-full]="fullWidth"
   [ngClass]="getButtonClasses()"
-  class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-body font-medium transition-colors duration-200 cursor-pointer"
+  class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-body transition-colors duration-200 cursor-pointer"
 >
   @if (loading) {
-    <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
+    <lucide-icon
+      [img]="icons.Loader2"
+      [size]="getCalculatedIconSize()"
+      class="animate-spin"
+    ></lucide-icon>
   } @else {
-    <div class="inline-flex items-center space-x-2" [class.flex-row-reverse]="iconPosition === 'right'">
+    <div
+      class="inline-flex items-center space-x-2"
+      [class.flex-row-reverse]="iconPosition === 'right'"
+      [class.space-x-reverse]="iconPosition === 'right'"
+    >
       @if (iconName) {
-        <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()"></lucide-icon>
+        <lucide-icon
+          [img]="getIcon()"
+          [size]="getCalculatedIconSize()"
+        ></lucide-icon>
       }
       <ng-content></ng-content>
     </div>

@@ -1,0 +1,67 @@
+<div class="relative">
+  <button
+    id="user-menu-button"
+    (click)="toggleMenu()"
+    class="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-body font-medium text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer"
+    [attr.aria-expanded]="isOpen"
+    aria-haspopup="true"
+  >
+    <div class="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
+      <lucide-icon [img]="icons.user" [size]="16" color="white"></lucide-icon>
+    </div>
+    <span class="hidden md:block">
+      {{ user?.name || 'Usuario' }}
+    </span>
+    <lucide-icon
+      [img]="icons.chevronDown"
+      [size]="16"
+      [ngClass]="{'rotate-180': isOpen}"
+      class="transition-transform duration-200"
+    ></lucide-icon>
+  </button>
+
+  @if (isOpen) {
+    <div class="absolute right-0 mt-2 w-56 bg-[var(--color-popover)] border border-[var(--color-border)] rounded-md shadow-elevation-2 animate-fade-in z-50">
+      <div class="py-2">
+        <!-- User Info -->
+        <div class="px-4 py-3 border-b border-[var(--color-border)]">
+          <p class="text-sm font-body font-medium text-[var(--color-foreground)]">
+            {{ user?.name || 'Usuario' }}
+          </p>
+          <p class="text-xs font-caption text-[var(--color-muted-foreground)]">
+            {{ user?.email || 'usuario@ejemplo.com' }}
+          </p>
+          @if (user?.role) {
+            <span class="inline-flex items-center px-2 py-1 mt-2 text-xs font-caption bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-md">
+              {{ user?.role === 'admin' ? 'Administrador' : 'Participante' }}
+            </span>
+          }
+        </div>
+
+        <!-- Menu Items -->
+        <div class="py-1">
+          @for (item of menuItems; track item.path) {
+            <button
+              (click)="handleNavigation(item.path)"
+              class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer"
+            >
+              <lucide-icon [img]="item.icon" [size]="16"></lucide-icon>
+              <span>{{ item.label }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Logout -->
+        <div class="border-t border-[var(--color-border)] pt-1">
+          <button
+            (click)="handleLogout()"
+            class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer"
+          >
+            <lucide-icon [img]="icons.logOut" [size]="16"></lucide-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

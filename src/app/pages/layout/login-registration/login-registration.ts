@@ -40,7 +40,7 @@ export class LoginRegistration {
 
   handleTabChange(tab: 'login' | 'register'): void {
     this.activeTab = tab;
-    console.log(`Active tab changed to: ${this.activeTab}`);
+    //console.log(`Active tab changed to: ${this.activeTab}`);
   }
 
   handleAuthSuccess(): void {
@@ -50,6 +50,10 @@ export class LoginRegistration {
 
   handleLogoClick(): void {
     this.router.navigate(['/congress-homepage']);
+  }
+
+  getCurrentYear(): number {
+    return new Date().getFullYear();
   }
 
 }

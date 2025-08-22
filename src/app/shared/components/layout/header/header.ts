@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { 
   LucideAngularModule,
@@ -19,6 +19,8 @@ import {
 } from 'lucide-angular';
 import { filter } from 'rxjs';
 import { Button } from '../../reusables/button/button';
+import { AuthenticatedUserMenu } from '../../reusables/authenticated-user-menu/authenticated-user-menu';
+import { Auth } from '../../../../pages/login-registration/services/auth';
 
 
 @Component({
@@ -26,7 +28,8 @@ import { Button } from '../../reusables/button/button';
   imports: [
     CommonModule,
     LucideAngularModule,
-    Button
+    Button,
+    AuthenticatedUserMenu
   ],
   templateUrl: './header.html',
   styleUrl: './header.css'
@@ -48,8 +51,10 @@ export class Header {
     barChart3: BarChart3
   };
 
+  private readonly authService = inject(Auth)
+
   isAuthenticated = false;
-  user: { name: string, role: string } | null = null;
+  user: { name: string, email: string, role: string } | null = null;
   isMobileMenuOpen = false;
   currentPath = '';
 
@@ -72,7 +77,6 @@ export class Header {
   }
 
   ngOnInit(): void {
-    // Simulación de autenticación. En un proyecto real usarías un servicio de autenticación.
     const authStatus = localStorage.getItem('isAuthenticated');
     const userData = localStorage.getItem('userData');
     
@@ -108,11 +112,9 @@ export class Header {
   }
 
   handleLogout(): void {
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userData');
     this.isAuthenticated = false;
     this.user = null;
     this.isMobileMenuOpen = false;
-    this.router.navigate(['/congress-homepage']);
+    this.authService.logout()
   }
 }

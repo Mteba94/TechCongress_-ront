@@ -1,9 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { Home, LucideAngularModule } from 'lucide-angular';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   LogIn, UserPlus, ArrowDown,
-  Loader2 // Icono para el spinner de carga
+  Loader2,
+  ShieldCheck,
+  RefreshCw,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-angular';
 
 @Component({
@@ -28,7 +32,17 @@ export class Button {
 
   @Output() btnClick = new EventEmitter<void>();
 
-  readonly icons = { LogIn, UserPlus, ArrowDown, Loader2 };
+  readonly icons = { 
+    LogIn, 
+    UserPlus, 
+    ArrowDown, 
+    Loader2, 
+    ShieldCheck, 
+    RefreshCw, 
+    ArrowLeft,
+    ArrowRight,
+    Home
+  };
 
   get children(): boolean {
     return this.btnClick.observers.length > 0;

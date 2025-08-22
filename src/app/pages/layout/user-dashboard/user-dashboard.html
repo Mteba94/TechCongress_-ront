@@ -1,0 +1,80 @@
+<div class="min-h-screen bg-[var(--color-background)]">
+  <app-header />
+
+  @if (isLoading) {
+    <div class="container mx-auto px-4 py-8">
+      <div class="flex items-center justify-center min-h-[400px]">
+        <div class="text-center">
+          <div class="w-8 h-8 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-[var(--color-muted-foreground)] font-body">Cargando panel de usuario...</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!isLoading && !isAuthenticated) {
+    <div class="container mx-auto px-4 py-8">
+      <div class="text-center py-16">
+        <h1 class="text-2xl font-heading font-bold text-[var(--color-foreground)] mb-4">
+          Acceso Requerido
+        </h1>
+        <p class="text-[var(--color-muted-foreground)] font-body mb-6">
+          Debes iniciar sesión para acceder a tu panel de usuario.
+        </p>
+        <button
+          (click)="handleLoginRedirect()"
+          class="bg-[var(--color-primary)] text-[var(--color-primary-foreground)] px-6 py-3 rounded-lg font-body font-medium hover:bg-[var(--color-primary)]/90 transition-colors duration-200"
+        >
+          Iniciar Sesión
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (!isLoading && isAuthenticated) {
+    <app-registration-call-to-action />
+    
+    <main class="container mx-auto px-4 py-8">
+      <app-breadcrumbs />
+      
+      <app-welcome-header />
+      
+      <!-- <app-quick-stats /> -->
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="lg:col-span-2 space-y-6">
+          <!-- <app-my-enrollments /> -->
+          
+          <!-- <app-congress-schedule /> -->
+        </div>
+        
+        <div class="space-y-6">
+          <!-- <app-qrcode-card /> -->
+          
+          <!-- <app-notifications-panel /> -->
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div id="certificates">
+          <!-- <app-certificates-section /> -->
+        </div>
+        
+        <!-- <app-recent-activity /> -->
+      </div>
+    </main>
+    
+    <footer class="bg-[var(--color-card)] border-t border-[var(--color-border)] mt-16">
+      <div class="container mx-auto px-4 py-8">
+        <div class="text-center">
+          <p class="text-sm font-caption text-[var(--color-muted-foreground)]">
+            © {{ getCurrentYear() }} TechCongress Manager. Todos los derechos reservados.
+          </p>
+          <p class="text-xs font-caption text-[var(--color-muted-foreground)] mt-2">
+            Universidad Tecnológica - Sistemas de Información
+          </p>
+        </div>
+      </div>
+    </footer>
+  }
+</div>

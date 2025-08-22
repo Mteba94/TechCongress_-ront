@@ -1,0 +1,106 @@
+<div class="space-y-6">
+  <div class="text-center">
+    <div class="w-16 h-16 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <lucide-icon [img]="icons.mail" [size]="32" color="white"></lucide-icon>
+    </div>
+    <h2 class="text-2xl font-heading font-bold text-[var(--color-foreground)] mb-2">
+      Verifica tu correo electrónico
+    </h2>
+    <p class="font-body text-[var(--color-muted-foreground)]">
+      Hemos enviado un código de verificación de 6 dígitos a
+    </p>
+    <p class="font-body font-medium text-[var(--color-foreground)]">
+      {{ email }}
+    </p>
+  </div>
+
+  <form (ngSubmit)="handleSubmit()" class="space-y-6">
+    @if (error) {
+      <div class="p-4 bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 rounded-lg">
+        <div class="flex items-start space-x-2">
+          <lucide-icon [img]="icons.alertCircle" [size]="16" class="text-[var(--color-error)] mt-0.5"></lucide-icon>
+          <p class="font-body font-medium text-sm text-[var(--color-error)]">
+            {{ error }}
+          </p>
+        </div>
+      </div>
+    }
+
+    <div class="space-y-3">
+      <label class="block text-sm font-medium text-[var(--color-foreground)] text-center">
+        Código de verificación
+      </label>
+      <div class="flex justify-center space-x-3">
+      @for (digit of verificationCode; track $index) {
+        <input
+          #codeInput
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          [ngModel]="digit"
+          [ngModelOptions]="{ standalone: true }"
+          (input)="handleInputChange($index, $event)"
+          (keydown)="handleKeyDown($index, $event)"
+          (paste)="handlePaste($event)"
+          class="w-12 h-12 text-center text-lg font-semibold border border-[var(--color-input)] rounded-lg bg-[var(--color-background)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+          [disabled]="isLoading"
+        />
+      }
+    </div>
+    </div>
+
+    <app-button
+      type="submit"
+      variant="default"
+      [loading]="isLoading"
+      iconName="ShieldCheck"
+      iconPosition="left"
+      [fullWidth]="true"
+      [disabled]="verificationCode.join('').length !== 6"
+    >
+      <span>{{ isLoading ? 'Verificando...' : 'Verificar código' }}</span>
+    </app-button>
+
+    <div class="text-center space-y-3">
+      @if (!canResend) {
+        <p class="font-caption text-sm text-[var(--color-muted-foreground)]">
+          Puedes solicitar un nuevo código en
+          <span class="font-semibold text-[var(--color-primary)]">
+              {{ Math.floor(timeRemaining / 60) }}:{{ (timeRemaining % 60)?.toString()?.padStart(2, '0') }}
+          </span>
+        </p>
+      } @else {
+        <div class="space-y-2">
+          <p class="font-caption text-sm text-[var(--color-muted-foreground)]">
+            ¿No recibiste el código?
+          </p>
+          <app-button
+            type="button"
+            variant="outline"
+            size="sm"
+            [loading]="isResending"
+            iconName="RefreshCw"
+            iconPosition="left"
+            [disabled]="isResending"
+            (click)="handleResendCode()"
+          >
+            <span>{{ isResending ? 'Reenviando...' : 'Reenviar código' }}</span>
+          </app-button>
+        </div>
+      }
+    </div>
+
+    <div class="text-center pt-4 border-t border-[var(--color-border)]">
+      <app-button
+        type="button"
+        variant="ghost"
+        size="sm"
+        iconName="ArrowLeft"
+        iconPosition="left"
+        (click)="onBackToRegistration.emit()"
+      >
+        <span>Volver al registro</span>
+      </app-button>
+    </div>
+  </form>
+</div>

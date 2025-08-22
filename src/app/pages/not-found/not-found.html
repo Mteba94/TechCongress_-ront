@@ -1,0 +1,34 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+  <div class="text-center max-w-md">
+    <div class="flex justify-center mb-6">
+      <div class="relative">
+        <h1 class="text-9xl font-bold text-primary opacity-20">404</h1>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-medium text-onBackground mb-2">Página no encontrada</h2>
+    <p class="text-onBackground/70 mb-8">
+      La página que buscas no existe. ¡Volvamos!
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <app-button
+        variant="default"
+        iconName="ArrowLeft"
+        iconPosition="left"
+        (click)="goBack()"
+      >
+        <span>Regresar</span>
+      </app-button>
+
+      <app-button
+        variant="outline"
+        iconName="Home"
+        iconPosition="left"
+        (click)="goHome()"
+      >
+        <span>Volver al inicio</span>
+      </app-button>
+    </div>
+  </div>
+</div>

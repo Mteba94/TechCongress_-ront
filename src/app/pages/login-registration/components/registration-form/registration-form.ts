@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
   AlertCircle,
@@ -14,6 +14,19 @@ import { CheckPointComponent } from '../../../../shared/components/reusables/che
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { UserTypeSelector } from '../user-type-selector/user-type-selector';
 import { SelectComponent } from '../../../../shared/components/reusables/select-component/select-component';
+import { NivelAcademico } from '../../services/nivel-academico';
+import { EmailVerification } from '../email-verification/email-verification';
+import { Participante } from '../../services/participante';
+import { ApiError, BaseApiResponse } from '../../../../shared/models/reusables/base-api-response.interface';
+import { Codigo } from '../../services/codigo';
+import { firstValueFrom } from 'rxjs';
+import { ParticipanteRequest } from '../../models/participante-req.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+
+export interface gradeOptions{
+  value: number,
+  label: string
+}
 
 @Component({
   selector: 'app-registration-form',
@@ -25,7 +38,8 @@ import { SelectComponent } from '../../../../shared/components/reusables/select-
     CheckPointComponent,
     Button,
     UserTypeSelector,
-    SelectComponent
+    SelectComponent,
+    EmailVerification
   ],
   templateUrl: './registration-form.html',
   styleUrl: './registration-form.css'
@@ -33,12 +47,22 @@ import { SelectComponent } from '../../../../shared/components/reusables/select-
 export class RegistrationForm {
   @Output() onSuccess = new EventEmitter<void>();
 
+  currentStep: 'registration' | 'verification' = 'registration';
+  registrationEmail: string = '';
+
+  private readonly nivelAcademicoService = inject(NivelAcademico)
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly participanteService = inject(Participante)
+  private readonly codigoService = inject(Codigo)
+
   registrationForm!: FormGroup;
   userType: 'internal' | 'external' = 'external';
   isLoading = false;
   showPassword = false;
   showConfirmPassword = false;
-  generalError: string | null = null;
+  generalError: string[] | null = null;
+  apiError: string[] = []
   passwordMismatchError: boolean | false = false;
 
   readonly icons = { 
@@ -48,20 +72,38 @@ export class RegistrationForm {
     userPlus: UserPlus
    };
 
-  gradeOptions = [
-    { value: '10', label: 'Décimo Grado' },
-    { value: '11', label: 'Undécimo Grado' },
-    { value: '12', label: 'Duodécimo Grado' },
-    { value: 'graduate', label: 'Graduado' }
-  ];
+  // gradeOptions = [
+  //   { value: '10', label: 'Décimo Grado' },
+  //   { value: '11', label: 'Undécimo Grado' },
+  //   { value: '12', label: 'Duodécimo Grado' },
+  //   { value: 'graduate', label: 'Graduado' }
+  // ];
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router
-  ) {}
+  get nivelAcademicoIdControl(): FormControl {
+    return this.registrationForm.get('nivelAcademicoId') as FormControl;
+  }
+
+  gradeOp: gradeOptions[] = []
 
   ngOnInit(): void {
     this.initializeForm();
+
+    this.getSelectNivelAcademico();
+  }
+
+  getSelectNivelAcademico(): void{
+    this.nivelAcademicoService
+      .getSelectNivelAcademico()
+      .subscribe((resp) => {
+        if(resp.isSuccess){
+          this.gradeOp = resp.data.map(item => ({
+              value: item.id,
+              label: item.nombre
+            }));
+        }else{
+
+        }
+      })
   }
 
   initializeForm(): void {
@@ -70,13 +112,13 @@ export class RegistrationForm {
       sNombre: [''],
       pApellido: ['', Validators.required],
       sApellido: [''],
-      tipoParticipante: [this.userType],
+      tipoParticipanteId: [this.userType === 'external' ? 1 : 2],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
       telefono: [''],
       school: [''],
-      grade: [''],
+      nivelAcademicoId: [''],
       fechaNacimiento: [''],
       acceptTerms: [false, Validators.requiredTrue],
       acceptMarketing: [false]
@@ -84,24 +126,13 @@ export class RegistrationForm {
       validator: (form: FormGroup) => this.passwordMatchValidator(form)
     });
 
-    // Subscribirse a los cambios de userType para aplicar validaciones condicionales
-    // (Esta lógica se moverá al UserTypeSelector o se gestionará de otra forma)
-    // this.registrationForm.get('email')?.valueChanges.subscribe(value => {
-    //     if (this.userType === 'internal' && value && !value.includes('universidad.edu')) {
-    //         this.registrationForm.get('email')?.setErrors({ 'invalidInternalEmail': true });
-    //     } else {
-    //         this.registrationForm.get('email')?.setErrors(null);
-    //     }
-    // });
-
-    // Validaciones condicionales para campos de 'external'
     this.updateValidatorsForUserType();
   }
 
   updateValidatorsForUserType(): void {
     //const phoneControl = this.registrationForm.get('telefono');
     const schoolControl = this.registrationForm.get('school');
-    const gradeControl = this.registrationForm.get('grade');
+    const gradeControl = this.registrationForm.get('nivelAcademicoId');
     const birthDateControl = this.registrationForm.get('fechaNacimiento');
     const emailControl = this.registrationForm.get('email');
 
@@ -111,7 +142,6 @@ export class RegistrationForm {
       gradeControl?.setValidators(Validators.required);
       birthDateControl?.setValidators(Validators.required);
       if (emailControl) {
-        //emailControl.setValidators([Validators.required, Validators.email]);
         emailControl.setValidators([Validators.required, Validators.email, (control) => {
           const value = control.value;
           if (value && value.endsWith('@miumg.edu.gt')) {
@@ -143,7 +173,6 @@ export class RegistrationForm {
     emailControl?.updateValueAndValidity();
   }
 
-  // Custom validator for password match
   passwordMatchValidator(form: FormGroup): null | { mismatch: true } {
 
     const password = form.get('password')?.value;
@@ -161,6 +190,19 @@ export class RegistrationForm {
 
   handleUserTypeChange(type: 'internal' | 'external'): void {
     this.userType = type;
+
+    const nivelAcademicoIdControl = this.registrationForm.get('nivelAcademicoId');
+    if(nivelAcademicoIdControl){
+      const newValue = this.userType === 'internal' ? 4 : '';
+      nivelAcademicoIdControl.setValue(newValue);
+    }
+
+    const tipoParticipanteIdControl = this.registrationForm.get('tipoParticipanteId');
+    if(tipoParticipanteIdControl){
+      const valuenew = this.userType === 'external' ? 1 : 2;
+      tipoParticipanteIdControl.setValue(valuenew)
+    }
+
     this.updateValidatorsForUserType();
     this.registrationForm.get('email')?.updateValueAndValidity();
   }
@@ -174,10 +216,10 @@ export class RegistrationForm {
   }
 
   async handleSubmit(): Promise<void> {
-    this.registrationForm.markAllAsTouched(); // Marcar todos los campos como tocados para mostrar errores
+    this.registrationForm.markAllAsTouched();
 
     if (this.registrationForm.invalid) {
-      this.generalError = 'Por favor, corrige los errores del formulario.';
+      this.generalError = ['Por favor, corrige los errores del formulario.'];
       return;
     }
 
@@ -185,28 +227,104 @@ export class RegistrationForm {
     this.generalError = null;
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      //await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      
+      // this.participanteService
+      //   .PostCreate(this.registrationForm.value)
+      //   .subscribe((response: BaseApiResponse<boolean>) => {
+      //     if(response.isSuccess){
+            
+      //       this.registrationEmail = formData.email;
 
+      //       const ReqCodigo = {
+      //         purpose: 'validUser',
+      //         email: this.registrationEmail
+      //       }
+
+      //       this.codigoService
+      //         .CreateCode(ReqCodigo)
+      //         .subscribe((response: BaseApiResponse<string>) =>{
+      //           this.currentStep = 'verification';
+      //         })
+
+      //     }else{
+      //       this.generalError = response.message
+      //     }
+      //     console.log(response)
+      //   })
+
+      this.createPart(this.registrationForm.value)
+
+      // localStorage.setItem('isAuthenticated', 'true');
+      // localStorage.setItem('userData', JSON.stringify(userData));
       const formData = this.registrationForm.value;
-      const userData = {
-        email: formData.email,
-        name: `${formData.pNombre} ${formData.pApellido}`,
-        role: this.userType === 'internal' ? 'student' : 'external',
-        userType: this.userType,
-        registrationDate: new Date().toISOString()
-      };
 
-      console.log(formData)
+      this.registrationEmail = formData.email;
 
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userData', JSON.stringify(userData));
-
-      this.onSuccess.emit();
+      //this.currentStep = 'verification';
+      //this.onSuccess.emit();
     } catch (error) {
-      this.generalError = 'Error al crear la cuenta. Inténtalo de nuevo.';
+      this.generalError = ['Error al crear la cuenta. Inténtalo de nuevo.'];
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  async createPart(request: ParticipanteRequest){
+    this.generalError = ['']
+
+    try {
+      const response = await firstValueFrom(
+        this.participanteService.PostCreate(this.registrationForm.value)
+      );
+
+      if (response.isSuccess) {
+        this.registrationEmail = this.registrationForm.value.email;
+
+        const ReqCodigo = {
+          purpose: 'validUser',
+          email: this.registrationEmail
+        };
+
+        const codeResponse = await firstValueFrom(
+          this.codigoService.CreateCode(ReqCodigo)
+        );
+
+        if(codeResponse.isSuccess){
+          const formData = this.registrationForm.value;
+
+          const tempUserData = {
+            email: formData.email,
+            name: `${formData.pNombre} ${formData.pApellido}`,
+            role: this.userType === 'internal' ? 'student' : 'external',
+            userType: this.userType,
+            registrationDate: new Date().toISOString(),
+            isEmailVerified: false
+          };
+
+          sessionStorage.setItem('pendingUserRegistration', JSON.stringify(tempUserData));
+          this.currentStep = 'verification';
+        }
+
+      }
+
+    } catch (err: unknown) {
+      if (err instanceof HttpErrorResponse) {
+        const apiresponse = err.error as BaseApiResponse<any>;
+
+        if (apiresponse && apiresponse.errors && apiresponse.errors.length > 0) {
+          this.generalError = apiresponse.errors.map((err: ApiError) => err.errorMessage);
+
+        } else if (apiresponse && apiresponse.message) {
+          this.generalError = [apiresponse.message];
+
+        } else {
+          this.generalError = ['Ha ocurrido un error. Intente de nuevo.'];
+        }
+      } else {
+        this.generalError = ['Ha ocurrido un error. Intente de nuevo.'];
+      }
     }
   }
 
@@ -245,6 +363,29 @@ export class RegistrationForm {
   handleInputChange(controlName: string, value: any): void {
     this.registrationForm.get(controlName)?.setValue(value);
     this.registrationForm.updateValueAndValidity();
+  }
+
+  handleBackToRegistration(): void {
+    this.currentStep = 'registration';
+    sessionStorage.removeItem('pendingUserRegistration');
+    this.initializeForm(); // Reinicializa el formulario si es necesario
+  }
+
+  handleVerificationSuccess(): void {
+    // ... tu lógica para completar el registro
+    const pendingUser = JSON.parse(sessionStorage.getItem('pendingUserRegistration') || '{}');
+
+    const userData = {
+      ...pendingUser
+    }
+
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userData', JSON.stringify(userData));
+    this.onSuccess.emit();
+  }
+
+  handleResendCode(): void {
+    // ... tu lógica para reenviar el código
   }
 
 }

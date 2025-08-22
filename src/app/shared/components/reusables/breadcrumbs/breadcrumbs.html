@@ -1,0 +1,31 @@
+<nav>
+  @if (shouldShowBreadcrumbs()) {
+    <div class="flex items-center space-x-2 text-sm font-body mb-6" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2">
+        @for (crumb of currentBreadcrumbs; track crumb.path; let index = $index) {
+          <li class="flex items-center">
+            @if (index > 0) {
+              <lucide-icon 
+                [img]="icons.chevronRight" 
+                [size]="16" 
+                class="text-[var(--color-muted-foreground)] mx-2"
+              ></lucide-icon>
+            }
+            @if (index === currentBreadcrumbs.length - 1) {
+              <span class="text-[var(--color-foreground)] font-medium" aria-current="page">
+                {{ crumb.label }}
+              </span>
+            } @else {
+              <button
+                (click)="handleNavigation(crumb.path)"
+                class="text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors duration-200 cursor-pointer"
+              >
+                {{ crumb.label }}
+              </button>
+            }
+          </li>
+        }
+      </ol>
+    </div>
+  }
+</nav>

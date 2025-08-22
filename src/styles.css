@@ -1,43 +1,173 @@
-/* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+/* You can add global styles to this file, and also import other style files */
+
+
+
 /* html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
 /* src/styles.css */
 :root {
-  --color-background: #FAFBFC;
-  --color-foreground: #1F2937;
-  --color-border: #E5E7EB;
-  --color-input: #FFFFFF;
-  --color-ring: #1E3A8A;
+  --color-border: #e5e7eb;       /* gray-200 */
+  --color-input: #ffffff;        /* white */
+  --color-ring: #1e40af;         /* blue-800 */
+  --color-background: #f9fafb;   /* gray-50 */
+  --color-foreground: #1f2937;   /* gray-800 */
 
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1F2937;
+  --color-primary: #1e40af;      /* blue-800 */
+  --color-primary-foreground: #ffffff;
 
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #1F2937;
+  --color-secondary: #0f766e;    /* teal-700 */
+  --color-secondary-foreground: #ffffff;
 
-  --color-muted: #F9FAFB;
-  --color-muted-foreground: #6B7280;
+  --color-destructive: #dc2626;  /* red-600 */
+  --color-destructive-foreground: #ffffff;
 
-  --color-primary: #1E3A8A;
-  --color-primary-foreground: #FFFFFF;
+  --color-muted: #f9fafb;        /* gray-50 */
+  --color-muted-foreground: #6b7280; /* gray-500 */
 
-  --color-secondary: #0F766E;
-  --color-secondary-foreground: #FFFFFF;
+  --color-accent: #0f766e;       /* teal-700 */
+  --color-accent-foreground: #ffffff;
 
-  --color-destructive: #DC2626;
-  --color-destructive-foreground: #FFFFFF;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1f2937;
 
-  --color-accent: #0F766E;
-  --color-accent-foreground: #FFFFFF;
+  --color-card: #ffffff;
+  --color-card-foreground: #1f2937;
 
-  --color-success: #059669;
-  --color-success-foreground: #FFFFFF;
+  --color-success: #059669;      /* emerald-600 */
+  --color-success-foreground: #ffffff;
 
-  --color-warning: #D97706;
-  --color-warning-foreground: #FFFFFF;
+  --color-warning: #d97706;      /* amber-600 */
+  --color-warning-foreground: #ffffff;
 
-  --color-error: #DC2626;
-  --color-error-foreground: #FFFFFF;
+  --color-error: #dc2626;        /* red-600 */
+  --color-error-foreground: #ffffff;
+}
+
+/* 🌙 Dark mode (opcional, si usas .dark en <html> o <body>) */
+.dark {
+  --color-background: #1f2937;
+  --color-foreground: #f9fafb;
+
+  --color-card: #374151;
+  --color-card-foreground: #f9fafb;
+
+  --color-popover: #374151;
+  --color-popover-foreground: #f9fafb;
+}
+
+/* 🔤 Tipografías personalizadas */
+.font-heading {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.font-caption {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* 🌟 Helpers para texto */
+.text-default {
+  color: var(--color-foreground);
+}
+.text-primary {
+  color: var(--color-primary);
+}
+.text-secondary {
+  color: var(--color-secondary);
+}
+.text-muted {
+  color: var(--color-muted-foreground);
+}
+.text-success {
+  color: var(--color-success);
+}
+.text-warning {
+  color: var(--color-warning);
+}
+.text-error {
+  color: var(--color-error);
+}
+
+/* 🌟 Helpers para fondo */
+.bg-default {
+  background-color: var(--color-background);
+}
+.bg-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+.bg-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+}
+.bg-success {
+  background-color: var(--color-success);
+  color: var(--color-success-foreground);
+}
+.bg-warning {
+  background-color: var(--color-warning);
+  color: var(--color-warning-foreground);
+}
+.bg-error {
+  background-color: var(--color-error);
+  color: var(--color-error-foreground);
+}
+
+.bg-primary-soft {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-muted {
+  color: var(--color-muted-foreground);
+}
+
+/* 🖼️ Cards y superficies */
+.card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem; /* rounded-xl */
+  padding: 1.5rem; /* p-6 */
+  box-shadow: var(--shadow-subtle);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-elevation-1);
+}
+
+/* 🔲 Sombras */
+.shadow-2 {
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.shadow-3 {
+  box-shadow: var(--shadow-elevation-3);
+}
+
+/* ⏹️ Tipografía (ya lo tenías) */
+.font-heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
 }

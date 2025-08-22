@@ -1,9 +1,13 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { Check, LucideAngularModule } from 'lucide-angular';
 import { AlertCircle, Eye, EyeOff, LogIn, UserPlus } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { InputComponent } from '../../../../shared/components/reusables/input/input';
 import { CheckPointComponent } from '../../../../shared/components/reusables/check-point-component/check-point-component';
+import { Auth } from '../../services/auth';
+import { LoginRequest } from '../../models/login-request.interface';
+import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -28,6 +32,8 @@ export class LoginForm {
     userPlus: UserPlus
   };
 
+  private readonly authService = inject(Auth)
+
   formData = {
     email: '',
     password: '',
@@ -37,11 +43,11 @@ export class LoginForm {
   isLoading: boolean = false;
   showPassword: boolean = false;
 
-  private mockCredentials = {
-    'admin@techcongress.edu': { password: 'admin123', role: 'admin', name: 'Dr. María González' },
-    'estudiante@universidad.edu': { password: 'student123', role: 'student', name: 'Carlos Rodríguez' },
-    'participante@gmail.com': { password: 'external123', role: 'external', name: 'Ana Martínez' }
-  };
+  // private mockCredentials = {
+  //   'admin@techcongress.edu': { password: 'admin123', role: 'admin', name: 'Dr. María González' },
+  //   'estudiante@universidad.edu': { password: 'student123', role: 'student', name: 'Carlos Rodríguez' },
+  //   'participante@gmail.com': { password: 'external123', role: 'external', name: 'Ana Martínez' }
+  // };
 
   handleInputChange(name: string, value: any): void {
     if (this.errors[name]) {
@@ -62,7 +68,7 @@ export class LoginForm {
 
     if (!this.formData.password) {
       newErrors.password = 'La contraseña es obligatoria';
-    } else if (this.formData.password.length < 6) {
+    } else if (this.formData.password.length < 1) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
 
@@ -70,40 +76,86 @@ export class LoginForm {
     return Object.keys(newErrors).length === 0;
   }
 
-  async handleSubmit(): Promise<void> {
+  async handleSubmit(event?: Event): Promise<void> {
+    
     if (!this.validateForm()) {
       return;
     }
+    
+    event?.preventDefault()
 
     this.isLoading = true;
     this.errors = {};
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const credentials = this.mockCredentials[this.formData.email as keyof typeof this.mockCredentials];
+      // const credentials = this.mockCredentials[this.formData.email as keyof typeof this.mockCredentials];
 
-      if (!credentials || credentials.password !== this.formData.password) {
-        this.errors.general = `Credenciales incorrectas. Prueba con:\n• admin@techcongress.edu / admin123\n• estudiante@universidad.edu / student123\n• participante@gmail.com / external123`;
-        return;
-      }
+      // if (!credentials || credentials.password !== this.formData.password) {
+      //   this.errors.general = `Credenciales incorrectas. Prueba con:\n• admin@techcongress.edu / admin123\n• estudiante@universidad.edu / student123\n• participante@gmail.com / external123`;
+      //   return;
+      // }
 
       // Store authentication data
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userData', JSON.stringify({
+
+      //console.log(credentials)
+
+      const dataLogin ={
         email: this.formData.email,
-        name: credentials.name,
-        role: credentials.role
-      }));
+        password: this.formData.password
+      }
+
+      await this.login(dataLogin)
+
+      // localStorage.setItem('userData', JSON.stringify({
+      //   email: this.formData.email,
+      //   name: 'credentials.name',
+      //   role: 'credentials.role'
+      // }));
 
       this.onSuccess.emit();
-    } catch (error) {
-      this.errors.general = 'Error de conexión. Inténtalo de nuevo.';
+
+    } catch (error: any) {
+      if (error instanceof HttpErrorResponse) {
+            const apiResponse = error.error;
+
+            if (apiResponse && apiResponse.message) {
+                this.errors.general = apiResponse.message;
+            } else {
+                this.errors.general = 'Ha ocurrido un error en el servidor.';
+            }
+        } else {
+            this.errors.general = 'Error de conexión. Inténtalo de nuevo.';
+        }
     } finally {
       this.isLoading = false;
     }
   }
+
+  async login(request: LoginRequest): Promise<void> {
+    const response = await firstValueFrom(
+      this.authService.login(request)
+    );
+
+    if(response.isSuccess){
+      // Si todo es un éxito, sigue tu lógica para el token
+      const token = this.authService.userToken;
+      if (!token) { return; }
+
+      localStorage.setItem('isAuthenticated', 'true');
+      var dataUser = JSON.parse(atob(token.split(".")[1]));
+      localStorage.setItem('userData', JSON.stringify({
+        email: this.formData.email,
+        name: `${dataUser.given_name} ${dataUser.family_name}`.trim(),
+        role: 'credentials.role'
+      }));
+
+    } else {
+        throw new Error(response.message);
+    }
+}
 
   handleForgotPassword(): void {
     alert('Funcionalidad de recuperación de contraseña próximamente disponible.');

@@ -1,0 +1,45 @@
+<div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-[var(--color-primary-foreground)] rounded-lg p-6 mb-6">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="w-16 h-16 bg-[var(--color-primary-foreground)]/20 rounded-full flex items-center justify-center">
+        @if (user?.avatar) {
+          <app-image
+            [src]="user?.avatar || ''"
+            [alt]="'Avatar de ' + (user?.name || '')"
+            className="w-14 h-14 rounded-full object-cover"
+          ></app-image>
+        } @else {
+          <lucide-icon [img]="icons.user" [size]="32" color="white"></lucide-icon>
+        }
+      </div>
+      <div>
+        <h1 class="text-2xl font-heading font-bold">
+          {{ getGreeting() }}, {{ user?.name || 'Participante' }}
+        </h1>
+        <p class="text-[var(--color-primary-foreground)]/90 font-body">
+          {{ formatDate() }}
+        </p>
+        <div class="flex items-center space-x-2 mt-1">
+          <lucide-icon [img]="icons.mapPin" [size]="16" color="white"></lucide-icon>
+          <span class="text-sm font-caption text-[var(--color-primary-foreground)]/80">
+            Congreso UMG {{getCurrentYear()}} - Universidad Tecnológica
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="hidden md:flex items-center space-x-4">
+      <div class="text-right">
+        <p class="text-sm font-caption text-[var(--color-primary-foreground)]/80">
+          ID de Participante
+        </p>
+        <p class="text-lg font-mono font-semibold">
+          {{ user?.participantId || 'TC2025-001' }}
+        </p>
+      </div>
+      <div class="w-12 h-12 bg-[var(--color-primary-foreground)]/20 rounded-lg flex items-center justify-center">
+        <lucide-icon [img]="icons.zap" [size]="24" color="white"></lucide-icon>
+      </div>
+    </div>
+  </div>
+</div>
