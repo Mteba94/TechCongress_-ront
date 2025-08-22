@@ -35,7 +35,7 @@ export class Auth {
           localStorage.setItem('token', JSON.stringify(response.data));
           this.user.next(response.data);
         }
-        console.log(response)
+        //console.log(response)
         return response;
       })
     );

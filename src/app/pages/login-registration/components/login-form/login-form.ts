@@ -88,20 +88,6 @@ export class LoginForm {
     this.errors = {};
 
     try {
-      // Simulate API call
-      // await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // const credentials = this.mockCredentials[this.formData.email as keyof typeof this.mockCredentials];
-
-      // if (!credentials || credentials.password !== this.formData.password) {
-      //   this.errors.general = `Credenciales incorrectas. Prueba con:\n• admin@techcongress.edu / admin123\n• estudiante@universidad.edu / student123\n• participante@gmail.com / external123`;
-      //   return;
-      // }
-
-      // Store authentication data
-
-      //console.log(credentials)
-
       const dataLogin ={
         email: this.formData.email,
         password: this.formData.password
@@ -109,26 +95,20 @@ export class LoginForm {
 
       await this.login(dataLogin)
 
-      // localStorage.setItem('userData', JSON.stringify({
-      //   email: this.formData.email,
-      //   name: 'credentials.name',
-      //   role: 'credentials.role'
-      // }));
-
       this.onSuccess.emit();
 
     } catch (error: any) {
       if (error instanceof HttpErrorResponse) {
-            const apiResponse = error.error;
+        const apiResponse = error.error;
 
-            if (apiResponse && apiResponse.message) {
-                this.errors.general = apiResponse.message;
-            } else {
-                this.errors.general = 'Ha ocurrido un error en el servidor.';
-            }
+        if (apiResponse && apiResponse.message) {
+            this.errors.general = apiResponse.message;
         } else {
-            this.errors.general = 'Error de conexión. Inténtalo de nuevo.';
+            this.errors.general = 'Ha ocurrido un error en el servidor.';
         }
+      } else {
+        this.errors.general = 'Error de conexión. Inténtalo de nuevo.';
+      }
     } finally {
       this.isLoading = false;
     }
