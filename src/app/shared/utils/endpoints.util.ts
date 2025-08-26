@@ -18,6 +18,10 @@ export const endpoint = {
 
     //SCHOOL
     SELECT_SCHOOL: 'School/Select',
-    BY_ID_SCHOOL: 'School/'
+    BY_ID_SCHOOL: 'School/',
+
+    //TIPO IDENTIFICACION
+    SELECT_TIPO_IDENTIFICACION: 'TipoIdentificacion/Select',
+
 
 }

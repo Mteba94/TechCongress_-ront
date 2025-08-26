@@ -25,6 +25,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { School } from '../../services/school';
 import { AutocompleteInput } from '../../../../shared/components/reusables/autocomplete-input/autocomplete-input';
 import { SelectResponse } from '../../models/select-response.interface';
+import { TipoIdentificacion } from '../../services/tipo-identificacion';
 
 export interface gradeOptions{
   value: number,
@@ -32,6 +33,11 @@ export interface gradeOptions{
 }
 
 export interface schoolOptions{
+  value: number,
+  label: string
+}
+
+interface TipoIdentificacionOptions{
   value: number,
   label: string
 }
@@ -74,6 +80,8 @@ export class RegistrationForm {
   private readonly participanteService = inject(Participante)
   private readonly codigoService = inject(Codigo)
   private readonly schoolService = inject(School)
+  private readonly TipoIdentificacionService = inject(TipoIdentificacion)
+
 
   registrationForm!: FormGroup;
   userType: 'internal' | 'external' = 'external';
@@ -83,6 +91,7 @@ export class RegistrationForm {
   generalError: string[] | null = null;
   apiError: string[] = []
   passwordMismatchError: boolean | false = false;
+  showSemestreField = false;
 
   readonly icons = { 
     alertCircle: AlertCircle,
@@ -101,13 +110,18 @@ export class RegistrationForm {
 
   gradeOp: gradeOptions[] = []
   schoolOp: schoolOptions[] = []
+  tipoIdentificacionOp: TipoIdentificacionOptions[] = []
   schoolName: string = '';
+  carneId: number | null = null;
+  universidadId: number | null = null;
 
   ngOnInit(): void {
     this.initializeForm();
 
     this.getSelectNivelAcademico();
     this.getSelectNSchool();
+    this.getSelectTipoIdentificacion();
+    this.updateSemestreFieldVisibility();
   }
 
   getSelectNivelAcademico(): void{
@@ -119,6 +133,10 @@ export class RegistrationForm {
               value: item.id,
               label: item.nombre
             }));
+          const universidadOption = resp.data.find(item => item.nombre.toLowerCase().includes('universidad'));
+          if (universidadOption) {
+            this.universidadId = universidadOption.id;
+          }
         }else{
 
         }
@@ -148,33 +166,57 @@ export class RegistrationForm {
       })
   }
 
+  private allTipoIdentificacionOp: TipoIdentificacionOptions[] = [];
+
+  getSelectTipoIdentificacion(): void{
+    this.TipoIdentificacionService
+      .getSelectTipoIdentificacion()
+      .subscribe((resp) => {
+        if(resp.isSuccess){
+          this.allTipoIdentificacionOp = resp.data
+            .filter(item => item.nombre !== 'Sin Documento')
+            .map(item => ({
+              value: item.id,
+              label: item.nombre
+            }));
+          
+          const carneOption = this.allTipoIdentificacionOp.find(op => op.label === 'Carné');
+          if (carneOption) {
+            this.carneId = carneOption.value;
+          }
+
+          this.updateTipoIdentificacionOptions();
+        }
+      })
+  }
+
+  updateTipoIdentificacionOptions(): void {
+    if (this.userType === 'external') {
+      this.tipoIdentificacionOp = this.allTipoIdentificacionOp.filter(item => item.label !== 'Carné');
+    } else {
+      this.tipoIdentificacionOp = this.allTipoIdentificacionOp;
+    }
+    const tipoIdentificacionControl = this.registrationForm.get('tipoIdentificacionId');
+    if (tipoIdentificacionControl && !this.tipoIdentificacionOp.some(op => op.value === tipoIdentificacionControl.value)) {
+      tipoIdentificacionControl.setValue('');
+    }
+  }
+
   private normalizeString(value: string): string {
     return value
       .toLowerCase()
       .normalize("NFD")                // separa acentos
-      .replace(/[\u0300-\u036f]/g, ""); // elimina acentos
+      .replace(/[̀-ͯ]/g, ""); // elimina acentos
   }
-
-  // handleSchoolSelected(option: schoolOptions): void {
-  //   this.schoolName = option.label;
-  //   this.registrationForm.get('schoolId')?.setValue(option.value);
-  // }
-
-  // handleSchoolInput(value: string): void {
-  //   this.registrationForm.get('schoolId')?.setValue(value);
-  // }
 
   onSchoolChange(value: schoolOptions | string): void {
     if (typeof value === 'object') {
-      // Si el valor es un objeto, significa que se seleccionó una opción.
       this.schoolControl.setValue(value.value);
       this.schoolName = value.label;
     } else {
-      // Si el valor es una cadena, significa que se escribió manualmente.
       this.schoolControl.setValue(value);
       this.schoolName = value;
     }
-    // Para asegurar que la validación se dispara.
     this.schoolControl.updateValueAndValidity();
   }
 
@@ -192,25 +234,91 @@ export class RegistrationForm {
       telefono: [''],
       schoolId: [''],
       nivelAcademicoId: [''],
+      semestre: [''],
       fechaNacimiento: [''],
+      tipoIdentificacionId: [''],
+      numeroIdentificacion: [''],
+      carneGroup: this.fb.group({
+        carnePart1: [''],
+        carnePart2: [''],
+        carnePart3: ['']
+      }),
       acceptTerms: [false, Validators.requiredTrue],
       acceptMarketing: [false]
     }, {
       validator: (form: FormGroup) => this.passwordMatchValidator(form)
     });
 
+    this.registrationForm.get('tipoIdentificacionId')?.valueChanges.subscribe(id => {
+      this.onTipoIdentificacionChange(id);
+    });
+
+    this.registrationForm.get('nivelAcademicoId')?.valueChanges.subscribe(() => {
+      this.updateSemestreFieldVisibility();
+    });
+
     this.updateValidatorsForUserType();
   }
 
+  updateSemestreFieldVisibility(): void {
+    const userIsInternal = this.userType === 'internal';
+    const isUniversidad = this.registrationForm.get('nivelAcademicoId')?.value === this.universidadId;
+    
+    const semestreControl = this.registrationForm.get('semestre');
+
+    if (userIsInternal || isUniversidad) {
+      this.showSemestreField = true;
+      semestreControl?.setValidators([
+        Validators.required,
+        Validators.min(1),
+        Validators.max(10),
+        Validators.pattern(/^[0-9]+$/)
+      ]);
+    } else {
+      this.showSemestreField = false;
+      semestreControl?.clearValidators();
+      semestreControl?.setValue('');
+    }
+    semestreControl?.updateValueAndValidity();
+  }
+
+  onTipoIdentificacionChange(id: number): void {
+    const numeroIdentificacionControl = this.registrationForm.get('numeroIdentificacion');
+    const carneGroup = this.registrationForm.get('carneGroup');
+    const carnePart1 = carneGroup?.get('carnePart1');
+    const carnePart2 = carneGroup?.get('carnePart2');
+    const carnePart3 = carneGroup?.get('carnePart3');
+
+    if (id === this.carneId) {
+      numeroIdentificacionControl?.clearValidators();
+      numeroIdentificacionControl?.setValue('');
+      
+      carnePart1?.setValidators([Validators.required, Validators.maxLength(7)]);
+      carnePart2?.setValidators([Validators.required, Validators.maxLength(7)]);
+      carnePart3?.setValidators([Validators.required, Validators.maxLength(7)]);
+    } else {
+      numeroIdentificacionControl?.setValidators(Validators.required);
+      
+      carnePart1?.clearValidators();
+      carnePart2?.clearValidators();
+      carnePart3?.clearValidators();
+      carneGroup?.reset();
+    }
+    numeroIdentificacionControl?.updateValueAndValidity();
+    carneGroup?.updateValueAndValidity();
+  }
+
+  isCarneSelected(): boolean {
+    return this.registrationForm.get('tipoIdentificacionId')?.value === this.carneId;
+  }
+
   updateValidatorsForUserType(): void {
-    //const phoneControl = this.registrationForm.get('telefono');
     const schoolControl = this.registrationForm.get('schoolId');
     const gradeControl = this.registrationForm.get('nivelAcademicoId');
     const birthDateControl = this.registrationForm.get('fechaNacimiento');
     const emailControl = this.registrationForm.get('email');
 
     if (this.userType === 'external') {
-      //phoneControl?.setValidators(Validators.required);
       schoolControl?.setValidators(schoolInputValidator);
       gradeControl?.setValidators(Validators.required);
       birthDateControl?.setValidators(Validators.required);
@@ -224,7 +332,6 @@ export class RegistrationForm {
         }]);
       }
     } else {
-      //phoneControl?.clearValidators();
       schoolControl?.clearValidators();
       gradeControl?.clearValidators();
       birthDateControl?.clearValidators();
@@ -239,7 +346,6 @@ export class RegistrationForm {
       }
     }
 
-    //phoneControl?.updateValueAndValidity();
     schoolControl?.updateValueAndValidity();
     gradeControl?.updateValueAndValidity();
     birthDateControl?.updateValueAndValidity();
@@ -282,8 +388,16 @@ export class RegistrationForm {
       tipoParticipanteIdControl.setValue(valuenew)
     }
 
+    if (type === 'internal' && this.carneId) {
+      this.registrationForm.get('tipoIdentificacionId')?.setValue(this.carneId);
+    } else {
+      this.registrationForm.get('tipoIdentificacionId')?.setValue('');
+    }
+
     this.updateValidatorsForUserType();
     this.registrationForm.get('email')?.updateValueAndValidity();
+    this.updateTipoIdentificacionOptions();
+    this.updateSemestreFieldVisibility();
   }
 
   togglePasswordVisibility(): void {
@@ -306,9 +420,13 @@ export class RegistrationForm {
     this.generalError = null;
 
     try {
+      if (this.isCarneSelected()) {
+        const { carnePart1, carnePart2, carnePart3 } = this.registrationForm.value.carneGroup;
+        this.registrationForm.patchValue({
+          numeroIdentificacion: `${carnePart1}-${carnePart2}-${carnePart3}`
+        }, { emitEvent: false });
+      }
 
-      // localStorage.setItem('isAuthenticated', 'true');
-      // localStorage.setItem('userData', JSON.stringify(userData));
       const formData = this.registrationForm.value;
 
       let schoolId_to_send: number | null = null;
@@ -322,7 +440,6 @@ export class RegistrationForm {
           schoolId_to_send = this.schoolControl.value;
           schoolName_to_send = this.schoolOp.find(op => op.value === schoolId_to_send)?.label || '';
         } else if (typeof this.schoolControl.value === 'string' && this.schoolControl.value.trim() !== '') {
-          // Si el valor es una cadena, significa que se escribió manualmente
           schoolName_to_send = this.schoolControl.value.trim();
           schoolId_to_send = null;
         }
@@ -333,6 +450,7 @@ export class RegistrationForm {
         schoolId: Number(schoolId_to_send),
         schoolName: schoolName_to_send, 
       };
+      delete dataToSend.carneGroup;
 
       console.log(dataToSend)
 
@@ -340,8 +458,6 @@ export class RegistrationForm {
 
       this.registrationEmail = formData.email;
       this.registrationPass = formData.password;
-      //this.currentStep = 'verification';
-      //this.onSuccess.emit();
     } catch (error) {
       this.generalError = ['Error al crear la cuenta. Inténtalo de nuevo.'];
     } finally {
@@ -406,7 +522,6 @@ export class RegistrationForm {
     }
   }
 
-  // Helper para mostrar errores de los formularios reactivos
   getControlError(controlName: string): string | null {
     const control = this.registrationForm.get(controlName);
 
@@ -432,6 +547,15 @@ export class RegistrationForm {
       if (control.errors?.['requiredTrue']) {
         return 'Debe aceptar los términos y condiciones';
       }
+      if (control.errors?.['min']) {
+        return `El valor mínimo es ${control.errors['min'].min}`;
+      }
+      if (control.errors?.['max']) {
+        return `El valor máximo es ${control.errors['max'].max}`;
+      }
+      if (control.errors?.['pattern']) {
+        return 'Este campo solo acepta números enteros.';
+      }
     }
 
     if (controlName === 'confirmPassword' && this.registrationForm.errors?.['mismatch']) {
@@ -449,11 +573,10 @@ export class RegistrationForm {
   handleBackToRegistration(): void {
     this.currentStep = 'registration';
     sessionStorage.removeItem('pendingUserRegistration');
-    this.initializeForm(); // Reinicializa el formulario si es necesario
+    this.initializeForm();
   }
 
   handleVerificationSuccess(): void {
-    // ... tu lógica para completar el registro
     const pendingUser = JSON.parse(sessionStorage.getItem('pendingUserRegistration') || '{}');
 
     const userData = {
@@ -466,7 +589,16 @@ export class RegistrationForm {
   }
 
   handleResendCode(): void {
-    // ... tu lógica para reenviar el código
+  }
+
+  validaEdad(): boolean {
+    const fechaNacimiento = new Date(this.registrationForm.value.fechaNacimiento);
+    const fechaActual = new Date();
+    
+    const diferenciaEnMilisegundos = fechaActual.getTime() - fechaNacimiento.getTime();
+    const edad = Math.floor(diferenciaEnMilisegundos / (1000 * 60 * 60 * 24 * 365.25));
+    
+    return edad >= 18;
   }
 
 }

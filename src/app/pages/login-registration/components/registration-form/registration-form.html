@@ -169,7 +169,52 @@
         [required]="true"
       />
     </div>
-
+    @if(validaEdad() || userType === 'internal'){
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-select
+          label="Tipo Ident."
+          placeholder="Selecciona"
+          [options]="tipoIdentificacionOp"
+          formControlName="tipoIdentificacionId"
+          [error]="getControlError('tipoIdentificacionId')"
+          [required]="true"
+        />
+        
+        @if (isCarneSelected()) {
+          <div class="md:col-span-2">
+            <label class="font-body font-medium text-sm text-[var(--color-foreground)] block mb-1.5">Carné</label>
+            <div formGroupName="carneGroup" class="grid grid-cols-3 gap-2">
+              <app-input
+                type="text"
+                formControlName="carnePart1"
+                maxlength="7"
+                [error]="getControlError('carneGroup.carnePart1')"
+              />
+              <app-input
+                type="text"
+                formControlName="carnePart2"
+                maxlength="7"
+                [error]="getControlError('carneGroup.carnePart2')"
+              />
+              <app-input
+                type="text"
+                formControlName="carnePart3"
+                maxlength="7"
+                [error]="getControlError('carneGroup.carnePart3')"
+              />
+            </div>
+          </div>
+        } @else {
+          <app-input
+            label="Identificacion"
+            type="text"
+            formControlName="numeroIdentificacion"
+            [error]="getControlError('numeroIdentificacion')"
+            [required]="true"
+          />
+        }
+      </div>
+    }
     @if (userType === 'external') {
       <app-autocomplete-input
         [label]="'Escuela'"
@@ -189,6 +234,19 @@
       [error]="getControlError('nivelAcademicoId')"
       [required]="true"
     />
+    <br>
+    }
+    @if (showSemestreField) {
+      <app-input
+        label="Semestre"
+        type="number"
+        placeholder="Ingresa el semestre"
+        formControlName="semestre"
+        [error]="getControlError('semestre')"
+        [required]="true"
+        min="1"
+        max="10"
+      />
     }
     <div class="space-y-3 pt-4 border-t border-[var(--color-border)]">
       <app-check-point
