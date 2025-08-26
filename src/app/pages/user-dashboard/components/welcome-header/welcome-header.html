@@ -22,7 +22,7 @@
         <div class="flex items-center space-x-2 mt-1">
           <lucide-icon [img]="icons.mapPin" [size]="16" color="white"></lucide-icon>
           <span class="text-sm font-caption text-[var(--color-primary-foreground)]/80">
-            Congreso UMG {{getCurrentYear()}} - Universidad Tecnológica
+            Congreso UMG {{getCurrentYear()}} - {{ this.schoolName }}
           </span>
         </div>
       </div>
@@ -31,10 +31,10 @@
     <div class="hidden md:flex items-center space-x-4">
       <div class="text-right">
         <p class="text-sm font-caption text-[var(--color-primary-foreground)]/80">
-          ID de Participante
+          <!-- ID de Participante -->
         </p>
         <p class="text-lg font-mono font-semibold">
-          {{ user?.participantId || 'TC2025-001' }}
+          <!-- {{ user?.participantId || 'TC2025-001' }} -->
         </p>
       </div>
       <div class="w-12 h-12 bg-[var(--color-primary-foreground)]/20 rounded-lg flex items-center justify-center">

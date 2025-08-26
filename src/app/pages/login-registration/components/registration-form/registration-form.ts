@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
   AlertCircle,
@@ -22,11 +22,27 @@ import { Codigo } from '../../services/codigo';
 import { firstValueFrom } from 'rxjs';
 import { ParticipanteRequest } from '../../models/participante-req.interface';
 import { HttpErrorResponse } from '@angular/common/http';
+import { School } from '../../services/school';
+import { AutocompleteInput } from '../../../../shared/components/reusables/autocomplete-input/autocomplete-input';
+import { SelectResponse } from '../../models/select-response.interface';
 
 export interface gradeOptions{
   value: number,
   label: string
 }
+
+export interface schoolOptions{
+  value: number,
+  label: string
+}
+
+const schoolInputValidator = (control: AbstractControl): ValidationErrors | null => {
+  const value = control.value;
+  if (typeof value === 'number' || (typeof value === 'string' && value.trim() !== '')) {
+    return null; // El valor es válido
+  }
+  return { schoolRequired: true }; // El valor es inválido
+};
 
 @Component({
   selector: 'app-registration-form',
@@ -39,7 +55,8 @@ export interface gradeOptions{
     Button,
     UserTypeSelector,
     SelectComponent,
-    EmailVerification
+    EmailVerification,
+    AutocompleteInput
   ],
   templateUrl: './registration-form.html',
   styleUrl: './registration-form.css'
@@ -49,12 +66,14 @@ export class RegistrationForm {
 
   currentStep: 'registration' | 'verification' = 'registration';
   registrationEmail: string = '';
+  registrationPass: string = '';
 
   private readonly nivelAcademicoService = inject(NivelAcademico)
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly participanteService = inject(Participante)
   private readonly codigoService = inject(Codigo)
+  private readonly schoolService = inject(School)
 
   registrationForm!: FormGroup;
   userType: 'internal' | 'external' = 'external';
@@ -72,23 +91,23 @@ export class RegistrationForm {
     userPlus: UserPlus
    };
 
-  // gradeOptions = [
-  //   { value: '10', label: 'Décimo Grado' },
-  //   { value: '11', label: 'Undécimo Grado' },
-  //   { value: '12', label: 'Duodécimo Grado' },
-  //   { value: 'graduate', label: 'Graduado' }
-  // ];
-
   get nivelAcademicoIdControl(): FormControl {
     return this.registrationForm.get('nivelAcademicoId') as FormControl;
   }
 
+  get schoolControl(): FormControl {
+    return this.registrationForm.get('schoolId') as FormControl;
+  }
+
   gradeOp: gradeOptions[] = []
+  schoolOp: schoolOptions[] = []
+  schoolName: string = '';
 
   ngOnInit(): void {
     this.initializeForm();
 
     this.getSelectNivelAcademico();
+    this.getSelectNSchool();
   }
 
   getSelectNivelAcademico(): void{
@@ -106,6 +125,60 @@ export class RegistrationForm {
       })
   }
 
+  schools: SelectResponse[] = [];
+  schoolOptions: string[] = []; 
+  internalSchool: schoolOptions | null = null;
+
+  getSelectNSchool(): void{
+    this.schoolService
+      .getSelectSchool()
+      .subscribe((resp) => {
+        if(resp.isSuccess){
+            this.schoolOp = resp.data.map(item => ({
+              value: item.id,
+              label: item.nombre
+            }));
+
+            this.internalSchool = this.schoolOp.find(s =>
+              this.normalizeString(s.label).includes(this.normalizeString('Mariano Gálvez'))
+            ) || null;
+        }else{
+
+        }
+      })
+  }
+
+  private normalizeString(value: string): string {
+    return value
+      .toLowerCase()
+      .normalize("NFD")                // separa acentos
+      .replace(/[\u0300-\u036f]/g, ""); // elimina acentos
+  }
+
+  // handleSchoolSelected(option: schoolOptions): void {
+  //   this.schoolName = option.label;
+  //   this.registrationForm.get('schoolId')?.setValue(option.value);
+  // }
+
+  // handleSchoolInput(value: string): void {
+  //   this.registrationForm.get('schoolId')?.setValue(value);
+  // }
+
+  onSchoolChange(value: schoolOptions | string): void {
+    if (typeof value === 'object') {
+      // Si el valor es un objeto, significa que se seleccionó una opción.
+      this.schoolControl.setValue(value.value);
+      this.schoolName = value.label;
+    } else {
+      // Si el valor es una cadena, significa que se escribió manualmente.
+      this.schoolControl.setValue(value);
+      this.schoolName = value;
+    }
+    // Para asegurar que la validación se dispara.
+    this.schoolControl.updateValueAndValidity();
+  }
+
+
   initializeForm(): void {
     this.registrationForm = this.fb.group({
       pNombre: ['', Validators.required],
@@ -117,7 +190,7 @@ export class RegistrationForm {
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
       telefono: [''],
-      school: [''],
+      schoolId: [''],
       nivelAcademicoId: [''],
       fechaNacimiento: [''],
       acceptTerms: [false, Validators.requiredTrue],
@@ -131,14 +204,14 @@ export class RegistrationForm {
 
   updateValidatorsForUserType(): void {
     //const phoneControl = this.registrationForm.get('telefono');
-    const schoolControl = this.registrationForm.get('school');
+    const schoolControl = this.registrationForm.get('schoolId');
     const gradeControl = this.registrationForm.get('nivelAcademicoId');
     const birthDateControl = this.registrationForm.get('fechaNacimiento');
     const emailControl = this.registrationForm.get('email');
 
     if (this.userType === 'external') {
       //phoneControl?.setValidators(Validators.required);
-      schoolControl?.setValidators(Validators.required);
+      schoolControl?.setValidators(schoolInputValidator);
       gradeControl?.setValidators(Validators.required);
       birthDateControl?.setValidators(Validators.required);
       if (emailControl) {
@@ -188,13 +261,19 @@ export class RegistrationForm {
     return password === confirmPassword ? null : { mismatch: true };
   }
 
-  handleUserTypeChange(type: 'internal' | 'external'): void {
+    handleUserTypeChange(type: 'internal' | 'external'): void {
     this.userType = type;
 
     const nivelAcademicoIdControl = this.registrationForm.get('nivelAcademicoId');
     if(nivelAcademicoIdControl){
       const newValue = this.userType === 'internal' ? 4 : '';
       nivelAcademicoIdControl.setValue(newValue);
+    }
+
+    const schoolIdControl = this.registrationForm.get('schoolId');
+    if (schoolIdControl) {
+      const newSchoolValue = this.userType === 'internal' && this.internalSchool ? this.internalSchool.value : '';
+      schoolIdControl.setValue(newSchoolValue);
     }
 
     const tipoParticipanteIdControl = this.registrationForm.get('tipoParticipanteId');
@@ -227,41 +306,40 @@ export class RegistrationForm {
     this.generalError = null;
 
     try {
-      //await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      
-      // this.participanteService
-      //   .PostCreate(this.registrationForm.value)
-      //   .subscribe((response: BaseApiResponse<boolean>) => {
-      //     if(response.isSuccess){
-            
-      //       this.registrationEmail = formData.email;
-
-      //       const ReqCodigo = {
-      //         purpose: 'validUser',
-      //         email: this.registrationEmail
-      //       }
-
-      //       this.codigoService
-      //         .CreateCode(ReqCodigo)
-      //         .subscribe((response: BaseApiResponse<string>) =>{
-      //           this.currentStep = 'verification';
-      //         })
-
-      //     }else{
-      //       this.generalError = response.message
-      //     }
-      //     console.log(response)
-      //   })
-
-      this.createPart(this.registrationForm.value)
 
       // localStorage.setItem('isAuthenticated', 'true');
       // localStorage.setItem('userData', JSON.stringify(userData));
       const formData = this.registrationForm.value;
 
-      this.registrationEmail = formData.email;
+      let schoolId_to_send: number | null = null;
+      let schoolName_to_send = null;
 
+      if(this.userType === 'internal' && this.internalSchool) {
+        schoolId_to_send = this.internalSchool.value;
+        schoolName_to_send = this.internalSchool.label;
+      }else{
+        if (typeof this.schoolControl.value === 'number') {
+          schoolId_to_send = this.schoolControl.value;
+          schoolName_to_send = this.schoolOp.find(op => op.value === schoolId_to_send)?.label || '';
+        } else if (typeof this.schoolControl.value === 'string' && this.schoolControl.value.trim() !== '') {
+          // Si el valor es una cadena, significa que se escribió manualmente
+          schoolName_to_send = this.schoolControl.value.trim();
+          schoolId_to_send = null;
+        }
+      }
+
+      const dataToSend = {
+        ...formData,
+        schoolId: Number(schoolId_to_send),
+        schoolName: schoolName_to_send, 
+      };
+
+      console.log(dataToSend)
+
+      await this.createPart(dataToSend)
+
+      this.registrationEmail = formData.email;
+      this.registrationPass = formData.password;
       //this.currentStep = 'verification';
       //this.onSuccess.emit();
     } catch (error) {
@@ -335,6 +413,9 @@ export class RegistrationForm {
     if (control?.invalid && (control?.touched || control?.dirty)) {
       if (control.errors?.['required']) {
         return 'Este campo es obligatorio';
+      }
+      if (control.errors?.['schoolRequired']) {
+        return 'El nombre de la institución educativa es obligatorio';
       }
       if (control.errors?.['email']) {
         return 'Ingrese un correo electrónico válido';

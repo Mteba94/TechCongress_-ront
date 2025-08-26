@@ -1,6 +1,7 @@
 @if (currentStep === 'verification') {
   <app-email-verification
     [email]="registrationEmail"
+    [pass]="registrationPass"
     (onVerificationSuccess)="handleVerificationSuccess()"
     (onResendCode)="handleResendCode()"
     (onBackToRegistration)="handleBackToRegistration()"
@@ -170,16 +171,15 @@
     </div>
 
     @if (userType === 'external') {
-      <app-input
-        label="Institución Educativa"
-        type="text"
-        name="school"
-        placeholder="Nombre de tu colegio o institución"
-        [value]="registrationForm.get('school')?.value"
-        (valueChange)="handleInputChange('school', $event)"
-        [error]="getControlError('school')"
-        [required]="true"
-      />
+      <app-autocomplete-input
+        [label]="'Escuela'"
+        inputId="schoolId"
+        [options]="schoolOp"
+        [control]="schoolControl"
+        [required]="userType === 'external'"
+        [error]="getControlError('schoolId')"
+        (optionSelectedObject)="onSchoolChange($event)"
+      ></app-autocomplete-input>
     <br />
     <app-select
       label="Grado Académico"

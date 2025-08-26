@@ -8,6 +8,7 @@ import { CodigoRequest, ValidateCodigo } from '../../models/codigo-req.interface
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BaseApiResponse } from '../../../../shared/models/reusables/base-api-response.interface';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-email-verification',
@@ -22,6 +23,7 @@ import { BaseApiResponse } from '../../../../shared/models/reusables/base-api-re
 })
 export class EmailVerification {
   @Input({ required: true }) email!: string;
+  @Input({ required: true }) pass!: string;
   @Output() onVerificationSuccess = new EventEmitter<void>();
   @Output() onResendCode = new EventEmitter<void>();
   @Output() onBackToRegistration = new EventEmitter<void>();
@@ -29,6 +31,7 @@ export class EmailVerification {
    @ViewChildren('codeInput') inputRefs!: QueryList<any>;
 
    private readonly codigoService = inject(Codigo)
+   private readonly authService = inject(Auth)
 
    public Math = Math;
 
@@ -156,7 +159,19 @@ export class EmailVerification {
 
       if(response.isSuccess){
           //console.log('correcto')
-          this.onVerificationSuccess.emit();
+          const dataLogin ={
+            email: this.email,
+            password: this.pass
+          }
+
+          const responseLogin = await firstValueFrom(
+            this.authService.login(dataLogin)
+          );
+
+          if(responseLogin.isSuccess){
+            this.onVerificationSuccess.emit();
+          }
+          
         }else{
           this.error = response.message
         }

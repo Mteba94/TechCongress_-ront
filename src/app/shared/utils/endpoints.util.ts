@@ -14,6 +14,10 @@ export const endpoint = {
     VALIDATE_CODIGO: 'Codigo/validar',
 
     //LOGIN
-    LOGIN: 'Auth/Login'
+    LOGIN: 'Auth/Login',
+
+    //SCHOOL
+    SELECT_SCHOOL: 'School/Select',
+    BY_ID_SCHOOL: 'School/'
 
 }

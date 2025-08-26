@@ -11,5 +11,7 @@ export interface ParticipanteRequest{
     numeroIdentificacion: string,
     nivelAcademicoId: number,
     semestre: number,
-    password: string
+    password: string,
+    schoolId: number,
+    schoolName: string
 }

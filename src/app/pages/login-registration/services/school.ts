@@ -9,16 +9,17 @@ import { endpoint } from '../../../shared/utils/endpoints.util';
 @Injectable({
   providedIn: 'root'
 })
-export class NivelAcademico {
+export class School {
   private readonly httpClient = inject(HttpClient);
 
-  getSelectNivelAcademico(): Observable<BaseApiResponse<SelectResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.SELECT_NIVEL_ACADEMICO}`;
-    
+  getSelectSchool(): Observable<BaseApiResponse<SelectResponse[]>> {
+    const requestUrl = `${env.api}${endpoint.SELECT_SCHOOL}`;
+
     return this.httpClient
-      .get<BaseApiResponse<SelectResponse[]>>(requestUrl,{})
+      .get<BaseApiResponse<SelectResponse[]>>(requestUrl)
       .pipe(
         map((resp) => resp)
       );
   }
+
 }

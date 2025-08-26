@@ -63,15 +63,25 @@ export class UserTypeSelector {
   }
 
   getTipoParticipante(): void{
+    // Suscribirse al Observable del servicio.
     this.tipoParticipanteService
       .getSelectTipoParticipante()
-      .subscribe((resp) => {
-        if(resp.isSuccess){
-          this.userTypes = this.mapServiceDataToUserTypes(resp.data);
-        }else{
-          this.userTypes = [];
+      .subscribe({
+        // Callback para cuando la petición es exitosa.
+        next: (resp) => {
+          if (resp.isSuccess) {
+            this.userTypes = this.mapServiceDataToUserTypes(resp.data);
+          } else {
+            this.userTypes = [];
+          }
+        },
+        error: (error) => {
+          //console.error('An error occurred during API call:', error);
+        },
+        complete: () => {
+          //console.log('API call completed.');
         }
-      })
+      });
   }
 
    private mapServiceDataToUserTypes(data: SelectResponse[]): UserTypeOption[] {

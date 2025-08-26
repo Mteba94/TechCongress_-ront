@@ -120,12 +120,12 @@ export class LoginForm {
     );
 
     if(response.isSuccess){
-      // Si todo es un éxito, sigue tu lógica para el token
       const token = this.authService.userToken;
       if (!token) { return; }
 
       localStorage.setItem('isAuthenticated', 'true');
       var dataUser = JSON.parse(atob(token.split(".")[1]));
+      
       localStorage.setItem('userData', JSON.stringify({
         email: this.formData.email,
         name: `${dataUser.given_name} ${dataUser.family_name}`.trim(),
