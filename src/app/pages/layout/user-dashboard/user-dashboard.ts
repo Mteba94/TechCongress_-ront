@@ -4,6 +4,7 @@ import { Header } from '../../../shared/components/layout/header/header';
 import { RegistrationCallToAction } from '../../../shared/components/reusables/registration-call-to-action/registration-call-to-action';
 import { Breadcrumbs } from '../../../shared/components/reusables/breadcrumbs/breadcrumbs';
 import { WelcomeHeader } from '../../user-dashboard/components/welcome-header/welcome-header';
+import { QuickStats } from '../../user-dashboard/components/quick-stats/quick-stats';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -11,7 +12,8 @@ import { WelcomeHeader } from '../../user-dashboard/components/welcome-header/we
     Header,
     RegistrationCallToAction,
     Breadcrumbs,
-    WelcomeHeader
+    WelcomeHeader,
+    QuickStats
   ],
   templateUrl: './user-dashboard.html',
   styleUrl: './user-dashboard.css'

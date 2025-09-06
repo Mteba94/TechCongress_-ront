@@ -1,0 +1,17 @@
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      @for (item of statItems; track item.label) {
+        <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-4 shadow-subtle">
+          <div class="flex items-center justify-between mb-2">
+            <div [ngClass]="item.bgColor" class="w-10 h-10 rounded-lg flex items-center justify-center">
+              <lucide-icon [img]="item.icon" [size]="20" [ngClass]="item.color"></lucide-icon>
+            </div>
+            <span class="text-2xl font-heading font-bold text-[var(--color-foreground)]">
+              {{ item.value }}
+            </span>
+          </div>
+          <p class="text-sm font-body text-[var(--color-muted-foreground)]">
+            {{ item.label }}
+          </p>
+        </div>
+      }
+    </div>
