@@ -90,7 +90,7 @@ export class UserTypeSelector {
       let icon: LucideIconData;
       let color, bgColor, radioBgColor;
 
-      if (item.id === 1) {
+      if (item.nombre.includes('Externo')) {
         tipoId = 'external';
         icon = this.icons.graduationCap;
         color = 'text-[var(--color-blue-600)]';

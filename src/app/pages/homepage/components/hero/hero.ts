@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -12,6 +12,8 @@ import {
   UserPlus,
   ArrowDown
 } from 'lucide-angular';
+import { CongresoService } from '../../services/congreso-service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-hero',
@@ -24,6 +26,8 @@ import {
   styleUrl: './hero.css'
 })
 export class Hero {
+  private readonly congresoService = inject(CongresoService)
+
   readonly icons = {
     calendar: Calendar,
     mapPin: MapPin,
@@ -34,9 +38,13 @@ export class Hero {
     arrowDown: ArrowDown
   };
 
+  fechaCongreso$ = this.congresoService.congresoSelect();
+
+
   constructor(
     private router: Router
-  ) {}
+  ) {
+  }
 
   handleRegistration(): void {
     this.router.navigate(['/login-registration']);

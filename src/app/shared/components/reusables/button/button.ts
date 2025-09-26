@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Home, LucideAngularModule } from 'lucide-angular';
+import { Check, Filter, Grid3X3, Home, LucideAngularModule, Search, X } from 'lucide-angular';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   LogIn, UserPlus, ArrowDown,
@@ -30,7 +30,7 @@ export class Button {
   @Input() fullWidth: boolean = false;
   @Input() disabled: boolean = false;
 
-  @Output() btnClick = new EventEmitter<void>();
+  @Output() btnClick = new EventEmitter<MouseEvent>();
 
   readonly icons = { 
     LogIn, 
@@ -41,16 +41,21 @@ export class Button {
     RefreshCw, 
     ArrowLeft,
     ArrowRight,
-    Home
+    Home,
+    Grid3X3,
+    Search,
+    Filter,
+    X,
+    Check
   };
 
   get children(): boolean {
     return this.btnClick.observers.length > 0;
   }
 
-  onClick(): void {
+  onClick(event: MouseEvent): void {
     if (!this.disabled && !this.loading) {
-      this.btnClick.emit();
+      this.btnClick.emit(event);
     }
   }
 

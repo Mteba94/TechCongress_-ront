@@ -7,6 +7,10 @@ import { EventAgenda } from "../../homepage/components/event-agenda/event-agenda
 import { Meta, Title } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
 import { RegistrationCallToAction } from '../../../shared/components/reusables/registration-call-to-action/registration-call-to-action';
+import { FAQSection } from '../../homepage/components/faqsection/faqsection';
+import { Footer } from '../../homepage/components/footer/footer';
+import { SystemsEngineeringCareer } from '../../homepage/components/systems-engineering-career/systems-engineering-career';
+import { WorkshopHighlights } from '../../homepage/components/workshop-highlights/workshop-highlights';
 
 @Component({
   selector: 'app-homepage',
@@ -16,7 +20,11 @@ import { RegistrationCallToAction } from '../../../shared/components/reusables/r
     Overview,
     FeaturedSpeakers,
     EventAgenda,
-    RegistrationCallToAction
+    RegistrationCallToAction,
+    FAQSection,
+    Footer,
+    SystemsEngineeringCareer,
+    WorkshopHighlights
 ],
   templateUrl: './homepage.html',
   //styleUrl: './homepage.css'

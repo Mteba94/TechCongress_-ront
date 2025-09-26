@@ -45,7 +45,7 @@ export class Overview {
 
   features = [
     {
-      icon: "code", // Nombres de los íconos en minúsculas para el componente Icon
+      icon: "code",
       title: "Talleres Especializados",
       description: "Aprende las últimas tecnologías con expertos de la industria en sesiones prácticas y dinámicas."
     },
@@ -62,17 +62,17 @@ export class Overview {
     {
       icon: "award",
       title: "Certificaciones",
-      description: "Obtén certificados oficiales que validen tus conocimientos y habilidades adquiridas."
+      description: "Obtén certificados que validen tus conocimientos y habilidades adquiridas."
     },
     {
       icon: "briefcase",
-      title: "Oportunidades Laborales",
-      description: "Descubre ofertas de empleo, prácticas profesionales y programas de desarrollo de carrera."
+      title: "Oportunidades",
+      description: "Descubre prácticas profesionales y programas de desarrollo de carrera."
     },
     {
       icon: "lightbulb",
-      title: "Innovación & Startups",
-      description: "Conoce proyectos innovadores, startups emergentes y tendencias del ecosistema tecnológico."
+      title: "Innovación",
+      description: "Conoce proyectos innovadores, y tendencias del ecosistema tecnológico."
     }
   ];
 }

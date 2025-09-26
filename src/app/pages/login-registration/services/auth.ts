@@ -32,8 +32,8 @@ export class Auth {
     return this.http.post<BaseApiResponse<string>>(requestUrl, request).pipe(
       map((response: BaseApiResponse<string>) => {
         if (response.isSuccess) {
-          localStorage.setItem('token', JSON.stringify(response.data));
-          this.user.next(response.data);
+          localStorage.setItem('token', JSON.stringify(response.accessToken));
+            this.user.next(response.accessToken);
         }
         //console.log(response)
         return response;

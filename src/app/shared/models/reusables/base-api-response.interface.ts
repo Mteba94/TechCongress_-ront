@@ -4,6 +4,8 @@ export interface BaseApiResponse<T> {
   message: string;
   totalRecords: number;
   errors?: ApiError[]
+  accessToken: string;
+  refreshToken: string
 }
 
 export interface ApiError {

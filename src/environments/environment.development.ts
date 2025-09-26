@@ -3,4 +3,5 @@ export const environment = {
     //api: 'http://localhost/servicios/ws_congreso/api/'
     //api: 'http://localhost:81/api/'
     //api: 'https://www.congress.somee.com/api/'
+    //api: 'https://techcongress.azurewebsites.net/api/'
 };

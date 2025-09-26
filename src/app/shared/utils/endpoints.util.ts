@@ -1,4 +1,8 @@
 export const endpoint = {
+    //ACTIVIDAD
+    LIST_ACTIVIDAD: 'Actividad',
+
+
     //TIPO PARTICIPANTE
     LIST_TIPO_PARTICIPANTE: 'TipoParticipante',
     SELECT_TIPO_PARTICIPANTE: 'TipoParticipante/Select',
@@ -7,7 +11,17 @@ export const endpoint = {
     SELECT_NIVEL_ACADEMICO: 'NivelAcademico/Select',
 
     //PARTICIPANTE
-    CREATE_PARTICIPANTE: 'User',
+    CREATE_PARTICIPANTE: 'Participante/Create',
+
+    //PONENTES
+    LIST_PONENTES: 'Ponentes',
+    POPULAR_PONENTES: 'Ponente/Popular',
+
+    //PONENTES - TAG
+    PONENTES_TAG_BY_PONENTE_ID: 'PonenteTag/ByPonente/',
+
+    //TAG
+    LIST_TAG: 'Tag',
 
     //CODIGO
     CREATE_CODIGO: 'Codigo',
@@ -23,5 +37,7 @@ export const endpoint = {
     //TIPO IDENTIFICACION
     SELECT_TIPO_IDENTIFICACION: 'TipoIdentificacion/Select',
 
+    //CONGRESO
+    CONGRESO_SELECT: 'Congreso/Select',
 
 }

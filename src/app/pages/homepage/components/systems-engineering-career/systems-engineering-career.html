@@ -1,0 +1,217 @@
+<div class="py-20 bg-background font-body">
+  <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-16">
+        <div
+          class="inline-flex items-center space-x-2 bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-full px-4 py-2 mb-4">
+          <lucide-icon [img]="icons.graduationCap" [size]="16"></lucide-icon>
+          <span class="text-sm font-medium font-body">Tu Futuro Profesional</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-foreground)] mb-6">
+          Ingeniería de Sistemas
+          <span class="block text-[var(--color-primary)]">Tu Puerta al Futuro Digital</span>
+        </h2>
+        <p class="text-lg text-[var(--color-muted-foreground)] max-w-3xl mx-auto leading-relaxed font-body">
+          Descubre por qué la ingeniería de sistemas es una de las carreras más demandadas
+          y mejor remuneradas en el mercado laboral actual.
+        </p>
+      </div>
+
+      <!-- Why Systems Engineering -->
+      <div class="grid lg:grid-cols-2 gap-12 items-center mb-20">
+        <div>
+          <h3 class="text-2xl font-heading font-bold text-[var(--color-foreground)] mb-6">
+            ¿Por qué Ingeniería de Sistemas?
+          </h3>
+
+          <div class="space-y-6">
+            @for (reason of whySection(); track reason.title) {
+            <div class="flex items-start space-x-4">
+              <div class="bg-[var(--color-primary)]/[0.10] rounded-full p-2 flex-shrink-0">
+                <lucide-icon [img]="reason.icon" [size]="16"></lucide-icon>
+              </div>
+              <div>
+                <h4 class="font-semibold text-[var(--color-foreground)] mb-2">{{ reason.title }}</h4>
+                <p class="text-[var(--color-muted-foreground)]">
+                  {{ reason.description }}
+                </p>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="relative">
+          <img
+            [src]="'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'"
+            [alt]="'Estudiantes de ingeniería trabajando'"
+            class="w-full h-96 object-cover rounded-2xl shadow-elevation-2" />
+
+          <!-- Skills Chart Overlay -->
+          <div
+            class="absolute -bottom-6 -left-6 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-elevation-3 max-w-sm">
+            <h4 class="font-semibold text-[var(--color-foreground)] mb-4">Habilidades Clave</h4>
+            <div class="space-y-3">
+              @for (skill of skills(); track skill.name) {
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-[var(--color-muted-foreground)] pr-2">{{ skill.name }}</span>
+                  <span class="text-[var(--color-primary)] font-medium">{{ skill.level }}%</span>
+                </div>
+                <div class="w-full bg-[var(--color-muted)] rounded-full h-2">
+                  <div class="bg-[var(--color-primary)] h-2 rounded-full transition-all duration-1000"
+                    [style.width]="skill.level + '%'"></div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Career Paths -->
+      <div class="mb-20">
+        <div class="text-center mb-12">
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-foreground)] mb-4">
+            Especialidades y Oportunidades
+          </h3>
+          <p class="text-[var(--color-muted-foreground)] max-w-2xl mx-auto">
+            La ingeniería de sistemas te prepara para múltiples caminos profesionales
+            en el ecosistema tecnológico actual.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          @for (path of careerPaths(); track path.title) {
+          <div
+            class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-subtle hover:shadow-elevation-1 transition-shadow duration-300">
+            <div class="bg-primary-soft rounded-full w-12 h-12 flex items-center justify-center mb-4">
+              <lucide-icon [img]="path.icon" [size]="16" class="text-primary"></lucide-icon>
+            </div>
+
+            <h4 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-2">
+              {{ path.title }}
+            </h4>
+
+            <p class="text-[var(--color-muted-foreground)] text-sm mb-4">
+              {{ path.description }}
+            </p>
+
+            <!-- <div class="mb-4">
+                    <p class="text-xs font-medium text-[var(--color-muted-foreground)] mb-2">ROLES TÍPICOS:</p>
+                    <div class="flex flex-wrap gap-1">
+                      @for (role of path.opportunities; track role) {
+                        @if ($index < 2) {
+                          <span class="text-xs bg-[var(--color-muted)] text-[var(--color-muted-foreground)] px-2 py-1 rounded-md">
+                            {{ role }}
+                          </span>
+                        }
+                      }
+                      @if (path.opportunities.length > 2) {
+                        <span class="text-xs bg-[var(--color-muted)] text-[var(--color-muted-foreground)] px-2 py-1 rounded-md">
+                          +{{ path.opportunities.length - 2 }} más
+                        </span>
+                      }
+                    </div>
+                  </div> -->
+
+            <div class="mb-4">
+              <p class="text-xs font-medium text-[var(--color-muted-foreground)] mb-2">ROLES TÍPICOS:</p>
+              <div class="flex flex-wrap gap-1">
+                @for (role of path.opportunities; track role) {
+                <!-- Show only the first two opportunities by default, or all if expanded -->
+                @if (expandedPaths()[path.title] || $index < 2) { <span
+                  class="inline-flex items-center px-2 py-1 text-xs font-medium bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-md">
+                  {{ role }}
+                  </span>
+                  }
+                  }
+                  <!-- "Show More/Less" button logic -->
+                  @if (path.opportunities.length > 2) {
+                  <span
+                    class="text-xs bg-[var(--color-muted)] text-[var(--color-muted-foreground)] px-2 py-1 rounded-md cursor-pointer hover:underline"
+                    (click)="toggleExpansion(path.title)">
+                    @if (!expandedPaths()[path.title]) {
+                    +{{ path.opportunities.length - 2 }} más
+                    } @else {
+                    Ver menos
+                    }
+                  </span>
+                  }
+              </div>
+            </div>
+
+            <!-- <div class="flex items-center justify-between">
+                    <div>
+                      <p class="text-xs font-medium text-[var(--color-muted-foreground)]">RANGO SALARIAL</p>
+                      <p class="text-sm font-semibold text-[var(--color-primary)]">{{ path.salary }}</p>
+                    </div>
+                    <lucide-icon [img]="icons.arrowUpRight" [size]="16"></lucide-icon>
+                  </div> -->
+          </div>
+
+
+          }
+        </div>
+      </div>
+
+      <!-- Testimonials -->
+      <!-- <div class="mb-16">
+        <div class="text-center mb-12">
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-[var(--color-foreground)] mb-4">
+            Historias de Éxito
+          </h3>
+          <p class="text-[var(--color-muted-foreground)] max-w-2xl mx-auto">
+            Conoce a algunos de nuestros graduados que están transformando
+            el mundo de la tecnología.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          @for (testimonial of testimonials(); track testimonial.name) {
+          <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-subtle">
+            <div class="flex items-center space-x-4 mb-4">
+              <img [src]="testimonial.image" [alt]="testimonial.name" class="w-12 h-12 rounded-full object-cover" />
+              <div>
+                <h4 class="font-semibold text-[var(--color-foreground)]">{{ testimonial.name }}</h4>
+                <p class="text-sm text-[var(--color-primary)]">{{ testimonial.role }}</p>
+                <p class="text-xs text-[var(--color-muted-foreground)]">{{ testimonial.year }}</p>
+              </div>
+            </div>
+
+            <blockquote class="text-[var(--color-muted-foreground)] italic leading-relaxed">
+              "{{ testimonial.quote }}"
+            </blockquote>
+          </div>
+          }
+        </div>
+      </div> -->
+
+      <!-- CTA -->
+      <div class="text-center">
+        <div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-xl p-8 text-white">
+          <h3 class="text-2xl font-heading font-bold mb-4">
+            ¿Listo para Comenzar tu Carrera en Tecnología?
+          </h3>
+          <p class="text-white/90 mb-6 max-w-2xl mx-auto">
+            Únete al Congreso UMG y descubre de primera mano las oportunidades
+            que te esperan en el mundo de la ingeniería de sistemas.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/login-registration"
+              class="bg-white text-[var(--color-primary)] hover:bg-white/90 font-semibold px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center justify-center space-x-2">
+              <lucide-icon [img]="icons.userPlus" [size]="16"></lucide-icon>
+              <span>Registrarse al Congreso</span>
+            </a>
+            <a (click)="handleLearnMore()"
+              class="border border-white/30 text-white hover:bg-white/10 font-semibold px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center justify-center space-x-2 cursor-pointer">
+              <lucide-icon [img]="icons.bookOpen" [size]="16"></lucide-icon>
+              <span>Ver Talleres</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

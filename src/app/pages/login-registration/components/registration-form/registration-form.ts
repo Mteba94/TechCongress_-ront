@@ -198,7 +198,7 @@ export class RegistrationForm {
     }
     const tipoIdentificacionControl = this.registrationForm.get('tipoIdentificacionId');
     if (tipoIdentificacionControl && !this.tipoIdentificacionOp.some(op => op.value === tipoIdentificacionControl.value)) {
-      tipoIdentificacionControl.setValue('');
+      tipoIdentificacionControl.setValue(0);
     }
   }
 
@@ -277,7 +277,7 @@ export class RegistrationForm {
     } else {
       this.showSemestreField = false;
       semestreControl?.clearValidators();
-      semestreControl?.setValue('');
+      semestreControl?.setValue(null);
     }
     semestreControl?.updateValueAndValidity();
   }
@@ -289,21 +289,21 @@ export class RegistrationForm {
     const carnePart2 = carneGroup?.get('carnePart2');
     const carnePart3 = carneGroup?.get('carnePart3');
 
+    numeroIdentificacionControl?.clearValidators();
+    numeroIdentificacionControl?.setValue(null);
+    carnePart1?.clearValidators();
+    carnePart2?.clearValidators();
+    carnePart3?.clearValidators();
+    carneGroup?.reset();
+
     if (id === this.carneId) {
-      numeroIdentificacionControl?.clearValidators();
-      numeroIdentificacionControl?.setValue('');
-      
       carnePart1?.setValidators([Validators.required, Validators.maxLength(7)]);
       carnePart2?.setValidators([Validators.required, Validators.maxLength(7)]);
       carnePart3?.setValidators([Validators.required, Validators.maxLength(7)]);
-    } else {
+    } else if (id) {
       numeroIdentificacionControl?.setValidators(Validators.required);
-      
-      carnePart1?.clearValidators();
-      carnePart2?.clearValidators();
-      carnePart3?.clearValidators();
-      carneGroup?.reset();
     }
+
     numeroIdentificacionControl?.updateValueAndValidity();
     carneGroup?.updateValueAndValidity();
   }
@@ -391,7 +391,7 @@ export class RegistrationForm {
     if (type === 'internal' && this.carneId) {
       this.registrationForm.get('tipoIdentificacionId')?.setValue(this.carneId);
     } else {
-      this.registrationForm.get('tipoIdentificacionId')?.setValue('');
+      this.registrationForm.get('tipoIdentificacionId')?.setValue(0);
     }
 
     this.updateValidatorsForUserType();
@@ -412,6 +412,15 @@ export class RegistrationForm {
     this.registrationForm.markAllAsTouched();
 
     if (this.registrationForm.invalid) {
+      console.log(this.registrationForm.getRawValue());
+      Object.keys(this.registrationForm.controls).forEach(key => {
+        const controlS = this.registrationForm.get(key);
+
+        if (controlS!.invalid) {
+          console.log(`El control '${key}' es inválido.`);
+          console.log('Errores:', controlS!.errors);
+        }
+      });
       this.generalError = ['Por favor, corrige los errores del formulario.'];
       return;
     }
@@ -430,7 +439,7 @@ export class RegistrationForm {
       const formData = this.registrationForm.value;
 
       let schoolId_to_send: number | null = null;
-      let schoolName_to_send = null;
+      let schoolName_to_send: string | null = null;
 
       if(this.userType === 'internal' && this.internalSchool) {
         schoolId_to_send = this.internalSchool.value;
@@ -445,16 +454,21 @@ export class RegistrationForm {
         }
       }
 
-      const dataToSend = {
+      const semestreValue = formData.semestre ? parseInt(formData.semestre, 10) : null;
+
+      const dataToSend: ParticipanteRequest = {
         ...formData,
-        schoolId: Number(schoolId_to_send),
-        schoolName: schoolName_to_send, 
+        schoolId: schoolId_to_send,
+        schoolName: schoolName_to_send,
+        semestre: semestreValue
       };
-      delete dataToSend.carneGroup;
+      delete (dataToSend as any).carneGroup;
+      delete (dataToSend as any).confirmPassword;
+      delete (dataToSend as any).acceptTerms;
+      delete (dataToSend as any).acceptMarketing;
 
-      console.log(dataToSend)
 
-      await this.createPart(dataToSend)
+      await this.createPart(dataToSend);
 
       this.registrationEmail = formData.email;
       this.registrationPass = formData.password;
@@ -470,7 +484,7 @@ export class RegistrationForm {
 
     try {
       const response = await firstValueFrom(
-        this.participanteService.PostCreate(this.registrationForm.value)
+        this.participanteService.PostCreate(request)
       );
 
       if (response.isSuccess) {

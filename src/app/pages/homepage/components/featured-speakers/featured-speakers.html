@@ -19,58 +19,59 @@
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         @for (speaker of speakers; track speaker.id) {
           <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl overflow-hidden shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevation-2)] transition-all duration-300 group">
-            <div class="relative overflow-hidden">
-              <img
-                [src]="speaker.image"
-                [alt]="speaker.name"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/[0.60] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            @if(speaker.image){
+              <div class="relative overflow-hidden">
+                <img
+                  [src]="speaker.image"
+                  [alt]="speaker.name"
+                  class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/[0.60] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-              <div class="absolute bottom-4 left-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                @if (speaker.social.linkedin) {
-                  <a
-                    [href]="speaker.social.linkedin"
-                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <lucide-icon [img]="icons.linkedin" [size]="16"></lucide-icon>
-                  </a>
-                }
-                @if (speaker.social.twitter) {
-                  <a
-                    [href]="speaker.social.twitter"
-                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <lucide-icon [img]="icons.twitter" [size]="16"></lucide-icon>
-                  </a>
-                }
-                @if (speaker.social.github) {
-                  <a
-                    [href]="speaker.social.github"
-                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <lucide-icon [img]="icons.github" [size]="16"></lucide-icon>
-                  </a>
-                }
-                @if (speaker.social.dribbble) {
-                  <a
-                    [href]="speaker.social.dribbble"
-                    class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <lucide-icon [img]="icons.dribbble" [size]="16"></lucide-icon>
-                  </a>
-                }
+                <div class="absolute bottom-4 left-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  @if (speaker.social.linkedin) {
+                    <a
+                      [href]="speaker.social.linkedin"
+                      class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <lucide-icon [img]="icons.linkedin" [size]="16"></lucide-icon>
+                    </a>
+                  }
+                  @if (speaker.social.twitter) {
+                    <a
+                      [href]="speaker.social.twitter"
+                      class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <lucide-icon [img]="icons.twitter" [size]="16"></lucide-icon>
+                    </a>
+                  }
+                  @if (speaker.social.github) {
+                    <a
+                      [href]="speaker.social.github"
+                      class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <lucide-icon [img]="icons.github" [size]="16"></lucide-icon>
+                    </a>
+                  }
+                  @if (speaker.social.dribbble) {
+                    <a
+                      [href]="speaker.social.dribbble"
+                      class="bg-white/[0.20] backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/[0.30] transition-colors duration-200"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <lucide-icon [img]="icons.dribbble" [size]="16"></lucide-icon>
+                    </a>
+                  }
+                </div>
               </div>
-            </div>
-
+            }
             <div class="p-6">
               <h3 class="text-xl font-heading font-semibold text-[var(--color-foreground)] mb-1">
                 {{ speaker.name }}

@@ -1,0 +1,106 @@
+<div class="bg-card border border-border rounded-lg shadow-subtle mb-6">
+  <!-- Search Bar -->
+  <div class="p-4 border-b border-border">
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <div class="relative">
+          <app-input
+            type="search"
+            placeholder="Buscar talleres, competencias o actividades..."
+            [value]="searchQuery"
+            (valueChange)="onSearchChange.emit($event)"
+            [leadingIcon]="icons.search"
+          ></app-input>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <app-button
+          variant="outline"
+          (click)="onToggleFilterPanel.emit()"
+          iconName="Filter"
+          iconPosition="left"
+          [iconSize]="18"
+          class="relative"
+        >
+          <span>Filtros</span>
+          @if (activeFiltersCount() > 0) {
+            <span class="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {{ activeFiltersCount() }}
+            </span>
+          }
+        </app-button>
+
+        <div class="hidden sm:block">
+          <app-select
+              [options]="sortOptions"
+              [value]="sortBy"
+              (valueChange)="onSortChange.emit($event)"
+              placeholder="Ordenar por"
+              className="w-48"
+            ></app-select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Sort -->
+    <div class="sm:hidden mt-3">
+      <app-select
+        [options]="sortOptions"
+        [value]="sortBy"
+        (valueChange)="onSortChange.emit($event)"
+        placeholder="Ordenar por"
+      ></app-select>
+    </div>
+
+    <!-- Results Count -->
+    <div class="flex items-center justify-between mt-4 text-sm text-muted-foreground">
+      <span>{{ totalResults }} actividades encontradas</span>
+      @if (activeFiltersCount() > 0) {
+        <app-button
+          variant="ghost"
+          size="sm"
+          (click)="clearAllFilters()"
+          iconName="X"
+          iconPosition="left"
+          [iconSize]="14"
+        >
+          <span>Limpiar filtros</span>
+        </app-button>
+      }
+    </div>
+  </div>
+
+  <!-- Filter Panel -->
+  <div [ngClass]="{'block': isFilterPanelOpen, 'hidden': !isFilterPanelOpen, 'lg:block': true}" class="border-t border-border lg:border-t-0">
+    <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <app-select
+        label="Categoría"
+        [options]="categoryOptions"
+        [value]="filters.category"
+        (valueChange)="handleFilterChange('category', $event)"
+      ></app-select>
+
+      <app-select
+        label="Nivel de dificultad"
+        [options]="difficultyOptions"
+        [value]="filters.difficulty"
+        (valueChange)="handleFilterChange('difficulty', $event)"
+      ></app-select>
+
+      <app-select
+        label="Horario"
+        [options]="timeSlotOptions"
+        [value]="filters.timeSlot"
+        (valueChange)="handleFilterChange('timeSlot', $event)"
+      ></app-select>
+
+      <app-select
+        label="Disponibilidad"
+        [options]="availabilityOptions"
+        [value]="filters.availability"
+        (valueChange)="handleFilterChange('availability', $event)"
+      ></app-select>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,196 @@
+    <footer class="bg-[var(--color-card)] border-t border-[var(--color-border)]">
+      <div class="container mx-auto px-4">
+        <!-- Main Footer Content -->
+        <div class="py-16">
+          <div class="grid lg:grid-cols-4 gap-8">
+            <!-- Brand Section -->
+            <div class="lg:col-span-1">
+              <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
+                  <lucide-icon [img]="icons.zap" color="white" [size]="24"></lucide-icon>
+                </div>
+                <div>
+                  <h3 class="text-xl font-heading font-semibold text-[var(--color-foreground)]">
+                    Congreso UMG
+                  </h3>
+                  <p class="text-xs font-caption text-[var(--color-muted-foreground)]">
+                    GUASTATOYA
+                  </p>
+                </div>
+              </div>
+              
+              <p class="text-[var(--color-muted-foreground)] leading-relaxed mb-6">
+                El evento tecnológico más importante del año para estudiantes 
+                y profesionales interesados en ingeniería de sistemas.
+              </p>
+
+              <!-- Social Links -->
+              <div class="flex space-x-3">
+                @for (social of socialLinks; track social.name) {
+                  <a
+                    [href]="social.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="bg-[var(--color-muted)] hover:bg-[var(--color-primary)] hover:text-[var(--color-primary-foreground)] text-[var(--color-muted-foreground)] rounded-lg p-2 transition-colors duration-200"
+                    [attr.aria-label]="social.name"
+                  >
+                    @if (social.icon === 'facebook') {
+                      <lucide-icon [img]="icons.facebook" [size]="24"></lucide-icon>
+                    } @else if (social.icon === 'twitter') {
+                      <lucide-icon [img]="icons.twitter" [size]="24"></lucide-icon>
+                    } @else if (social.icon === 'linkedin') {
+                      <lucide-icon [img]="icons.linkedin" [size]="24"></lucide-icon>
+                    } @else if (social.icon === 'instagram') {
+                      <lucide-icon [img]="icons.instagram" [size]="24"></lucide-icon>
+                    } @else if (social.icon === 'youtube') {
+                      <lucide-icon [img]="icons.youtube" [size]="24"></lucide-icon>
+                    }
+                  </a>
+                }
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+              <h4 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-6">
+                Enlaces Rápidos
+              </h4>
+              <ul class="space-y-3">
+                @for (link of quickLinks; track link.path) {
+                  <li>
+                    <button
+                      (click)="handleNavigation(link.path)"
+                      class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200 text-left cursor-pointer"
+                    >
+                      {{ link.label }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <!-- Support Links -->
+            <div>
+              <h4 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-6">
+                Soporte
+              </h4>
+              <ul class="space-y-3">
+                @for (link of supportLinks; track link.path) {
+                  <li>
+                    <button
+                      (click)="handleNavigation(link.path)"
+                      class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200 text-left cursor-pointer"
+                    >
+                      {{ link.label }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div>
+              <h4 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-6">
+                Contacto
+              </h4>
+              
+              <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                  <lucide-icon [img]="icons.mapPin" [size]="24"></lucide-icon>
+                  <div>
+                    <p class="text-[var(--color-muted-foreground)]">
+                      Universidad Mariano Galvez<br />
+                      Sede Guastatoya<br />
+                      Guastatoya, El Progreso
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                  <lucide-icon [img]="icons.phone" [size]="24"></lucide-icon>
+                  <a 
+                    href="tel:+34912345678"
+                    class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200"
+                  >
+                    +502 1234 5678
+                  </a>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                  <lucide-icon [img]="icons.mail" [size]="24"></lucide-icon>
+                  <a 
+                    href="mailto:info@techcongress.edu"
+                    class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200"
+                  >
+                    info@techcongress.edu
+                  </a>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                  <lucide-icon [img]="icons.clock" [size]="24"></lucide-icon>
+                  <div class="text-[var(--color-muted-foreground)]">
+                    <p>Lun - Vie: 9:00 - 18:00</p>
+                    <p>Sáb: 9:00 - 14:00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div class="py-8 border-t border-[var(--color-border)]">
+          <div class="max-w-2xl mx-auto text-center">
+            <h4 class="text-lg font-heading font-semibold text-[var(--color-foreground)] mb-2">
+              Mantente Informado
+            </h4>
+            <p class="text-[var(--color-muted-foreground)] mb-6">
+              Suscríbete a nuestro newsletter para recibir las últimas noticias 
+              y actualizaciones sobre el TechCongress.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="tu@email.com"
+                class="flex-1 px-4 py-3 border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent bg-[var(--color-input)] text-[var(--color-foreground)]"
+              />
+              <button class="bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:bg-[var(--color-primary)]/90 px-6 py-3 rounded-lg font-medium transition-colors duration-200 inline-flex items-center justify-center space-x-2 cursor-pointer">
+                <lucide-icon [img]="icons.send" [size]="24"></lucide-icon>
+                <span>Suscribirse</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Footer -->
+        <div class="py-6 border-t border-[var(--color-border)]">
+          <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div class="text-sm text-[var(--color-muted-foreground)]">
+              &copy; {{ currentYear() }} Congreso UMG. Todos los derechos reservados.
+            </div>
+            
+            <div class="flex items-center space-x-6 text-sm">
+              <button 
+                (click)="handleNavigation('#privacy')"
+                class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200"
+              >
+                Política de Privacidad
+              </button>
+              <button 
+                (click)="handleNavigation('#cookies')"
+                class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200"
+              >
+                Cookies
+              </button>
+              <button 
+                (click)="handleNavigation('#terms')"
+                class="text-[var(--color-muted-foreground)] hover:text-[var(--color-primary)] transition-colors duration-200"
+              >
+                Términos de Uso
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>

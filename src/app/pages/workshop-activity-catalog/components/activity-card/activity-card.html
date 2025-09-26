@@ -1,0 +1,156 @@
+<div 
+      class="flex flex-col h-full bg-card border border-border rounded-lg shadow-subtle hover:shadow-elevation-1 transition-all duration-200 cursor-pointer group"
+      (click)="handleViewDetails()"
+    >
+      <!-- Imagen -->
+      <div class="relative overflow-hidden rounded-t-lg h-48">
+        <img
+          [ngSrc]="_activity().image"
+          [alt]="_activity().title"
+          width="384"
+          height="230"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        
+        <!-- Insignia de categoría -->
+        <div class="absolute top-3 left-3 px-2 py-1 rounded-md text-xs font-medium"
+             [ngClass]="getCategoryColor(_activity().category)">
+          <div class="flex items-center space-x-1">
+            <lucide-icon [img]="getCategoryIcon(_activity().category)" [size]="12"></lucide-icon>
+            <span class="capitalize">{{ _activity().category }}</span>
+          </div>
+        </div>
+
+        <!-- Estado de inscripción -->
+        @if (isEnrolled()) {
+          <div class="absolute top-3 right-3 bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-medium">
+            <div class="flex items-center space-x-1">
+              <lucide-icon [img]="icons.check" [size]="12"></lucide-icon>
+              <span>Inscrito</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Contenido -->
+      <div class="p-4">
+        <!-- Título y descripción -->
+        <h3 class="font-heading font-semibold text-lg text-foreground mb-2 line-clamp-2">
+          {{ _activity().title }}
+        </h3>
+        
+        <p class="text-muted-foreground text-sm mb-4 line-clamp-2">
+          {{ _activity().description }}
+        </p>
+
+        <!-- Instructor -->
+        <div class="flex items-center space-x-2 mb-3">
+          <lucide-icon [img]="icons.user" [size]="16" class="text-muted-foreground"></lucide-icon>
+          <span class="text-sm font-medium text-foreground">{{ _activity().instructor }}</span>
+        </div>
+
+        <!-- Horario -->
+        <div class="flex items-center space-x-2 mb-3">
+          <lucide-icon [img]="icons.clock" [size]="16" class="text-muted-foreground"></lucide-icon>
+          <span class="text-sm text-muted-foreground">
+            {{ _activity().date }} • {{ formatTime(_activity().startTime) }} - {{ formatTime(_activity().endTime) }}
+          </span>
+        </div>
+
+        <!-- Duración -->
+        <div class="flex items-center space-x-2 mb-3">
+          <lucide-icon [img]="icons.timer" [size]="16" class="text-muted-foreground"></lucide-icon>
+          <span class="text-sm text-gray-500">{{ _activity().duration }}</span>
+        </div>
+
+        <!-- Dificultad y requisitos previos -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-2 py-1 rounded-md text-xs font-medium"
+                [ngClass]="getDifficultyColor(_activity().difficulty)">
+            @switch (_activity().difficulty) {
+              @case ('beginner') { Principiante }
+              @case ('intermediate') { Intermedio }
+              @case ('advanced') { Avanzado }
+            }
+          </span>
+          
+          @if (_activity().prerequisites) {
+            <span class="px-2 py-1 rounded-md text-xs font-medium text-gray-600 bg-gray-50">
+              Requisitos previos
+            </span>
+          }
+        </div>
+
+        <!-- Capacidad y disponibilidad -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <lucide-icon [img]="icons.users" [size]="16" class="text-muted-foreground"></lucide-icon>
+            <span class="text-sm text-muted-foreground">
+              {{ _activity().enrolled }}/{{ _activity().capacity }} inscritos
+            </span>
+          </div>
+          
+          <span class="px-2 py-1 rounded-md text-xs font-medium" [ngClass]="availability().color">
+            {{ availability().text }}
+          </span>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="w-full bg-muted rounded-full h-2 mb-4">
+          <div 
+            class="h-2 rounded-full transition-all duration-300"
+            [ngClass]="getProgressBarColor(availability().status)"
+            [style.width.%]="(_activity().enrolled / _activity().capacity) * 100"
+          ></div>
+        </div>
+
+        <!-- Botón de acción -->
+        <div class="flex gap-2">
+          @if (isEnrolled()) {
+            <app-button
+              variant="outline"
+              [fullWidth]="true"
+              iconName="Check"
+              iconPosition="left"
+              [iconSize]="16"
+              [disabled]="true"
+              class="w-full"
+            >
+            <span>Ya inscrito</span>
+            </app-button>
+          } @else if (availability().status === 'full') {
+            <app-button
+              variant="outline"
+              iconName="X"
+              iconPosition="left"
+              [iconSize]="16"
+              [fullWidth]="true"
+              [disabled]="true"
+              class="w-full"
+            >
+            <span>Completo</span>
+            </app-button>
+          } @else {
+            <app-button
+              variant="default"
+              iconName="UserPlus"
+              (btnClick)="handleEnrollClick($event)"
+              iconPosition="left"
+              [iconSize]="16"
+              [fullWidth]="true"
+              class="w-full"
+            >
+            <span>{{ availability().status === 'waitlist' ? 'Lista de espera' : 'Inscribirse' }}</span>
+            </app-button>
+          }
+        </div>
+        
+        <!-- Información rápida -->
+        <div class="mt-3 pt-3 border-t border-border">
+          <div class="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{{ spotsLeft() > 0 ? (spotsLeft() + ' cupos disponibles') : 'Sin cupos' }}</span>
+            <!-- <span>Código: {{ _activity().code }}</span> -->
+          </div>
+        </div>
+      </div>
+    </div>

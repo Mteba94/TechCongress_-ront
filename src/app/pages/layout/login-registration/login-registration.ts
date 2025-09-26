@@ -6,6 +6,7 @@ import { Zap, Users } from 'lucide-angular';
 import { LoginForm } from '../../login-registration/components/login-form/login-form';
 import { RegistrationForm } from '../../login-registration/components/registration-form/registration-form';
 import { AuthTabs } from '../../login-registration/components/auth-tabs/auth-tabs';
+import { CongressHighlights } from '../../login-registration/components/congress-highlights/congress-highlights';
 
 @Component({
   selector: 'app-login-registration',
@@ -13,7 +14,8 @@ import { AuthTabs } from '../../login-registration/components/auth-tabs/auth-tab
     LucideAngularModule,
     LoginForm,
     RegistrationForm,
-    AuthTabs
+    AuthTabs,
+    CongressHighlights
   ],
   templateUrl: './login-registration.html',
   styleUrl: './login-registration.css'

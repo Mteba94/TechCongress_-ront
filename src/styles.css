@@ -12,7 +12,8 @@
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
 /* src/styles.css */
-:root {
+
+@theme {
   --color-border: #e5e7eb;       /* gray-200 */
   --color-input: #ffffff;        /* white */
   --color-ring: #1e40af;         /* blue-800 */
@@ -48,6 +49,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
   --color-error: #dc2626;        /* red-600 */
   --color-error-foreground: #ffffff;
+
+  --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
 /* 🌙 Dark mode (opcional, si usas .dark en <html> o <body>) */

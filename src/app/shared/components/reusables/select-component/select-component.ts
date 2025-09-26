@@ -49,8 +49,23 @@ export class SelectComponent {
   @Input() id: string | null = null;
   @Input() name: string | null = null;
 
+  _value: any; 
+
+  @Input()
+  set value(val: any) {
+    if (val !== this._value) {
+      this._value = val;
+      this.onChange(val);
+    }
+  }
+
+  get value(): any {
+    return this._value;
+  }
+
   // === EVENTOS (outputs de React) ===
   @Output() onOpenChange = new EventEmitter<boolean>();
+  @Output() valueChange = new EventEmitter<any>();
 
   // === ESTADO INTERNO (useState de React) ===
   isOpen = false;
@@ -58,7 +73,7 @@ export class SelectComponent {
   selectId: string = '';
 
   // Propiedades para implementar ControlValueAccessor
-  private _value: any;
+  // private _value: any; // This is now handled by the @Input() setter
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
 
@@ -69,17 +84,6 @@ export class SelectComponent {
     search: Search,
     x: X
    };
-
-  // === GETTERS y LÓGICA ===
-  get value(): any {
-    return this._value;
-  }
-  set value(val: any) {
-    if (val !== this._value) {
-      this._value = val;
-      this.onChange(val); // Notifica a Angular que el valor ha cambiado
-    }
-  }
 
   get filteredOptions(): SelectOption[] {
     if (!this.searchable || !this.searchTerm) {
@@ -143,12 +147,14 @@ export class SelectComponent {
       this.isOpen = false;
       this.onOpenChange.emit(false);
     }
+    this.valueChange.emit(this.value);
   }
 
   handleClear(event: MouseEvent): void {
     event.stopPropagation();
     this.value = this.multiple ? [] : null;
     this.onTouched();
+    this.valueChange.emit(this.value);
   }
 
   handleSearchChange(event: Event): void {
@@ -180,3 +186,4 @@ export class SelectComponent {
     this.disabled = isDisabled;
   }
 }
+

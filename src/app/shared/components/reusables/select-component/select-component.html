@@ -4,8 +4,8 @@
       [attr.for]="selectId"
       [ngClass]="{
         'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 block': true,
-        'text-[var(--color-destructive)]': error,
-        'text-[var(--color-foreground)]': !error
+        'text-destructive': error,
+        'text-foreground': !error
       }"
     >
       {{ label }}
@@ -20,7 +20,7 @@
       [id]="selectId"
       type="button"
       [ngClass]="{
-        'flex h-10 w-full items-center justify-between rounded-md border border-[var(--color-input)] bg-[var(--color-background)] text-[var(--color-foreground)] px-3 py-2 text-sm ring-offset-[var(--color-background)] placeholder:text-[var(--color-muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50': true,
+        'flex h-10 w-full items-center justify-between rounded-md border border-input bg-white text-black px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer': true,
         'border-[var(--color-destructive)] focus:ring-[var(--color-destructive)]': error,
         'text-[var(--color-muted-foreground)]': !hasValue
       }"
@@ -29,7 +29,7 @@
       [attr.aria-expanded]="isOpen"
       aria-haspopup="listbox"
     >
-      <span class="truncate">{{ selectedDisplay }}</span>
+      <span class="truncate flex-grow min-w-0">{{ selectedDisplay }}</span>
 
       <div class="flex items-center gap-1">
         @if (loading) {

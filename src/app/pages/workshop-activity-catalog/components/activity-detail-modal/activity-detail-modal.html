@@ -1,0 +1,269 @@
+@if (isOpen() && activity()) {
+      <div
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        (click)="handleBackdropClick($event)"
+      >
+        <div class="bg-card rounded-lg shadow-elevation-3 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <!-- Header -->
+          <div class="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
+            <h2 class="text-xl font-heading font-semibold text-foreground">
+              Detalles de la actividad
+            </h2>
+            <app-button
+              variant="ghost"
+              size="icon"
+              (click)="onClose.emit()"
+              iconName="X"
+              [iconSize]="20"
+            />
+          </div>
+
+          <!-- Content -->
+          <div class="p-6">
+            <!-- Image and Basic Info -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div class="relative overflow-hidden rounded-lg h-64 lg:h-80">
+                <img
+                  [src]="activity()!.image"
+                  [alt]="activity()!.title"
+                  class="w-full h-full object-cover"
+                />
+
+                @if (isEnrolled()) {
+                  <div class="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm font-medium">
+                    <div class="flex items-center space-x-2">
+                      <lucide-icon [img]="icons.check" [size]="16"></lucide-icon>
+                      <span>Ya inscrito</span>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div>
+                <div class="flex items-center space-x-2 mb-3">
+                  <lucide-icon [img]="getCategoryIcon(activity()!.category)" [size]="20" class="text-primary"></lucide-icon>
+                  <span class="text-sm font-medium text-primary capitalize">
+                    {{ activity()!.category }}
+                  </span>
+                </div>
+
+                <h1 class="text-2xl font-heading font-bold text-foreground mb-4">
+                  {{ activity()!.title }}
+                </h1>
+
+                <p class="text-muted-foreground mb-6">
+                  {{ activity()!.fullDescription || activity()!.description }}
+                </p>
+
+                <!-- Key Details -->
+                <div class="space-y-3">
+                  <div class="flex items-center space-x-3">
+                    <lucide-icon [img]="icons.user" [size]="18" class="text-muted-foreground"></lucide-icon>
+                    <div>
+                      <span class="font-medium text-foreground">{{ activity()!.instructor }}</span>
+                      <p class="text-sm text-muted-foreground">{{ activity()!.instructorBio }}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center space-x-3">
+                    <lucide-icon [img]="icons.calendar" [size]="18" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-foreground">{{ activity()!.date }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-3">
+                    <lucide-icon [img]="icons.clock" [size]="18" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-foreground">
+                      {{ formatTime(activity()!.startTime) }} - {{ formatTime(activity()!.endTime) }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center space-x-3">
+                    <lucide-icon [img]="icons.timer" [size]="18" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-foreground">{{ activity()!.duration }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-3">
+                    <lucide-icon [img]="icons.mapPin" [size]="18" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-foreground">{{ activity()!.location }}</span>
+                  </div>
+
+                  <div class="flex items-center space-x-3">
+                    <lucide-icon [img]="icons.users" [size]="18" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-foreground">
+                      {{ activity()!.enrolled }}/{{ activity()!.capacity }} inscritos
+                    </span>
+                    <span
+                      class="px-2 py-1 rounded-md text-xs font-medium"
+                      [class]="statusClasses()"
+                    >
+                      {{ statusText() }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Learning Objectives -->
+            @if (activity()!.learningObjectives && activity()!.learningObjectives!.length > 0) {
+              <div class="mb-6">
+                <h3 class="text-lg font-heading font-semibold text-foreground mb-3">
+                  Objetivos de aprendizaje
+                </h3>
+                <ul class="space-y-2">
+                  @for (objective of activity()!.learningObjectives; track $index) {
+                    <li class="flex items-start space-x-2">
+                      <lucide-icon [img]="icons.checkCirle" [size]="16" class="text-green-600 mt-0.5 flex-shrink-0"></lucide-icon>
+                      <span class="text-muted-foreground">{{ objective }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            <!-- Prerequisites -->
+            @if (activity()!.prerequisites) {
+              <div class="mb-6">
+                <h3 class="text-lg font-heading font-semibold text-foreground mb-3">
+                  Requisitos previos
+                </h3>
+                <div class="bg-muted rounded-lg p-4">
+                  <p class="text-muted-foreground">{{ activity()!.prerequisites }}</p>
+                </div>
+              </div>
+            }
+
+            <!-- Materials -->
+            @if (activity()!.materials && activity()!.materials!.length > 0) {
+              <div class="mb-6">
+                <h3 class="text-lg font-heading font-semibold text-foreground mb-3">
+                  Materiales necesarios
+                </h3>
+                <ul class="space-y-2">
+                  @for (material of activity()!.materials; track $index) {
+                    <li class="flex items-center space-x-2">
+                      <lucide-icon [img]="icons.package" [size]="16" class="text-muted-foreground"></lucide-icon>
+                      <span class="text-muted-foreground">{{ material }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            <!-- Schedule Conflicts Warning -->
+            @if (activity()!.conflictingActivities && activity()!.conflictingActivities!.length > 0) {
+              <div class="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div class="flex items-start space-x-2">
+                  <lucide-icon [img]="icons.alertTriangle" [size]="20" class="text-orange-600 mt-0.5"></lucide-icon>
+                  <div>
+                    <h4 class="font-medium text-orange-800 mb-2">
+                      Conflicto de horarios detectado
+                    </h4>
+                    <p class="text-orange-700 text-sm mb-2">
+                      Esta actividad se superpone con:
+                    </p>
+                    <ul class="space-y-1">
+                      @for (conflict of activity()!.conflictingActivities; track $index) {
+                        <li class="text-orange-700 text-sm">
+                          • {{ conflict }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border">
+              @if (isEnrolled()) {
+                <app-button
+                  variant="outline"
+                  [fullWidth]="true"
+                  iconName="Check"
+                  iconPosition="left"
+                  [iconSize]="18"
+                  [disabled]="true"
+                  class="w-full"
+                >
+                  <span>Ya estás inscrito en esta actividad</span>
+                </app-button>
+              } @else if (isFull()) {
+                <app-button
+                  variant="outline"
+                  [fullWidth]="true"
+                  [disabled]="true"
+                  iconName="X"
+                  iconPosition="left"
+                  [iconSize]="18"
+                  class="w-full"
+                >
+                  <span>Actividad completa - Sin cupos disponibles</span>
+                </app-button>
+              } @else {
+                <app-button
+                  variant="default"
+                  [fullWidth]="true"
+                  (click)="handleEnrollClick()"
+                  iconName="UserPlus"
+                  iconPosition="left"
+                  [iconSize]="18"
+                  class="w-full"
+                >
+                  <span>{{ spotsLeft() <= 5 ? 'Unirse a lista de espera' : 'Inscribirse ahora' }}</span>
+                </app-button>
+              }
+              <app-button
+                variant="outline"
+                (click)="onClose.emit()"
+                class="sm:w-auto"
+              >
+                Cerrar
+              </app-button>
+            </div>
+          </div>
+
+          <!-- Enrollment Confirmation Modal -->
+          @if (showEnrollConfirm()) {
+            <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-60 p-4">
+              <div class="bg-card rounded-lg shadow-elevation-3 max-w-md w-full p-6">
+                <div class="text-center">
+                  <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <lucide-icon [img]="icons.userPlus" [size]="24" class="text-primary"></lucide-icon>
+                  </div>
+
+                  <h3 class="text-lg font-heading font-semibold text-foreground mb-2">
+                    Confirmar inscripción
+                  </h3>
+
+                  <p class="text-muted-foreground mb-6">
+                    ¿Estás seguro de que deseas inscribirte en "{{ activity()!.title }}"?
+                  </p>
+
+                  <div class="flex gap-3">
+                    <app-button
+                      variant="outline"
+                      [fullWidth]="true"
+                      (click)="showEnrollConfirm.set(false)"
+                      class="w-full"
+                    >
+                      <span>Cancelar</span>
+                    </app-button>
+                    <app-button
+                      variant="default"
+                      [fullWidth]="true"
+                      (click)="confirmEnrollment()"
+                      iconName="Check"
+                      iconPosition="left"
+                      [iconSize]="16"
+                      class="w-full"
+                    >
+                      <span>Confirmar</span>
+                    </app-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }

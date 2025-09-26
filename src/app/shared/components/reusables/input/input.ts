@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Output, Input, EventEmitter, forwardRef } from '@angular/core';
+import { Component, Output, Input, EventEmitter, forwardRef, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 
@@ -19,7 +19,7 @@ const INPUT_FIELD_VALUE_ACCESSOR: any = {
   styleUrl: './input.css',
   providers: [INPUT_FIELD_VALUE_ACCESSOR]
 })
-export class InputComponent {
+export class InputComponent implements OnChanges {
   @Input() className: string = '';
   @Input() type: string = 'text';
   @Input() label: string | null = null;
@@ -31,10 +31,12 @@ export class InputComponent {
   @Input() name: string = '';
   @Input() value: any;
   @Input() disabled: boolean = false;
+  @Input() leadingIcon: any;
 
   @Output() valueChange = new EventEmitter<any>();
 
   inputId: string;
+  _leadingIcon = signal<any>(null);
 
   // ControlValueAccessor methods
   onChange: any = () => {};
@@ -47,6 +49,12 @@ export class InputComponent {
   ngOnInit(): void {
     if (this.id) {
       this.inputId = this.id;
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['leadingIcon']) {
+      this._leadingIcon.set(this.leadingIcon);
     }
   }
 
