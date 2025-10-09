@@ -73,7 +73,7 @@
                   <div class="flex items-center space-x-3">
                     <lucide-icon [img]="icons.clock" [size]="18" class="text-muted-foreground"></lucide-icon>
                     <span class="text-foreground">
-                      {{ formatTime(activity()!.startTime) }} - {{ formatTime(activity()!.endTime) }}
+                      {{ activity()!.startTime }} - {{ activity()!.endTime }}
                     </span>
                   </div>
 

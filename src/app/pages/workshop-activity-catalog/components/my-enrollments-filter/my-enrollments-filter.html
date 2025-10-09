@@ -1,0 +1,59 @@
+@if (isAuthenticated()) {
+<div class="bg-card border border-border rounded-lg shadow-subtle p-4 mb-6">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <lucide-icon [img]="icons.bookOpen" [size]="24" class="text-primary"></lucide-icon>
+            </div>
+            <div>
+                <h3 class="font-heading font-semibold text-foreground">
+                    Mis inscripciones
+                </h3>
+                <p class="text-sm text-muted-foreground">
+                    {{ enrolledActivities().length }} actividades inscritas
+                </p>
+            </div>
+        </div>
+        <app-button [variant]="showMyEnrollments() ? 'default' : 'outline'" (btnClick)="onToggleMyEnrollments.emit()"
+            [iconName]="showMyEnrollments() ? 'Eye' : 'EyeOff'" iconPosition="left" [iconSize]="16">
+            <span>{{showMyEnrollments() ? 'Ver todas' : 'Solo mis inscripciones'}}</span>
+        </app-button>
+    </div>
+
+    <!-- Detalles de Inscripciones -->
+    @if (showMyEnrollments()) {
+    @if (enrolledActivities().length > 0) {
+    <div class="mt-4 pt-4 border-t border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (activity of enrolledActivities(); track activity.id) {
+            <div class="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                    <lucide-icon [img]="getIconForCategory(activity.category)" [size]="16" color="white"></lucide-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium text-foreground text-sm truncate">
+                        {{ activity.title }}
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ activity.date }} • {{ activity.startTime }}
+                    </p>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }@else{
+    <!-- Mensaje de no inscripciones -->
+    <div class="mt-4 pt-4 border-t border-border text-center">
+        <lucide-icon [img]="icons.calendar" [size]="48" class="text-muted-foreground mx-auto mb-3"></lucide-icon>
+        <p className="text-muted-foreground">
+            No tienes inscripciones activas
+        </p>
+        <p className="text-sm text-muted-foreground mt-1">
+            Explora las actividades disponibles y inscríbete
+        </p>
+    </div>
+    }
+    }
+</div>
+}

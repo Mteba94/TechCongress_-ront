@@ -24,7 +24,9 @@ import { Auth } from '../../services/auth';
 export class EmailVerification {
   @Input({ required: true }) email!: string;
   @Input({ required: true }) pass!: string;
-  @Output() onVerificationSuccess = new EventEmitter<void>();
+  @Input() purpose: 'registration' | 'recovery' = 'registration';
+
+  @Output() onVerificationSuccess = new EventEmitter<string>();
   @Output() onResendCode = new EventEmitter<void>();
   @Output() onBackToRegistration = new EventEmitter<void>();
 
@@ -83,27 +85,27 @@ export class EmailVerification {
   }
 
   handleInputChange(index: number, event: any): void {
-  const value = event.target.value;
+    const value = event.target.value;
 
-  // Solo permitir un único dígito numérico
-  if (!/^\d*$/.test(value) || value.length > 1) {
-    return;
-  }
+    // Solo permitir un único dígito numérico
+    if (!/^\d*$/.test(value) || value.length > 1) {
+      return;
+    }
 
-  // Actualiza el array de código
-  this.verificationCode[index] = value;
+    // Actualiza el array de código
+    this.verificationCode[index] = value;
 
-  // Limpia el error cuando el usuario empieza a escribir
-  this.error = null;
+    // Limpia el error cuando el usuario empieza a escribir
+    this.error = null;
 
-  // Auto-focus al siguiente input solo si hay un valor
-  if (value && index < 5) {
-    const nextInput = this.inputRefs.get(index + 1)?.nativeElement;
-    if (nextInput) {
-      nextInput.focus();
+    // Auto-focus al siguiente input solo si hay un valor
+    if (value && index < 5) {
+      const nextInput = this.inputRefs.get(index + 1)?.nativeElement;
+      if (nextInput) {
+        nextInput.focus();
+      }
     }
   }
-}
 
   handleKeyDown(index: number, event: KeyboardEvent): void {
     if (event.key === 'Backspace' && !this.verificationCode[index] && index > 0) {
@@ -137,7 +139,7 @@ export class EmailVerification {
 
       const ReqCodigo = {
           codigo: code,
-          purpose: 'validUser',
+          purpose: this.purpose,
           email: this.email
         };
 
@@ -159,17 +161,23 @@ export class EmailVerification {
 
       if(response.isSuccess){
           //console.log('correcto')
-          const dataLogin ={
-            email: this.email,
-            password: this.pass
+          if (this.purpose === 'registration') {
+            const dataLogin ={
+              email: this.email,
+              password: this.pass
+            }
+
+            const responseLogin = await firstValueFrom(
+              this.authService.login(dataLogin)
+            );
+
+            if(responseLogin.isSuccess){
+              this.onVerificationSuccess.emit();
+            }
           }
 
-          const responseLogin = await firstValueFrom(
-            this.authService.login(dataLogin)
-          );
-
-          if(responseLogin.isSuccess){
-            this.onVerificationSuccess.emit();
+          if (this.purpose === 'recovery') {
+            this.onVerificationSuccess.emit(request.codigo);
           }
           
         }else{
@@ -194,8 +202,22 @@ export class EmailVerification {
     this.error = null;
     
     try {
+
+      var purposeReq ='';
+      switch (this.purpose){
+        case 'registration':
+          purposeReq = 'validUser';
+          break;
+        case 'recovery':
+          purposeReq = 'recovery';
+          break;
+        default:
+          purposeReq = '';
+          break;
+      }
+
       const ReqCodigo = {
-          purpose: 'validUser',
+          purpose: purposeReq,
           email: this.email
         };
       

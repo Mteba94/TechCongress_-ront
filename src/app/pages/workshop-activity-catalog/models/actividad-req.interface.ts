@@ -1,31 +1,10 @@
-export interface Activity {
-  id: string;
-  category: string;
-  title: string;
-  description: string;
-  fullDescription: string;
-  image: string;
-  instructor: string;
-  instructorBio: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  duration: string;
-  location: string;
-  capacity: number;
-  enrolled: number;
-  learningObjectives?: string[];
-  prerequisites?: string;
-  materials?: string[];
-  conflictingActivities?: string[];
-}
-
 export interface ActividadResponse {
   actividadId: number;
   congresoId: number;
   titulo: string;
   descripcion: string;
   descripcionTotal: string;
+  ponenteId: number;
   tipoActividadId: number;
   fechaActividad: string;
   horaInicio: string;

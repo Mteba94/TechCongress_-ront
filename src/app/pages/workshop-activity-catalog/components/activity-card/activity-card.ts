@@ -2,24 +2,7 @@ import { Component, computed, signal, Input, OnChanges, SimpleChanges, Output, E
 import { NgOptimizedImage, CommonModule } from '@angular/common';
 import { Calendar, Check, Clock, Code, LucideAngularModule, LucideIconData, Timer, Trophy, User, Users } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
-
-interface Activity {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  prerequisites?: boolean;
-  instructor: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  duration: string;
-  capacity: number;
-  enrolled: number;
-  code: string;
-}
+import { Activity } from '../../models/activity.interface';
 
 interface AvailabilityStatus {
   status: 'full' | 'waitlist' | 'available';
@@ -56,17 +39,24 @@ export class ActivityCard implements OnChanges {
     id: 0,
     title: '',
     description: '',
+    fullDescription: '',
     image: '',
     category: '',
     difficulty: 'beginner',
+    prerequisites: '',
     instructor: '',
+    instructorBio: '',
     date: '',
     startTime: '',
     endTime: '',
     duration: '',
+    location: '',
     capacity: 0,
     enrolled: 0,
     code: '',
+    learningObjectives: [],
+    materials: [],
+    conflictingActivities: []
   });
   _userEnrollments = signal<number[]>([]);
 
@@ -103,18 +93,18 @@ export class ActivityCard implements OnChanges {
 
   getCategoryIcon(category: string): LucideIconData {
     switch (category) {
-      case 'workshop': return Code;
+      case 'Taller': return Code;
       case 'competition': return Trophy;
-      case 'social': return Users;
+      case 'Social': return Users;
       default: return Calendar;
     }
   }
 
   getCategoryColor(category: string): string {
     switch (category) {
-      case 'workshop': return 'text-blue-600 bg-blue-50';
+      case 'Taller': return 'text-blue-600 bg-blue-50';
       case 'competition': return 'text-amber-600 bg-amber-50';
-      case 'social': return 'text-green-600 bg-green-50';
+      case 'Social': return 'text-green-600 bg-green-50';
       default: return 'text-gray-600 bg-gray-50';
     }
   }

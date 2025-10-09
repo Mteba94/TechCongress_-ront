@@ -3,24 +3,7 @@ import { ActivityCard } from '../activity-card/activity-card';
 import { CommonModule } from '@angular/common';
 import { ChevronDown, LucideAngularModule, Search } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
-
-interface Activity {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  prerequisites?: boolean;
-  instructor: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  duration: string;
-  capacity: number;
-  enrolled: number;
-  code: string;
-}
+import { Activity } from '../../models/activity.interface';
 
 @Component({
   selector: 'app-activity-grid',

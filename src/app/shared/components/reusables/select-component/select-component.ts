@@ -33,7 +33,6 @@ export interface SelectOption {
   ],
 })
 export class SelectComponent {
-  // === PROPIEDADES DEL COMPONENTE (inputs de React) ===
   @Input() className: string = '';
   @Input() options: SelectOption[] = [];
   @Input() placeholder: string = 'Selecciona una opción';

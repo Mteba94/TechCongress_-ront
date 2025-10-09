@@ -1,7 +1,7 @@
 import { Component, computed, input, signal, Output, EventEmitter } from '@angular/core';
-import { Activity } from '../../models/actividad-req.interface';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { AlertTriangle, Calendar, Check, CheckCircle, Clock, Code, LucideAngularModule, LucideIconData, MapPin, Package, Timer, Trophy, User, UserPlus, Users } from 'lucide-angular';
+import { Activity } from '../../models/activity.interface';
 
 @Component({
   selector: 'app-activity-detail-modal',
@@ -27,7 +27,7 @@ export class ActivityDetailModal {
     userPlus:UserPlus
   }
   // Inputs as signals for property binding
-  activity = input<Activity>();
+  activity = input<Activity | null>();
   isOpen = input<boolean>(false);
   @Output() onClose = new EventEmitter<void>();
   @Output() onEnroll = new EventEmitter<Activity>();
@@ -41,7 +41,7 @@ export class ActivityDetailModal {
   isEnrolled = computed(() => {
     const activity = this.activity();
     if (!activity) return false;
-    return this.userEnrollments().includes(Number(activity.id));
+    return this.userEnrollments().includes(activity.id);
   });
   spotsLeft = computed(() => (this.activity()?.capacity || 0) - (this.activity()?.enrolled || 0));
   isFull = computed(() => this.spotsLeft() <= 0);
@@ -66,14 +66,6 @@ export class ActivityDetailModal {
       case 'social': return Users;
       default: return Calendar;
     }
-  }
-
-  formatTime(time: string): string {
-    const date = new Date(`2000-01-01T${time}`);
-    return date.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   }
 
   handleEnrollClick(): void {

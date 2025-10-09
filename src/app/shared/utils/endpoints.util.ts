@@ -2,6 +2,19 @@ export const endpoint = {
     //ACTIVIDAD
     LIST_ACTIVIDAD: 'Actividad',
 
+    //ACTIVIDAD-PONENTE
+    LIST_ACTIVIDAD_PONENTE: 'ActividadPonente',
+
+    //OBJETIVO-ACTIVIDAD
+    LIST_OBJETIVO_ACTIVIDAD: 'ObjetivoActividad',
+
+    //MENU
+    MENU_BY_USER: 'Menu/MenuByUser',
+    
+
+    //TIPO ACTIVIDAD
+    LIST_CATEGORIA: 'TipoActividad',
+    SELECT_CATEGORIA: 'TipoActividad/Select',
 
     //TIPO PARTICIPANTE
     LIST_TIPO_PARTICIPANTE: 'TipoParticipante',
@@ -10,11 +23,15 @@ export const endpoint = {
     //NIVEL ACADEMICO
     SELECT_NIVEL_ACADEMICO: 'NivelAcademico/Select',
 
+    //NIVEL-ACTIVIDAD
+    LIST_NIVEL_ACTIVIDAD: 'NivelDificultad',
+    SELECT_NIVEL_ACTIVIDAD: 'NivelDificultad/Select',
+
     //PARTICIPANTE
     CREATE_PARTICIPANTE: 'Participante/Create',
 
     //PONENTES
-    LIST_PONENTES: 'Ponentes',
+    LIST_PONENTES: 'Ponente',
     POPULAR_PONENTES: 'Ponente/Popular',
 
     //PONENTES - TAG
@@ -29,6 +46,8 @@ export const endpoint = {
 
     //LOGIN
     LOGIN: 'Auth/Login',
+    RECOVERY_PASSWORD: 'Auth/RecoveryPass',
+
 
     //SCHOOL
     SELECT_SCHOOL: 'School/Select',

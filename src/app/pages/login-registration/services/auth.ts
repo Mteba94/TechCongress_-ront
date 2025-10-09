@@ -6,6 +6,7 @@ import { LoginRequest } from '../models/login-request.interface';
 import { BaseApiResponse } from '../../../shared/models/reusables/base-api-response.interface';
 import { environment as env } from '../../../../environments/environment.development';
 import { endpoint } from '../../../shared/utils/endpoints.util';
+import { RecoveryPaswordRequest } from '../models/recoveryPass-req.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +48,16 @@ export class Auth {
     localStorage.removeItem('userData');
     this.user.next('');
     this.router.navigate(['/congress-homepage']);
+  }
+
+  recoveryPassword(request: RecoveryPaswordRequest): Observable<BaseApiResponse<string>> {
+    const requestUrl = `${env.api}${endpoint.RECOVERY_PASSWORD}`;
+
+    return this.http.put<BaseApiResponse<string>>(requestUrl, request).pipe(
+      map((response: BaseApiResponse<string>) => {
+        return response;
+      })
+    )
+    
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { Check, LucideAngularModule } from 'lucide-angular';
 import { AlertCircle, Eye, EyeOff, LogIn, UserPlus } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
@@ -8,6 +8,7 @@ import { Auth } from '../../services/auth';
 import { LoginRequest } from '../../models/login-request.interface';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { PasswordRecoveryForm } from '../../../../shared/components/reusables/password-recovery-form/password-recovery-form';
 
 
 @Component({
@@ -16,13 +17,17 @@ import { HttpErrorResponse } from '@angular/common/http';
     LucideAngularModule,
     Button,
     InputComponent,
-    CheckPointComponent
+    CheckPointComponent,
+    PasswordRecoveryForm
   ],
   templateUrl: './login-form.html',
   styleUrl: './login-form.css'
 })
 export class LoginForm {
   @Output() onSuccess = new EventEmitter<void>();
+
+  readonly currentView = signal<'login' | 'recovery'>('login');
+  //currentView: 'login' | 'recovery' = 'login';
 
   readonly icons = {
     alertCircle: AlertCircle,
@@ -135,9 +140,9 @@ export class LoginForm {
     } else {
         throw new Error(response.message);
     }
-}
+  }
 
   handleForgotPassword(): void {
-    alert('Funcionalidad de recuperación de contraseña próximamente disponible.');
+    this.currentView.set('recovery');
   }
 }

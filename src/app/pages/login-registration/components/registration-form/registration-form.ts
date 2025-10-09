@@ -467,11 +467,11 @@ export class RegistrationForm {
       delete (dataToSend as any).acceptTerms;
       delete (dataToSend as any).acceptMarketing;
 
-
       await this.createPart(dataToSend);
 
       this.registrationEmail = formData.email;
       this.registrationPass = formData.password;
+      
     } catch (error) {
       this.generalError = ['Error al crear la cuenta. Inténtalo de nuevo.'];
     } finally {

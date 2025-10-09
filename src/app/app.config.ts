@@ -5,11 +5,16 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './shared/interceptors/auth-interceptor';
 
+import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideToastr(),
+    provideAnimations()
   ]
 };
