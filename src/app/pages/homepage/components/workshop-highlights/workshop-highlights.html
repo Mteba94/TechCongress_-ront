@@ -19,13 +19,13 @@
 
           <!-- Featured Workshops -->
           <div class="grid lg:grid-cols-3 gap-8 mb-12">
-            @for (workshop of featuredWorkshops(); track workshop.id) {
+            @for (activity of featuredWorkshops(); track activity.id) {
               <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl overflow-hidden shadow-subtle hover:shadow-elevation-2 transition-all duration-300 group">
                 <!-- Workshop Image -->
                 <div class="relative overflow-hidden">
                   <img
-                    [src]="workshop.image"
-                    [alt]="workshop.title"
+                    [src]="activity.image"
+                    [alt]="activity.title"
                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div class="absolute top-4 left-4">
@@ -34,8 +34,8 @@
                     </span>
                   </div>
                   <div class="absolute top-4 right-4">
-                    <span [class]="'text-xs font-medium px-2 py-1 rounded-md ' + getLevelColor(workshop.level)">
-                      {{ workshop.level }}
+                    <span [class]="'text-xs font-medium px-2 py-1 rounded-md ' + getLevelColor(activity.difficulty)">
+                      {{ activity.difficulty }}
                     </span>
                   </div>
                 </div>
@@ -43,46 +43,46 @@
                 <!-- Workshop Content -->
                 <div class="p-6">
                   <h3 class="text-xl font-semibold text-[var(--color-foreground)] mb-2 line-clamp-2">
-                    {{ workshop.title }}
+                    {{ activity.title }}
                   </h3>
                   
                   <div class="flex items-center space-x-4 text-sm text-[var(--color-muted-foreground)] mb-3">
                     <div class="flex items-center space-x-1">
                       <lucide-icon [img]="icons.user" [size]="14"></lucide-icon>
-                      <span>{{ workshop.instructor }}</span>
+                      <span>{{ activity.instructor }}</span>
                     </div>
                   </div>
 
                   <div class="flex items-center space-x-4 text-sm text-[var(--color-muted-foreground)] mb-4">
                     <div class="flex items-center space-x-1">
                       <lucide-icon [img]="icons.clock" [size]="14"></lucide-icon>
-                      <span>{{ workshop.duration }}</span>
+                      <span>{{ activity.duration }}</span>
                     </div>
                     <div class="flex items-center space-x-1">
                       <lucide-icon [img]="icons.users" [size]="14"></lucide-icon>
-                      <span>{{ workshop.capacity }}</span>
+                      <span>{{ activity.capacity }}</span>
                     </div>
                   </div>
 
                   <p class="text-[var(--color-muted-foreground)] text-sm leading-relaxed mb-4 line-clamp-3">
-                    {{ workshop.description }}
+                    {{ activity.description }}
                   </p>
 
                   <!-- Topics -->
                   <div class="flex flex-wrap gap-2 mb-6">
-                    @for (topic of workshop.topics; track topic) {
-                      @if (workshop.isExpanded || $index < 3) {
+                    @for (topic of activity.learningObjectives; track topic) {
+                      @if (activity.isExpanded || $index < 3) {
                         <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-[var(--color-muted)] text-[var(--color-muted-foreground)] rounded-md">
                           {{ topic }}
                         </span>
                       }
                     }
-                    @if (workshop.topics.length > 3) {
-                      <button (click)="toggleTopics(workshop.id)" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-transparent text-[var(--color-primary)] rounded-md hover:underline focus:outline-none cursor-pointer">
-                        @if (workshop.isExpanded) {
+                    @if (activity.learningObjectives!.length > 3) {
+                      <button (click)="toggleTopics(activity.id)" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-transparent text-[var(--color-primary)] rounded-md hover:underline focus:outline-none cursor-pointer">
+                        @if (activity.isExpanded) {
                           <span>ver menos</span>
                         } @else {
-                          <span>+{{ workshop.topics.length - 3 }} más</span>
+                          <span>+{{ activity.learningObjectives!.length - 3 }} más</span>
                         }
                       </button>
                     }
@@ -104,52 +104,52 @@
 
           <!-- All Workshops Grid -->
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            @for (workshop of otherWorkshops(); track workshop.id) {
+            @for (activity of otherWorkshops(); track activity.id) {
               <div class="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-6 shadow-subtle hover:shadow-elevation-1 transition-shadow duration-300">
                 <div class="flex items-start justify-between mb-3">
                   <h3 class="text-lg font-semibold text-[var(--color-foreground)] line-clamp-2 flex-1">
-                    {{ workshop.title }}
+                    {{ activity.title }}
                   </h3>
-                  <span [class]="'text-xs font-medium px-2 py-1 rounded-md ml-2 flex-shrink-0 ' + getLevelColor(workshop.level)">
-                    {{ workshop.level }}
+                  <span [class]="'text-xs font-medium px-2 py-1 rounded-md ml-2 flex-shrink-0 ' + getLevelColor(activity.difficulty)">
+                    {{ activity.difficulty }}
                   </span>
                 </div>
 
                 <div class="text-sm text-[var(--color-muted-foreground)] mb-3">
                   <div class="flex items-center space-x-1 mb-1">
                     <lucide-icon [img]="icons.user" [size]="14"></lucide-icon>
-                    <span>{{ workshop.instructor }}</span>
+                    <span>{{ activity.instructor }}</span>
                   </div>
                   <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-1">
                       <lucide-icon [img]="icons.clock" [size]="14"></lucide-icon>
-                      <span>{{ workshop.duration }}</span>
+                      <span>{{ activity.duration }}</span>
                     </div>
                     <div class="flex items-center space-x-1">
                       <lucide-icon [img]="icons.users" [size]="14"></lucide-icon>
-                      <span>{{ workshop.capacity }}</span>
+                      <span>{{ activity.capacity }}</span>
                     </div>
                   </div>
                 </div>
 
                 <p class="text-[var(--color-muted-foreground)] text-sm leading-relaxed mb-4 line-clamp-2">
-                  {{ workshop.description }}
+                  {{ activity.description }}
                 </p>
 
                 <div class="flex flex-wrap gap-1 mb-4">
-                  @for (topic of workshop.topics; track topic) {
-                    @if (workshop.isExpanded || $index < 2) {
+                  @for (topic of activity.learningObjectives; track topic) {
+                    @if (activity.isExpanded || $index < 2) {
                       <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-[var(--color-muted)] text-[var(--color-muted-foreground)] rounded-md">
                         {{ topic }}
                       </span>
                     }
                   }
-                  @if (workshop.topics.length > 2) {
-                    <button (click)="toggleTopics(workshop.id)" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-transparent text-[var(--color-primary)] rounded-md hover:underline focus:outline-none cursor-pointer">
-                      @if (workshop.isExpanded) {
+                  @if (activity.learningObjectives!.length > 2) {
+                    <button (click)="toggleTopics(activity.id)" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-transparent text-[var(--color-primary)] rounded-md hover:underline focus:outline-none cursor-pointer">
+                      @if (activity.isExpanded) {
                         <span>ver menos</span>
                       } @else {
-                        <span>+{{ workshop.topics.length - 2 }} más</span>
+                        <span>+{{ activity.learningObjectives!.length - 2 }} más</span>
                       }
                     </button>
                   }

@@ -20,4 +20,7 @@ export interface Activity {
   learningObjectives?: string[];
   materials?: string[];
   conflictingActivities?: string[];
+  isExpanded?: boolean;
+  featured?: boolean;
+
 }

@@ -10,6 +10,9 @@ export const endpoint = {
 
     //MENU
     MENU_BY_USER: 'Menu/MenuByUser',
+
+    //INSCRIPCION
+    CREATE_INSCRIPCION: 'Inscripcion/Create',
     
 
     //TIPO ACTIVIDAD

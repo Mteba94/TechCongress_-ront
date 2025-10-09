@@ -1,6 +1,8 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ArrowLeft, ArrowRight, Clock, Code, Grid3X3, LucideAngularModule, User, UserPlus, Users } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
+import { Actividad } from '../../../workshop-activity-catalog/services/actividad';
+import { Activity } from '../../../workshop-activity-catalog/models/activity.interface';
 
 
 interface Workshop {
@@ -36,81 +38,13 @@ export class WorkshopHighlights {
     arrowRight: ArrowRight,
   };
 
-  // Use a signal for the main data
-  private workshops = signal<Workshop[]>([
-    {
-      id: 1,
-      title: "Inteligencia Artificial y Machine Learning",
-      instructor: "Dr. María González",
-      duration: "3 horas",
-      level: "Intermedio",
-      capacity: "25 participantes",
-      image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Aprende los fundamentos de IA y ML con ejercicios prácticos usando Python y TensorFlow.",
-      topics: ["Python", "TensorFlow", "Redes Neuronales", "Análisis de Datos"],
-      featured: true
-    },
-    {
-      id: 2,
-      title: "Desarrollo Web Full Stack",
-      instructor: "Ing. Carlos Rodríguez",
-      duration: "4 horas",
-      level: "Principiante",
-      capacity: "30 participantes",
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Construye aplicaciones web completas desde cero usando tecnologías modernas.",
-      topics: ["React", "Node.js", "MongoDB", "API REST"],
-      featured: true
-    },
-    {
-      id: 3,
-      title: "Diseño UX/UI para Desarrolladores",
-      instructor: "Ana Martínez",
-      duration: "2.5 horas",
-      level: "Principiante",
-      capacity: "20 participantes",
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Domina los principios de diseño centrado en el usuario y herramientas de prototipado.",
-      topics: ["Figma", "Design Thinking", "Prototipado", "Usabilidad"],
-      featured: true
-    },
-    {
-      id: 4,
-      title: "Ciberseguridad y Ethical Hacking",
-      instructor: "Dr. Roberto Silva",
-      duration: "3.5 horas",
-      level: "Avanzado",
-      capacity: "15 participantes",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Aprende técnicas de seguridad informática y ethical hacking de forma práctica.",
-      topics: ["Penetration Testing", "Kali Linux", "Vulnerabilidades", "Seguridad Web"],
-      featured: false
-    },
-    {
-      id: 5,
-      title: "Desarrollo de Apps Móviles",
-      instructor: "Laura Fernández",
-      duration: "4 horas",
-      level: "Intermedio",
-      capacity: "25 participantes",
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Crea aplicaciones móviles multiplataforma con React Native y Flutter.",
-      topics: ["React Native", "Flutter", "Firebase", "App Store"],
-      featured: false
-    },
-    {
-      id: 6,
-      title: "Internet of Things (IoT)",
-      instructor: "Ing. David López",
-      duration: "3 horas",
-      level: "Intermedio",
-      capacity: "20 participantes",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Desarrolla soluciones IoT integrando sensores, microcontroladores y cloud computing.",
-      topics: ["Arduino", "Raspberry Pi", "Sensores", "Cloud IoT"],
-      featured: false
-    }
-  ]);
+  workshops = signal<Activity[]>([]);
+
+  private readonly actividadService = inject(Actividad)
+
+  ngOnInit() {
+    this.loadInitialActivities();
+  }
   
   // Use computed signals to filter the data
   featuredWorkshops = computed(() => this.workshops().filter(w => w.featured));
@@ -124,16 +58,34 @@ export class WorkshopHighlights {
     );
   }
 
+  paginatorOptions = {
+    pageSizeOptions: [6, 12, 24],
+    pageSize: 6,
+    pageLength: 0,
+    currentPage: 0,
+  };
+
+  loadInitialActivities() {
+    //this.loading.set(true);
+    this.paginatorOptions.currentPage = 0;
+    this.actividadService.getAll(this.paginatorOptions.pageSize, 'titulo', 'asc', this.paginatorOptions.currentPage, '').subscribe(resp => {
+      this.workshops.set(resp.data);
+      // this.paginatorOptions.pageLength = resp.totalRecords;
+      // this.hasMore.set(this.displayedActivities().length < resp.totalRecords);
+      // this.loading.set(false);
+    });
+  }
+
   /**
    * Returns a Tailwind class for the workshop's difficulty level.
    * @param level The workshop level.
    * @returns Tailwind CSS class string.
    */
-  getLevelColor(level: 'Principiante' | 'Intermedio' | 'Avanzado'): string {
+  getLevelColor(level: 'beginner' | 'intermediate' | 'advanced'): string {
     const colors = {
-      "Principiante": "bg-green-100 text-green-700",
-      "Intermedio": "bg-yellow-100 text-yellow-700",
-      "Avanzado": "bg-red-100 text-red-700"
+      "beginner": "bg-green-100 text-green-700",
+      "intermediate": "bg-yellow-100 text-yellow-700",
+      "advanced": "bg-red-100 text-red-700"
     };
     return colors[level] || "bg-gray-100 text-gray-700";
   }

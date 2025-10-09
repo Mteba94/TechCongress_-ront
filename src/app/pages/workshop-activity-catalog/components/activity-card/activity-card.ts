@@ -82,8 +82,10 @@ export class ActivityCard implements OnChanges {
 
   handleEnrollClick(event: MouseEvent) {
     event.stopPropagation();
+
     if (!this.isEnrolled() && this.availability().status !== 'full') {
       this.onEnroll.emit(this._activity());
+      //console.log(this.activityInput)
     }
   }
 

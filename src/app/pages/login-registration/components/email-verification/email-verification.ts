@@ -24,7 +24,7 @@ import { Auth } from '../../services/auth';
 export class EmailVerification {
   @Input({ required: true }) email!: string;
   @Input({ required: true }) pass!: string;
-  @Input() purpose: 'registration' | 'recovery' = 'registration';
+  @Input() purpose: 'validUser' | 'recovery' = 'validUser';
 
   @Output() onVerificationSuccess = new EventEmitter<string>();
   @Output() onResendCode = new EventEmitter<void>();
@@ -161,7 +161,7 @@ export class EmailVerification {
 
       if(response.isSuccess){
           //console.log('correcto')
-          if (this.purpose === 'registration') {
+          if (this.purpose === 'validUser') {
             const dataLogin ={
               email: this.email,
               password: this.pass
@@ -205,7 +205,7 @@ export class EmailVerification {
 
       var purposeReq ='';
       switch (this.purpose){
-        case 'registration':
+        case 'validUser':
           purposeReq = 'validUser';
           break;
         case 'recovery':

@@ -30,6 +30,7 @@
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "jwt-decode": "^4.0.0",
     "lucide-angular": "^0.539.0",
     "ngx-toastr": "^19.1.0",
     "postcss": "^8.5.6",

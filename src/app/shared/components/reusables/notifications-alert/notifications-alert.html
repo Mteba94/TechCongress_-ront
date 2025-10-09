@@ -1,0 +1,19 @@
+<div
+  class="fixed inset-x-4 bottom-4 z-[99] animate-fade-in-up md:max-w-md md:mx-auto md:right-4 md:left-auto"
+>
+  <div
+    class="text-white p-4 rounded-lg shadow-lg flex items-center justify-between"
+    [ngClass]="bgColor"
+  >
+    <div class="flex items-center space-x-3">
+      <lucide-icon [img]="icon" [size]="24"></lucide-icon>
+      <span>{{ message }}</span>
+    </div>
+    <button
+      (click)="close.emit()"
+      class="text-white hover:text-white/80 transition cursor-pointer"
+    >
+      <lucide-icon [img]="X" [size]="20"></lucide-icon>
+    </button>
+  </div>
+</div>

@@ -7,6 +7,8 @@ import { BaseApiResponse } from '../../../shared/models/reusables/base-api-respo
 import { environment as env } from '../../../../environments/environment.development';
 import { endpoint } from '../../../shared/utils/endpoints.util';
 import { RecoveryPaswordRequest } from '../models/recoveryPass-req.interface';
+import { CurrentUser } from '../models/user-resp.interface';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +18,25 @@ export class Auth {
   private readonly router = inject(Router);
 
   private user: BehaviorSubject<string>;
+  private currentUserSubject: BehaviorSubject<CurrentUser | null>;
 
   public get userToken(): string {
     return this.user.value;
   }
 
+  public get currentUser(): CurrentUser | null {
+    return this.currentUserSubject.value;
+  }
+
   constructor() {
+    const storedToken  = localStorage.getItem('token');
+
     this.user = new BehaviorSubject<string>(
       JSON.parse(localStorage.getItem('token')!)
+    );
+
+    this.currentUserSubject = new BehaviorSubject<CurrentUser | null>(
+      storedToken  ? this.decodeToken(storedToken) : null
     );
   }
 
@@ -35,6 +48,7 @@ export class Auth {
         if (response.isSuccess) {
           localStorage.setItem('token', JSON.stringify(response.accessToken));
             this.user.next(response.accessToken);
+            this.currentUserSubject.next(this.decodeToken(response.accessToken));
         }
         //console.log(response)
         return response;
@@ -59,5 +73,21 @@ export class Auth {
       })
     )
     
+  }
+
+  private decodeToken(token: string): CurrentUser | null {
+    try {
+      const decoded: any = jwtDecode(token);
+      // 👇 Mapea los valores que vienen en el payload
+      return {
+        id: decoded.sub,
+        name: decoded.given_name + ' ' + decoded.family_name,
+        email: decoded.email,
+        role: decoded.role
+      };
+    } catch (error) {
+      console.error('Token inválido', error);
+      return null;
+    }
   }
 }

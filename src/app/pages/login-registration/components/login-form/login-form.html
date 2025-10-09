@@ -1,7 +1,15 @@
+
+  <app-notifications-alert
+    *ngIf="notificacionService.message()"
+    [message]="notificacionService.message()"
+    [type]="notificacionService.type()"
+    (close)="notificacionService.clear()"
+  ></app-notifications-alert>
+
 @if (currentView() === 'recovery') {
   <app-password-recovery-form 
     (onBack)="currentView.set('login')" 
-    (onSuccess)="currentView.set('login')">
+    (onSuccess)="handleRecoverySuccess()">
   </app-password-recovery-form>
 } @else {
   <form (ngSubmit)="handleSubmit()" class="space-y-4">

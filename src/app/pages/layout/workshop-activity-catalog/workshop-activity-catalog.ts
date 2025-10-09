@@ -13,6 +13,10 @@ import { Router } from '@angular/router';
 import { Actividad } from '../../workshop-activity-catalog/services/actividad';
 import { Activity } from '../../workshop-activity-catalog/models/activity.interface';
 import { MyEnrollmentsFilter } from '../../workshop-activity-catalog/components/my-enrollments-filter/my-enrollments-filter';
+import { InscripcionService } from '../../workshop-activity-catalog/services/inscripcion-service';
+import { firstValueFrom } from 'rxjs';
+import { InscripcionRequest } from '../../workshop-activity-catalog/models/inscripcion-req.interface';
+import { NotificationsAlert } from '../../../shared/components/reusables/notifications-alert/notifications-alert';
 
 // Define the Enrollment type
 interface Enrollment {
@@ -32,7 +36,8 @@ interface Enrollment {
     RegistrationCallToAction,
     ActivityGrid,
     ActivityDetailModal,
-    MyEnrollmentsFilter
+    MyEnrollmentsFilter,
+    NotificationsAlert
 ],
   templateUrl: './workshop-activity-catalog.html',
   styleUrl: './workshop-activity-catalog.css'
@@ -45,6 +50,9 @@ export class WorkshopActivityCatalog {
 
   private readonly router = inject(Router)
   private readonly actividadService = inject(Actividad)
+  private readonly inscripcionService = inject(InscripcionService)
+  private readonly auth = inject(Auth)
+
 
   paginatorOptions = {
     pageSizeOptions: [6, 12, 24],
@@ -72,6 +80,7 @@ export class WorkshopActivityCatalog {
   isAuthenticated = signal(false);
   userEnrollments = signal<number[]>([]);
   enrollmentMessage = signal<string | null>(null);
+  isEnrollmentError = signal<boolean>(false);
 
   // Lógica de filtrado y ordenamiento con computed
   filteredAndSortedActivities = computed(() => {
@@ -192,7 +201,7 @@ export class WorkshopActivityCatalog {
     this.sortBy.set(newSortBy);
   }
 
-  handleEnroll(activity: Activity) {
+  async handleEnroll(activity: Activity) {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/login-registration']);
       return;
@@ -205,19 +214,45 @@ export class WorkshopActivityCatalog {
     }
 
     const newEnrollments = [...this.userEnrollments(), activity.id];
-    this.userEnrollments.set(newEnrollments);
-    localStorage.setItem('userEnrollments', JSON.stringify(newEnrollments));
+    //this.userEnrollments.set(newEnrollments);
+    //localStorage.setItem('userEnrollments', JSON.stringify(newEnrollments));
 
-    // Actualizar conteo de inscripciones en los datos
-    const updatedActivities = this.displayedActivities().map(act =>
-      act.id === activity.id ? { ...act, enrolled: act.enrolled + 1 } : act
-    );
-    this.displayedActivities.set(updatedActivities);
-    
-    this.isDetailModalOpen.set(false);
+    var user = this.auth.currentUser
 
-    this.enrollmentMessage.set(`¡Te has inscrito exitosamente en "${activity.title}"!`);
-    setTimeout(() => this.hideEnrollmentMessage(), 3000);
+    console.log(user)
+
+    const request: InscripcionRequest = {
+      idUsuario: user!.id,
+      idActividad: activity.id,
+    }
+
+    try {
+      const response = await firstValueFrom(
+        this.inscripcionService.PostCreate(request)
+      );
+
+      if(response.isSuccess){
+        const updatedActivities = this.displayedActivities().map(act =>
+          act.id === activity.id ? { ...act, enrolled: act.enrolled + 1 } : act
+        );
+        
+        this.userEnrollments.set(newEnrollments);
+        this.displayedActivities.set(updatedActivities);
+        
+        this.isDetailModalOpen.set(false);
+
+        this.isEnrollmentError.set(false);
+        this.enrollmentMessage.set(`¡Te has inscrito exitosamente en "${activity.title}"!`);
+        setTimeout(() => this.hideEnrollmentMessage(), 3000);
+      }else{
+        this.isEnrollmentError.set(true);
+        this.enrollmentMessage.set(`Error al inscribirte en la actividad "${activity.title}".`);setTimeout(() => this.hideEnrollmentMessage(), 3000)
+      }      
+    } catch (error) {
+      this.isEnrollmentError.set(true);
+      this.enrollmentMessage.set(`Error al inscribirte en la actividad "${activity.title}".`);
+      console.error('Error en inscripción:', error);
+    }
   }
 
   hideEnrollmentMessage() {

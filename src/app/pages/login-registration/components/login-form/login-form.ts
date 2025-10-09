@@ -9,16 +9,21 @@ import { LoginRequest } from '../../models/login-request.interface';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PasswordRecoveryForm } from '../../../../shared/components/reusables/password-recovery-form/password-recovery-form';
+import { NotificationsAlert } from '../../../../shared/components/reusables/notifications-alert/notifications-alert';
+import { NotificacionService } from '../../../../shared/services/notificacion-service';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-login-form',
   imports: [
+    CommonModule,
     LucideAngularModule,
     Button,
     InputComponent,
     CheckPointComponent,
-    PasswordRecoveryForm
+    PasswordRecoveryForm,
+    NotificationsAlert
   ],
   templateUrl: './login-form.html',
   styleUrl: './login-form.css'
@@ -38,6 +43,8 @@ export class LoginForm {
   };
 
   private readonly authService = inject(Auth)
+  public readonly notificacionService = inject(NotificacionService)
+
 
   formData = {
     email: '',
@@ -144,5 +151,12 @@ export class LoginForm {
 
   handleForgotPassword(): void {
     this.currentView.set('recovery');
+  }
+
+  handleRecoverySuccess() {
+    this.notificacionService.show('Contraseña actualizada exitosamente.', 'success');
+
+    console.log(this.notificacionService.message())
+    this.currentView.set('login');
   }
 }

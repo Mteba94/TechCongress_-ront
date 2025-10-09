@@ -9,6 +9,8 @@ import { EmailVerification } from '../../../../pages/login-registration/componen
 import { Codigo } from '../../../../pages/login-registration/services/codigo';
 import { Auth } from '../../../../pages/login-registration/services/auth';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationsAlert } from '../notifications-alert/notifications-alert';
+import { NotificacionService } from '../../../services/notificacion-service';
 
 type Step = 'email' | 'code' | 'newPassword';
 
@@ -28,7 +30,8 @@ type RecoveryErrors = {
     LucideAngularModule,
     InputComponent,
     Button,
-    EmailVerification
+    EmailVerification,
+    //NotificationsAlert
   ],
   templateUrl: './password-recovery-form.html',
   styleUrl: './password-recovery-form.css'
@@ -49,7 +52,10 @@ export class PasswordRecoveryForm {
   private readonly codigoService = inject(Codigo)
   private readonly authService = inject(Auth)
   private readonly toast = inject(ToastrService)
+  public readonly notificacionService = inject(NotificacionService)
 
+  enrollmentMessage = signal<string | null>(null);
+  isEnrollmentError = signal<boolean>(false);
 
   // Estado del formulario
   currentStep = signal<Step>('email');
@@ -59,6 +65,10 @@ export class PasswordRecoveryForm {
     newPassword: '',
     confirmPassword: ''
   });
+
+  hideEnrollmentMessage() {
+    this.enrollmentMessage.set(null);
+  }
 
   errors = signal<{ [key: string]: string }>({});
   isLoading = signal(false);
@@ -213,27 +223,25 @@ export class PasswordRecoveryForm {
        )
 
        if(passwordResponse.isSuccess){
-        this.toast.success(passwordResponse.message, 'Excelente', {
-          timeOut: 3000,
-          closeButton: true,
-          progressBar: true
-        })
+        this.isEnrollmentError.set(false);
+
+        //this.notificacionService.show('Contraseña actualizada exitosamente.', 'success');
+
+        //setTimeout(() => this.onSuccess.emit(), 3000);
         this.onSuccess.emit();
        }else{
-        this.toast.error(passwordResponse.message, 'Error', {
-          timeOut: 3000,
-          closeButton: true,
-          progressBar: true
-        })
+        this.notificacionService.show('Error al actualizar la contraseña.', 'error')
+        setTimeout(() => this.hideEnrollmentMessage(), 3000);
        }
 
     } catch {
       this.errors.set({ newPassword: 'Error al actualizar la contraseña. Inténtalo de nuevo.' });
-      this.toast.error('Error al actualizar la contraseña. Inténtalo de nuevo.', 'Error', {
-        timeOut: 3000,
-        closeButton: true,
-        progressBar: true
-      })
+      // this.toast.error('Error al actualizar la contraseña. Inténtalo de nuevo.', 'Error', {
+      //   timeOut: 3000,
+      //   closeButton: true,
+      //   progressBar: true
+      // })
+      this.notificacionService.show('Error al actualizar la contraseña.', 'error')
     } finally {
       this.isLoading.set(false);
     }
