@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChevronDown, LogOut, LucideAngularModule, Settings, User } from 'lucide-angular';
@@ -19,7 +19,8 @@ interface MenuItem {
   selector: 'app-authenticated-user-menu',
   imports: [
     LucideAngularModule,
-    NgClass
+    NgClass,
+    CommonModule
   ],
   templateUrl: './authenticated-user-menu.html',
   styleUrl: './authenticated-user-menu.css'
@@ -54,7 +55,7 @@ export class AuthenticatedUserMenu {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {  }
 
   // Closes the menu when a click occurs outside the component
   @HostListener('document:click', ['$event'])

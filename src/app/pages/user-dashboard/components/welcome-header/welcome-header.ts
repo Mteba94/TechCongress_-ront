@@ -65,10 +65,13 @@ export class WelcomeHeader {
     }
 
     const token = this.authService.userToken;
+    const payload = token?.split('.')[1];
 
-    var dataUser = JSON.parse(atob(token.split(".")[1]));
-    this.schoolId = dataUser.schoolId;
-    this.loadSchoolName();
+    if (payload) {
+      const dataUser = JSON.parse(atob(payload));
+      this.schoolId = dataUser.schoolId;
+      this.loadSchoolName();
+    }
   }
 
   private loadSchoolName(): void {
@@ -82,7 +85,7 @@ export class WelcomeHeader {
           next: (resp: BaseApiResponse<SchoolByIdResp>) => {
             if (resp.isSuccess) {
               this.schoolName = resp.data.schoolName;
-              console.log(resp.data.schoolName)
+              //console.log(resp.data.schoolName)
             } else {
               this.schoolName = null;
             }

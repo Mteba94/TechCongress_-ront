@@ -13,6 +13,11 @@ export const endpoint = {
 
     //INSCRIPCION
     CREATE_INSCRIPCION: 'Inscripcion/Create',
+
+    //ROLE
+    ROLE_BY_USER: 'UserRole/Role/',
+
+
     
 
     //TIPO ACTIVIDAD

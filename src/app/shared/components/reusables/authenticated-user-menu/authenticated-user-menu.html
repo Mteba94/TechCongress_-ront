@@ -31,11 +31,11 @@
           <p class="text-xs font-caption text-[var(--color-muted-foreground)]">
             {{ user?.email || 'usuario@ejemplo.com' }}
           </p>
-          @if (user?.role) {
-            <span class="inline-flex items-center px-2 py-1 mt-2 text-xs font-caption bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-md">
-              {{ user?.role === 'admin' ? 'Administrador' : 'Participante' }}
+          
+            <span *ngIf="user?.role" class="inline-flex items-center px-2 py-1 mt-2 text-xs font-caption bg-[var(--color-primary)]/[0.10] text-[var(--color-primary)] rounded-md">
+              {{ user?.role === 'administrador' ? 'Administrador' : 'Participante' }}
             </span>
-          }
+          
         </div>
 
         <!-- Menu Items -->

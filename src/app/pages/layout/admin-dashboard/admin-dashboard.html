@@ -1,0 +1,89 @@
+
+    <div *ngIf="!user && isLoading" class="min-h-screen bg-background flex items-center justify-center">
+        <div class="text-center">
+            <lucide-icon [img]="icons.loader" [size]="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
+            <p class="text-muted-foreground">Verificando permisos...</p>
+        </div>
+    </div>
+
+
+<div *ngIf="user" class="min-h-screen bg-background">
+    <app-header/>
+    <div class="container mx-auto px-4 py-6">
+        <app-breadcrumbs />
+        <!-- Header Section -->
+         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+            <div class="mb-6 lg:mb-0">
+                <h1 class="text-3xl font-heading font-bold text-foreground mb-2">
+                    Panel de Administración
+                </h1>
+                <p class="text-muted-foreground font-body">
+                    Control y supervisión integral del TechCongress Manager
+                </p>
+                <div class="flex items-center space-x-4 mt-4">
+                    <div class="flex items-center space-x-2 px-3 py-1 bg-success/10 border border-success/20 rounded-full">
+                        <lucide-icon [img]="icons.shield" [size]="16" class="text-success"></lucide-icon>
+                        <span class="text-sm font-medium text-success">Administrador</span>
+                    </div>
+                    <!-- <div *ngIf="user() as currentUser" class="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <lucide-icon [img]="icons.clock" [size]="16" class="text-success"></lucide-icon>
+                        <span>Último acceso: {{ currentUser.lastAccess }}</span>
+                    </div> -->
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <!-- Time Range Selector -->
+                 <div class="flex items-center space-x-2 bg-card border border-border rounded-lg p-1">
+                     @for (range of timeRanges; track range.value) {
+                        <button
+                            (click)="handleTimeRangeChange(range.value)"
+                            class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+                            [class]="selectedTimeRange() === range.value 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'"
+                        >
+                            {{ range.label }}
+                        </button>
+                     }
+                 </div>
+                 <app-button
+                    variant="outline"
+                    (btnClick)="handleRefresh()"
+                    [loading]="isLoading"
+                    iconName="RefreshCw"
+                    iconPosition="left"
+                    [iconSize]="16"
+                 >
+                 <span>{{ isLoading ? 'Actualizando...' : 'Actualizar' }}</span>
+                 </app-button>
+            </div>
+         </div>
+
+         <!-- Content Grid -->
+          <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <!-- Left Sidebar - Admin Navigation -->
+             <div class="xl:col-span-1">
+                 <app-admin-navigation />
+             </div>
+
+             <!-- Main Content Area -->
+              <div class="xl:col-span-3 space-y-6">
+                <!-- Alerts Panel -->
+                 <!-- <AlertsPanel /> -->
+
+                 <!-- Metrics Cards -->
+                  <!-- <MetricsCards timeRange={selectedTimeRange} /> -->
+
+                  <!-- Charts Section -->
+                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- <ActivityCharts timeRange={selectedTimeRange} />
+                    <QuickActions /> -->
+                   </div>
+
+                   <!-- Recent Activity -->
+                    <!-- <RecentActivity /> -->
+              </div>
+          </div>
+    </div>
+</div>

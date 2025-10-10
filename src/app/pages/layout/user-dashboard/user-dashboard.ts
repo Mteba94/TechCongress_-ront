@@ -5,6 +5,8 @@ import { RegistrationCallToAction } from '../../../shared/components/reusables/r
 import { Breadcrumbs } from '../../../shared/components/reusables/breadcrumbs/breadcrumbs';
 import { WelcomeHeader } from '../../user-dashboard/components/welcome-header/welcome-header';
 import { QuickStats } from '../../user-dashboard/components/quick-stats/quick-stats';
+import { firstValueFrom } from 'rxjs';
+import { Auth } from '../../login-registration/services/auth';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -21,25 +23,40 @@ import { QuickStats } from '../../user-dashboard/components/quick-stats/quick-st
 export class UserDashboard {
   isAuthenticated = false;
   isLoading = true;
+  isAdmin = false;
+
+
   private readonly router = inject(Router);
+  private readonly authService = inject(Auth)
 
   ngOnInit(): void {
     this.checkAuthentication();
   }
 
-  checkAuthentication(): void {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    const userData = localStorage.getItem('userData');
-    
-    if (authStatus === 'true' && userData) {
+  private async checkAuthentication(): Promise<void> {
+    try {
+      const user = await firstValueFrom(this.authService.currentUser$)
+
+      if(!user){
+        this.router.navigate(['/login-registration']);
+        return;
+      }
+
       this.isAuthenticated = true;
-    } else {
-      // Redirigir a la página de login si no está autenticado
+
+      this.isAdmin = user.role?.toLocaleLowerCase() === 'administrador';
+
+      if(this.isAdmin){
+        this.router.navigate(['/user-dashboard']);
+        return;
+      }
+
+    } catch (error) {
       this.router.navigate(['/login-registration']);
       return;
+    }finally{
+      this.isLoading = false;
     }
-    
-    this.isLoading = false;
   }
 
   handleLoginRedirect(): void {

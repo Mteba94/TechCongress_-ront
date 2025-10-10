@@ -46,6 +46,10 @@ export class Breadcrumbs {
     '/login-registration': [
       { label: 'Inicio', path: '/congress-homepage' },
       { label: 'Acceder', path: '/login-registration' }
+    ],
+    '/admin-dashboard': [
+      { label: 'Inicio', path: '/congress-homepage' },
+      { label: 'Panel Admin', path: '/admin-dashboard' }
     ]
   };
 

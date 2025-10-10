@@ -5,6 +5,7 @@ import { LoginRegistration } from './pages/layout/login-registration/login-regis
 import { NotFound } from './pages/not-found/not-found';
 import { UserDashboard } from './pages/layout/user-dashboard/user-dashboard';
 import { WorkshopActivityCatalog } from './pages/layout/workshop-activity-catalog/workshop-activity-catalog';
+import { AdminDashboard } from './pages/layout/admin-dashboard/admin-dashboard';
 
 export const routes: Routes = [
     {
@@ -26,6 +27,10 @@ export const routes: Routes = [
     {
         path: 'workshop-activity-catalog',
         component: WorkshopActivityCatalog
+    },
+    {
+        path: 'admin-dashboard',
+        component: AdminDashboard
     },
     {
         path: '**',

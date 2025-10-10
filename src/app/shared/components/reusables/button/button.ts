@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Check, Eye, EyeOff, Filter, Grid3X3, Home, LucideAngularModule, Save, Search, Send, X } from 'lucide-angular';
+import { CalendarPlus, Check, Download, Eye, EyeOff, FileText, Filter, Grid3X3, Home, LucideAngularModule, Save, Search, Send, X } from 'lucide-angular';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   LogIn, UserPlus, ArrowDown,
@@ -50,7 +50,10 @@ export class Button {
     Eye,
     EyeOff,
     Send,
-    Save
+    Save,
+    CalendarPlus,
+    Download,
+    FileText
   };
 
   get children(): boolean {

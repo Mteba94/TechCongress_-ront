@@ -1,98 +1,10 @@
-<!-- <button [ngClass]="getButtonClasses()" (click)="onClick()"> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'left'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- <ng-content></ng-content> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'right'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- </button> -->
-
-<!-- <button 
-      [ngClass]="getButtonClasses()" (click)="onClick()" [attr.aria-label]="ariaLabel"
-      class="cursor-pointer"
-      [disabled]="disabled || loading">
-      @if (loading) {
-      <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
-      }
-      @if (!loading && iconName && iconPosition === 'left') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'mr-2': children}"></lucide-icon>
-      }
-      <ng-content></ng-content>
-      @if (!loading && iconName && iconPosition === 'right') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'ml-2': children}"></lucide-icon>
-      }
-</button> -->
-
-<!-- <button [ngClass]="getButtonClasses()" (click)="onClick()"> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'left'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- <ng-content></ng-content> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'right'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- </button> -->
-
-<!-- <button 
-      [ngClass]="getButtonClasses()" (click)="onClick()" [attr.aria-label]="ariaLabel"
-      class="cursor-pointer"
-      [disabled]="disabled || loading">
-      @if (loading) {
-      <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
-      }
-      @if (!loading && iconName && iconPosition === 'left') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'mr-2': children}"></lucide-icon>
-      }
-      <ng-content></ng-content>
-      @if (!loading && iconName && iconPosition === 'right') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'ml-2': children}"></lucide-icon>
-      }
-</button> -->
-
-<!-- <button [ngClass]="getButtonClasses()" (click)="onClick()"> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'left'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- <ng-content></ng-content> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'right'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- </button> -->
-
-<!-- <button 
-      [ngClass]="getButtonClasses()" (click)="onClick()" [attr.aria-label]="ariaLabel"
-      class="cursor-pointer"
-      [disabled]="disabled || loading">
-      @if (loading) {
-      <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
-      }
-      @if (!loading && iconName && iconPosition === 'left') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'mr-2': children}"></lucide-icon>
-      }
-      <ng-content></ng-content>
-      @if (!loading && iconName && iconPosition === 'right') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'ml-2': children}"></lucide-icon>
-      }
-</button> -->
-
-<!-- <button [ngClass]="getButtonClasses()" (click)="onClick()"> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'left'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- <ng-content></ng-content> -->
-<!-- <app-icon *ngIf="iconName && iconPosition === 'right'" [iconName]="iconName" [size]="iconSize" [color]="getIconColor()"></app-icon> -->
-<!-- </button> -->
-
-<!-- <button 
-      [ngClass]="getButtonClasses()" (click)="onClick()" [attr.aria-label]="ariaLabel"
-      class="cursor-pointer"
-      [disabled]="disabled || loading">
-      @if (loading) {
-      <lucide-icon [img]="icons.Loader2" [size]="getCalculatedIconSize()" class="animate-spin"></lucide-icon>
-      }
-      @if (!loading && iconName && iconPosition === 'left') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'mr-2': children}"></lucide-icon>
-      }
-      <ng-content></ng-content>
-      @if (!loading && iconName && iconPosition === 'right') {
-      <lucide-icon [img]="getIcon()" [size]="getCalculatedIconSize()" [ngClass]="{'ml-2': children}"></lucide-icon>
-      }
-</button> -->
-
 <button
   (click)="onClick($event)"
   [attr.aria-label]="ariaLabel"
   [disabled]="disabled || loading"
   [class.w-full]="fullWidth"
   [ngClass]="getButtonClasses()"
-  class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-body transition-colors duration-200 cursor-pointer"
+  class="inline-flex items-center rounded-md px-4 py-2 text-sm font-body transition-colors duration-200 cursor-pointer"
 >
   @if (loading) {
     <lucide-icon

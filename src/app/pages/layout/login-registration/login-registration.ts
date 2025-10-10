@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 
@@ -7,6 +7,7 @@ import { LoginForm } from '../../login-registration/components/login-form/login-
 import { RegistrationForm } from '../../login-registration/components/registration-form/registration-form';
 import { AuthTabs } from '../../login-registration/components/auth-tabs/auth-tabs';
 import { CongressHighlights } from '../../login-registration/components/congress-highlights/congress-highlights';
+import { Auth } from '../../login-registration/services/auth';
 
 @Component({
   selector: 'app-login-registration',
@@ -28,16 +29,19 @@ export class LoginRegistration {
     users: Users
   };
 
+  private readonly authService = inject(Auth)
+
+
   constructor(
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Check if user is already authenticated
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (isAuthenticated === 'true') {
-      this.router.navigate(['/user-dashboard']);
-    }
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.router.navigate(['/user-dashboard']);
+      }
+    });
   }
 
   handleTabChange(tab: 'login' | 'register'): void {

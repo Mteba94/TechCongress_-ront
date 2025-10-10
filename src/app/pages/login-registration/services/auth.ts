@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, switchMap, of, catchError, throwError } from 'rxjs';
 import { LoginRequest } from '../models/login-request.interface';
 import { BaseApiResponse } from '../../../shared/models/reusables/base-api-response.interface';
 import { environment as env } from '../../../../environments/environment.development';
@@ -9,6 +9,15 @@ import { endpoint } from '../../../shared/utils/endpoints.util';
 import { RecoveryPaswordRequest } from '../models/recoveryPass-req.interface';
 import { CurrentUser } from '../models/user-resp.interface';
 import { jwtDecode } from 'jwt-decode';
+import { UserRole } from './user-role';
+
+interface JwtPayload {
+  sub: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+  role: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,77 +25,102 @@ import { jwtDecode } from 'jwt-decode';
 export class Auth {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly roleService = inject(UserRole);
 
-  private user: BehaviorSubject<string>;
   private currentUserSubject: BehaviorSubject<CurrentUser | null>;
+  public userTokenSubject: BehaviorSubject<string | null>;
 
-  public get userToken(): string {
-    return this.user.value;
+  public get userToken(): string | null{
+    return this.userTokenSubject.value;
   }
 
-  public get currentUser(): CurrentUser | null {
+  public get currentUser$(): Observable<CurrentUser | null> {
+    return this.currentUserSubject.asObservable();
+  }
+
+  public get currentUserValue(): CurrentUser | null {
     return this.currentUserSubject.value;
   }
 
+  public get isAuthenticated(): boolean {
+    return !!this.userTokenSubject.value;
+  }
+
   constructor() {
-    const storedToken  = localStorage.getItem('token');
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    this.userTokenSubject = new BehaviorSubject<string | null>(storedToken);
 
-    this.user = new BehaviorSubject<string>(
-      JSON.parse(localStorage.getItem('token')!)
-    );
-
-    this.currentUserSubject = new BehaviorSubject<CurrentUser | null>(
-      storedToken  ? this.decodeToken(storedToken) : null
-    );
+    let user = null;
+    if (storedToken) {
+      try {
+        const parsedToken = JSON.parse(storedToken);
+        user = this.decodeToken(parsedToken);
+      } catch (error) {
+        user = this.decodeToken(storedToken);
+      }
+    }
+    this.currentUserSubject = new BehaviorSubject<CurrentUser | null>(user);
   }
 
   login(request: LoginRequest): Observable<BaseApiResponse<string>> {
     const requestUrl = `${env.api}${endpoint.LOGIN}`;
 
     return this.http.post<BaseApiResponse<string>>(requestUrl, request).pipe(
-      map((response: BaseApiResponse<string>) => {
-        if (response.isSuccess) {
-          localStorage.setItem('token', JSON.stringify(response.accessToken));
-            this.user.next(response.accessToken);
-            this.currentUserSubject.next(this.decodeToken(response.accessToken));
+      switchMap((response: BaseApiResponse<string>) => {
+        if (response.isSuccess && response.accessToken) {
+          const token = response.accessToken;
+
+          localStorage.setItem('token', token);
+          this.userTokenSubject.next(token);
+
+          const decodedUser = this.decodeToken(token);
+
+          if (decodedUser) {
+            //console.log(decodedUser);
+            return this.roleService.getUserRole(decodedUser.id).pipe(
+              map(roleResp => {
+                if (roleResp.isSuccess) {
+                  decodedUser.role = roleResp.data.nombre.toLowerCase();
+                  this.currentUserSubject.next(decodedUser);
+                }
+                return response;
+              })
+            );
+          }
         }
-        //console.log(response)
-        return response;
+        this.currentUserSubject.next(null);
+        return of(response);
+      }),
+      catchError(err => {
+        console.error('Login failed', err);
+        return throwError(() => err);
       })
     );
   }
 
-  logout(){
-    localStorage.removeItem('token')
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userData');
-    this.user.next('');
+  logout() {
+    localStorage.removeItem('token');
+    this.userTokenSubject.next(null);
+    this.currentUserSubject.next(null);
     this.router.navigate(['/congress-homepage']);
   }
 
   recoveryPassword(request: RecoveryPaswordRequest): Observable<BaseApiResponse<string>> {
     const requestUrl = `${env.api}${endpoint.RECOVERY_PASSWORD}`;
-
-    return this.http.put<BaseApiResponse<string>>(requestUrl, request).pipe(
-      map((response: BaseApiResponse<string>) => {
-        return response;
-      })
-    )
-    
+    return this.http.put<BaseApiResponse<string>>(requestUrl, request);
   }
 
   private decodeToken(token: string): CurrentUser | null {
     try {
-      const decoded: any = jwtDecode(token);
-      // 👇 Mapea los valores que vienen en el payload
+      const decoded: JwtPayload = jwtDecode(token);
       return {
-        id: decoded.sub,
-        name: decoded.given_name + ' ' + decoded.family_name,
+        id: Number(decoded.sub),
+        name: `${decoded.given_name} ${decoded.family_name}`,
         email: decoded.email,
         role: decoded.role
       };
     } catch (error) {
-      console.error('Token inválido', error);
+      console.error('Invalid token', error);
       return null;
     }
   }

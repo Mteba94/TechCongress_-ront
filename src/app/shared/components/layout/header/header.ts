@@ -15,12 +15,14 @@ import {
   X,
   Calendar,
   Trophy,
-  BarChart3
+  BarChart3,
+  Shield
 } from 'lucide-angular';
-import { filter } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
 import { Button } from '../../reusables/button/button';
 import { AuthenticatedUserMenu } from '../../reusables/authenticated-user-menu/authenticated-user-menu';
 import { Auth } from '../../../../pages/login-registration/services/auth';
+import { UserRole } from '../../../../pages/login-registration/services/user-role';
 
 
 @Component({
@@ -48,10 +50,12 @@ export class Header {
     x: X,
     calendar: Calendar,
     trophy: Trophy,
-    barChart3: BarChart3
+    barChart3: BarChart3,
+    shield: Shield
   };
 
   private readonly authService = inject(Auth)
+  private readonly roleService = inject(UserRole)
 
   isAuthenticated = false;
   user: { name: string, email: string, role: string } | null = null;
@@ -59,11 +63,48 @@ export class Header {
   currentPath = '';
 
   navigationItems = [
-    { label: 'Inicio', path: '/congress-homepage', icon: this.icons.home, requiredAuth: false, requiredRole: null },
-    { label: 'Actividades', path: '/workshop-activity-catalog', icon: this.icons.calendar, requiredAuth: false, requiredRole: null },
-    { label: 'Mi Panel', path: '/user-dashboard', icon: this.icons.user, requiredAuth: true, requiredRole: null },
-    { label: 'Resultados', path: '/competition-results-winners', icon: this.icons.trophy, requiredAuth: false, requiredRole: null },
-    { label: 'Reportes', path: '/attendance-reports-dashboard', icon: this.icons.barChart3, requiredAuth: true, requiredRole: 'admin' }
+    { 
+      label: 'Inicio',
+      path: '/congress-homepage',
+      icon: this.icons.home,
+      requiredAuth: false,
+      requiredRole: null
+    },
+    { 
+      label: 'Actividades',
+      path: '/workshop-activity-catalog',
+      icon: this.icons.calendar,
+      requiredAuth: false,
+      requiredRole: null
+    },
+    { 
+      label: 'Mi Panel',
+      path: '/user-dashboard',
+      icon: this.icons.user,
+      requiredAuth: true,
+      requiredRole: null
+    },
+    { 
+      label: 'Resultados',
+      path: '/competition-results-winners',
+      icon: this.icons.trophy,
+      requiredAuth: false,
+      requiredRole: null
+    },
+    {
+      label: 'Panel Admin',
+      path: '/admin-dashboard',
+      icon: this.icons.shield,
+      requiredAuth: true,
+      requiredRole: 'administrador'
+    },
+    { 
+      label: 'Reportes',
+      path: '/attendance-reports-dashboard',
+      icon: this.icons.barChart3,
+      requiredAuth: true,
+      requiredRole: 'admin'
+    }
   ];
 
   constructor(
@@ -77,12 +118,28 @@ export class Header {
   }
 
   ngOnInit(): void {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    const userData = localStorage.getItem('userData');
-    
-    if (authStatus === 'true' && userData) {
-      this.isAuthenticated = true;
-      this.user = JSON.parse(userData);
+    this.loadUser()
+
+    this.authService.currentUser$.subscribe(user => {
+      this.user = user ? { ...user } : null;
+      this.isAuthenticated = !!user;
+    });
+  }
+
+  async loadUser(){
+    if(this.authService.isAuthenticated){
+      try {
+        const user = await firstValueFrom(this.authService.currentUser$);
+      if (user) {
+        this.user = {
+          name: user.name,
+          email: user.email,
+          role: user.role
+        };
+      }
+      } catch (error) {
+        
+      }
     }
   }
 

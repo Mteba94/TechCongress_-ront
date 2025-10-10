@@ -217,9 +217,9 @@ export class WorkshopActivityCatalog {
     //this.userEnrollments.set(newEnrollments);
     //localStorage.setItem('userEnrollments', JSON.stringify(newEnrollments));
 
-    var user = this.auth.currentUser
+    const user = await firstValueFrom(this.auth.currentUser$);
 
-    console.log(user)
+    //console.log(user)
 
     const request: InscripcionRequest = {
       idUsuario: user!.id,
