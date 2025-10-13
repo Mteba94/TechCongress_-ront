@@ -1,0 +1,26 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <app-select
+        placeholder="Filtrar por rol"
+        [options]="roleOptions"
+        [value]="filters.role"
+        (valueChange)="onFilterChange('role', $event)"
+    ></app-select>
+    <app-select
+        placeholder="Filtrar por estado"
+        [options]="statusOptions"
+        [value]="filters.status"
+        (valueChange)="onFilterChange('status', $event)"
+    ></app-select>
+    <app-select
+        placeholder="Filtrar por institución"
+        [options]="institutionOptions"
+        [value]="filters.institution"
+        (valueChange)="onFilterChange('institution', $event)"
+    ></app-select>
+    <app-select
+        placeholder="Filtrar por actividad"
+        [options]="activityOptions"
+        [value]="filters.activityParticipation"
+        (valueChange)="onFilterChange('activityParticipation', $event)"
+    ></app-select>
+</div>

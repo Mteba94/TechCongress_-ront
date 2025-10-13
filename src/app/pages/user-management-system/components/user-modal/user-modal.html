@@ -1,0 +1,179 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+    <div class="w-full max-w-2xl bg-card rounded-lg shadow-xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-foreground">
+                        {{user ? 'Editar Usuario' : 'Crear Nuevo Usuario'}}
+                    </h2>
+                    <p class="text-sm text-muted-foreground mt-1">
+                        {{ user ? 'Modifica la información del usuario' : 'Completa los datos para crear una nueva cuenta'}}
+                    </p>
+                </div>
+                 <button
+                    (click)="onClose()"
+                    class="text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer">
+                    <lucide-icon [img]="icons.x" size="24"></lucide-icon>
+                </button>
+            </div>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="handleSubmit()" class="p-6 space-y-6">
+            @if(generalError && generalError.length > 0){
+                <div class="p-4 bg-error/10 border border-error/20 rounded-lg">
+                    <div class="flex items-start space-x-2">
+                        <lucide-icon [img]="icons.alertCircle" size="13" class="text-error mt-0.5"></lucide-icon>
+                        @for (error of generalError; track $index) {
+                            <p class="font-body font-medium text-sm text-error">
+                                {{ error }}
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
+            <!-- Basic Information -->
+             <div class="space-y-4">
+                <h3 class="text-lg font-medium text-foreground">Información Básica</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <app-input
+                        label="Primer Nombre"
+                        type="text"
+                        name="pnombre"
+                        placeholder="Primer Nombre"
+                        [value]="form.get('pnombre')?.value"
+                        (valueChange)="handleInputChange('pnombre', $event)"
+                        [error]="getControlError('pnombre')"
+                        [required]="true"
+                    ></app-input>
+                    <app-input
+                        label="Segundo Nombre"
+                        type="text"
+                        name="snombre"
+                        placeholder="Segundo Nombre"
+                        [value]="form.get('snombre')?.value"
+                        (valueChange)="handleInputChange('snombre', $event)"
+                        [error]="getControlError('snombre')"
+                    ></app-input>
+
+                    <app-input
+                        label="Primer Apellido"
+                        type="text"
+                        name="papellido"
+                        placeholder="Primer Apellido"
+                        [value]="form.get('papellido')?.value"
+                        (valueChange)="handleInputChange('papellido', $event)"
+                        [error]="getControlError('papellido')"
+                        [required]="true"
+                    ></app-input>
+                    <app-input
+                        label="Segundo Apellido"
+                        type="text"
+                        name="sapellido"
+                        placeholder="Segundo Apellido"
+                        [value]="form.get('sapellido')?.value"
+                        (valueChange)="handleInputChange('sapellido', $event)"
+                        [error]="getControlError('sapellido')"
+                    ></app-input>
+
+                    
+                </div>
+                <div class="space-y-4">
+                    <app-input
+                        label="Correo Electrónico"
+                        type="email"
+                        name="email"
+                        placeholder="usuario@correo.com"
+                        [value]="form.get('email')?.value"
+                        (valueChange)="handleInputChange('email', $event)"
+                        [error]="getControlError('email')"
+                        [required]="true"
+                    ></app-input>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <app-select
+                        label="Tipo de Participante"
+                        placeholder="Selecciona tipo de Participante"
+                        [options]="roleOptions"
+                        formControlName="tipoParticipanteId"
+                        [error]="getControlError('tipoParticipanteId')"
+                        [required]="true"
+                        (valueChange)="handleTipoParticipanteChange('tipoParticipanteId', $event)"
+                    ></app-select>
+
+                    <!-- <app-select
+                        label="Estado de la Cuenta"
+                        placeholder="Selecciona un estado"
+                        [options]="statusOptions"
+                        formControlName="estado"
+                        [error]="getControlError('estado')"
+                        [required]="true"
+                    ></app-select> -->
+                </div>
+             </div>
+
+             <!-- Contact Information -->
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <app-input
+                        label="Teléfono"
+                        type="tel"
+                        name="telefono"
+                        placeholder="1234 5678"
+                        [value]="form.get('telefono')?.value"
+                        (valueChange)="handleInputChange('telefono', $event)"
+                        [error]="getControlError('telefono')"
+                    ></app-input>
+                    <app-select
+                        label="Grado Académico"
+                        placeholder="Selecciona tu grado actual"
+                        [options]="gradeOp"
+                        formControlName="nivelAcademicoId"
+                        [error]="getControlError('nivelAcademicoId')"
+                        [required]="true"
+                    />
+                </div>
+                @if (userType === 1) {
+                    <app-select
+                        label="Institución"
+                        placeholder="Selecciona tu institución"
+                        [options]="schoolOp"
+                        [searchable]="true"
+
+                        formControlName="schoolId"
+                        [error]="getControlError('schoolId')"
+                        [required]="true"
+                    />
+                }
+            </div>
+            @if(!user){
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-foreground">Configuración Inicial</h3>
+                    <div class="space-y-3">
+                        <!-- <app-checkbox
+                            label="Generar contraseña automáticamente y enviar por correo"
+                        ></app-checkbox> -->
+                        <!-- <app-checkbox
+                            label="Enviar email de bienvenida con instrucciones"
+                        ></app-checkbox> -->
+                    </div>
+                </div>
+            }
+
+            <div class="flex items-center justify-end space-x-4 pt-6 border-t border-border">
+                <app-button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    (click)="onClose()"
+                ><span>Cancelar</span></app-button>
+                <app-button
+                    type="submit"
+                    variant="outline"
+                    size="sm"
+                >
+                    <span>{{ isSaving ? user ? 'Guardando...' : 'Creando...' : user ? 'Guardar Cambios' : 'Crear Usuario' }}</span>
+                </app-button>
+            </div>
+        </form>
+    </div>
+</div>

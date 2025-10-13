@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Output, output, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Eye, EyeOff, Info, Key, LucideAngularModule, Mail, Shield, UserPlus } from 'lucide-angular';
 import { firstValueFrom, interval, Subscription } from 'rxjs';
@@ -46,6 +46,7 @@ export class PasswordRecoveryForm {
     userPlus: UserPlus,
     info: Info
   }
+  @Input() currentStep = signal<Step>('email');
   @Output() onBack = new EventEmitter<void>();
   @Output() onSuccess = new EventEmitter<void>();
 
@@ -58,7 +59,7 @@ export class PasswordRecoveryForm {
   isEnrollmentError = signal<boolean>(false);
 
   // Estado del formulario
-  currentStep = signal<Step>('email');
+  //currentStep = signal<Step>('email');
   formData = signal({
     email: '',
     verificationCode: '',
@@ -181,26 +182,6 @@ export class PasswordRecoveryForm {
     }
   }
 
-  // async handleCodeSubmit() {
-  //   if (!this.validateCode()) return;
-  //   this.isLoading.set(true);
-
-  //   try {
-
-  //     await new Promise(r => setTimeout(r, 1500));
-  //     const storedCode = sessionStorage.getItem('recoveryCode');
-  //     if (this.formData().verificationCode !== storedCode) {
-  //       this.errors.set({ verificationCode: 'Código de verificación incorrecto' });
-  //       return;
-  //     }
-  //     this.currentStep.set('newPassword');
-  //   } catch {
-  //     this.errors.set({ verificationCode: 'Error al verificar el código' });
-  //   } finally {
-  //     this.isLoading.set(false);
-  //   }
-  // }
-
   async handlePasswordSubmit() {
     if (!this.validatePassword()) return;
     this.isLoading.set(true);
@@ -211,7 +192,7 @@ export class PasswordRecoveryForm {
       // sessionStorage.removeItem('recoveryEmail');
       // this.onSuccess.emit();
 
-      console.log(this.codeValidate)
+      //console.log(this.codeValidate)
       
        const passwordResponse = await firstValueFrom(
         this.authService.recoveryPassword({

@@ -9,13 +9,9 @@ import { UserRole } from '../../login-registration/services/user-role';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { UserLog } from '../../../shared/models/commons/user.interface';
 
-interface User {
-  id: number;
-  name: string;
-  role: string;
-  lastAccess: string;
-}
+
 
 interface Metric {
   title: string;
@@ -55,7 +51,7 @@ export class AdminDashboard {
   private readonly router = inject(Router)
   
   //user = signal<User | null | undefined>(undefined);
-  user: User | null = null;
+  user: UserLog | null = null;
   selectedTimeRange = signal<string>('7d');
   refreshing = signal<boolean>(false);
   isLoading = true;

@@ -1,0 +1,58 @@
+<div [ngClass]="cn('flex items-start space-x-2', className)">
+  <div class="relative flex items-center">
+    <input
+      type="checkbox"
+      [id]="checkboxId"
+      [checked]="checked"
+      [attr.aria-checked]="indeterminate ? 'mixed' : checked"
+      [disabled]="disabled"
+      [required]="required"
+      class="sr-only peer"
+      (change)="onInputChange($event)"
+      [attr.data-state]="indeterminate ? 'indeterminate' : (checked ? 'checked' : 'unchecked')"
+      #checkboxInput
+    />
+
+    <label
+      [attr.for]="checkboxId"
+      [ngClass]="checkboxLabelClasses"
+      [attr.data-state]="indeterminate ? 'indeterminate' : (checked ? 'checked' : 'unchecked')"
+      tabIndex="-1"
+    >
+      @if (checked && !indeterminate) {
+        <lucide-icon [img]="icons.check" class="h-3 w-3 text-current"></lucide-icon>
+      }
+      @if (indeterminate) {
+        <lucide-icon [img]="icons.minus" class="h-3 w-3 text-current"></lucide-icon>
+      }
+    </label>
+  </div>
+
+  @if (label || description || error) {
+    <div class="flex-1 space-y-1">
+      @if (label) {
+        <label
+          [attr.for]="checkboxId"
+          [ngClass]="labelClasses"
+        >
+          {{ label }}
+          @if (required) {
+            <span class="text-destructive ml-1">*</span>
+          }
+        </label>
+      }
+
+      @if (description && !error) {
+        <p class="text-sm text-muted-foreground">
+          {{ description }}
+        </p>
+      }
+
+      @if (error) {
+        <p class="text-sm text-destructive">
+          {{ error }}
+        </p>
+      }
+    </div>
+  }
+</div>

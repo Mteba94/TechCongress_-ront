@@ -50,6 +50,16 @@ export class Breadcrumbs {
     '/admin-dashboard': [
       { label: 'Inicio', path: '/congress-homepage' },
       { label: 'Panel Admin', path: '/admin-dashboard' }
+    ],
+    '/user-management-system': [
+      { label: 'Inicio', path: '/congress-homepage' },
+      { label: 'Panel Admin', path: '/admin-dashboard' },
+      { label: 'Gestión de Usuarios', path: '/user-management-system' }
+    ],
+    '/user-settings-profile-management': [
+      { label: 'Inicio', path: '/congress-homepage' },
+      { label: 'Mi Panel', path: '/user-dashboard' },
+      { label: 'Configuración de Perfil', path: '/user-settings-profile-management' }
     ]
   };
 

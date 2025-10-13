@@ -1,7 +1,8 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { NavigationItem } from '../../models/navigationItems.interface';
 import { Award, BarChart, Calendar, Clock, Database, ExternalLink, LucideAngularModule, Mic, Settings, Shield, TrendingUp, Trophy, Users } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-navigation',
@@ -17,6 +18,8 @@ export class AdminNavigation {
     externalLink: ExternalLink
   }
   activeSection: WritableSignal<string> = signal('dashboard');
+
+  private readonly router = inject(Router)
   
   navigationItems: NavigationItem[] = [
     { 
@@ -99,15 +102,11 @@ export class AdminNavigation {
    * @param item El elemento de navegación seleccionado.
    */
   handleNavigation(item: NavigationItem): void {
-    // Actualiza el signal
     this.activeSection.set(item.id);
-    
-    // Si tiene un href, simula la navegación (como en el componente React original)
+
     if (item.href) {
-      // Nota: En una aplicación Angular real, usarías el Router (router.navigate)
-      // En este contexto de componente único, usamos window.location.href
-      console.log(`Navegando a: ${item.href}`);
-      // window.location.href = item.href; 
+      this.router.navigate([item.href]);
+      console.log(item.href);
     }
   }
 

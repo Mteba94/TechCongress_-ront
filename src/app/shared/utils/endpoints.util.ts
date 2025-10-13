@@ -17,9 +17,6 @@ export const endpoint = {
     //ROLE
     ROLE_BY_USER: 'UserRole/Role/',
 
-
-    
-
     //TIPO ACTIVIDAD
     LIST_CATEGORIA: 'TipoActividad',
     SELECT_CATEGORIA: 'TipoActividad/Select',
@@ -66,5 +63,9 @@ export const endpoint = {
 
     //CONGRESO
     CONGRESO_SELECT: 'Congreso/Select',
+
+    //USUARIO
+    LIST_USER: 'User',
+    CREATE_USER: 'User/Create',
 
 }

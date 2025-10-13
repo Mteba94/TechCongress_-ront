@@ -32,6 +32,8 @@ export class LoginForm {
   @Output() onSuccess = new EventEmitter<void>();
 
   readonly currentView = signal<'login' | 'recovery'>('login');
+  readonly step = signal<'email' | 'code' | 'newPassword'>('email');
+
   //currentView: 'login' | 'recovery' = 'login';
 
   readonly icons = {
@@ -105,46 +107,56 @@ export class LoginForm {
         password: this.formData.password
       }
 
-      await this.login(dataLogin)
+      const isRecovery = await this.login(dataLogin);
 
+      if (!isRecovery) {
       this.onSuccess.emit();
+    }
 
     } catch (error: any) {
       if (error instanceof HttpErrorResponse) {
-        const apiResponse = error.error;
-
-        if (apiResponse && apiResponse.message) {
-            this.errors.general = apiResponse.message;
+        if (error.status === 0) {
+          // Sin conexión al servidor o fallo de red
+          this.errors.general = 'No se pudo establecer conexión con el servidor. Verifica tu conexión a Internet.';
+        } else if (error.error && error.error.message) {
+          this.errors.general = error.error.message;
         } else {
-            this.errors.general = 'Ha ocurrido un error en el servidor.';
+          this.errors.general = 'Ha ocurrido un error en el servidor.';
         }
       } else {
-        this.errors.general = 'Error de conexión. Inténtalo de nuevo.';
+        this.errors.general = 'Error inesperado. Inténtalo de nuevo.';
       }
     } finally {
       this.isLoading = false;
     }
   }
 
-  async login(request: LoginRequest): Promise<void> {
+  async login(request: LoginRequest): Promise<boolean> {
     const response = await firstValueFrom(
       this.authService.login(request)
     );
 
     if(response.isSuccess){
-      const token = this.authService.userToken;
-      if (!token) { return; }
+      if(response.message?.trim().toLowerCase() === "recovery"){
+        this.handleNewPassword();
+        return true
+      }else{
+        const token = this.authService.userToken;
+        if (!token) { return false; }
+          localStorage.setItem('isAuthenticated', 'true');
+          var dataUser = JSON.parse(atob(token.split(".")[1]));
+          
+          localStorage.setItem('userData', JSON.stringify({
+            email: this.formData.email,
+            name: `${dataUser.given_name} ${dataUser.family_name}`.trim(),
+            role: 'credentials.role'
+          }));
 
-      localStorage.setItem('isAuthenticated', 'true');
-      var dataUser = JSON.parse(atob(token.split(".")[1]));
-      
-      localStorage.setItem('userData', JSON.stringify({
-        email: this.formData.email,
-        name: `${dataUser.given_name} ${dataUser.family_name}`.trim(),
-        role: 'credentials.role'
-      }));
+          return false
+      }
 
     } else {
+      this.errors = response.message
         throw new Error(response.message);
     }
   }
@@ -153,10 +165,15 @@ export class LoginForm {
     this.currentView.set('recovery');
   }
 
+  handleNewPassword(): void {
+    //this.step.set('newPassword')
+    this.currentView.set('recovery');
+  }
+
   handleRecoverySuccess() {
     this.notificacionService.show('Contraseña actualizada exitosamente.', 'success');
 
-    console.log(this.notificacionService.message())
+    //console.log(this.notificacionService.message())
     this.currentView.set('login');
   }
 }

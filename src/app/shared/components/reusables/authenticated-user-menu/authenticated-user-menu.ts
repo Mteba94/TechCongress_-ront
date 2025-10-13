@@ -50,7 +50,7 @@ export class AuthenticatedUserMenu {
     },
     {
       label: 'Configuración',
-      path: '/settings',
+      path: '/user-settings-profile-management',
       icon: Settings
     }
   ];

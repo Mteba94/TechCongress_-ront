@@ -1,0 +1,175 @@
+<!-- <div *ngIf="!user()" class="min-h-screen bg-background flex items-center justify-center">
+    <div class="text-center">
+        <lucide-icon [img]="icons.loader" [size]="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
+        <p class="text-muted-foreground">Verificando permisos...</p>
+    </div>
+</div> -->
+
+<app-notifications-alert
+    *ngIf="notificacionService.message()"
+    [message]="notificacionService.message()"
+    [type]="notificacionService.type()"
+    (close)="notificacionService.clear()"
+></app-notifications-alert>
+
+<div class="min-h-screen bg-background">
+    <app-header />
+    <div class="container mx-auto px-4 py-6">
+        <app-breadcrumbs />
+        <!-- Header Section -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+            <div class="mb-6 lg:mb-0">
+                <h1 class="text-3xl font-heading font-bold text-foreground mb-2">
+                    Gestión de Usuarios
+                </h1>
+                <p class="text-muted-foreground font-body">
+                    Administración integral de participantes y cuentas del sistema
+                </p>
+                <div class="flex items-center space-x-4 mt-4">
+                    <div class="flex items-center space-x-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-full">
+                        <lucide-icon [img]="icons.users" [size]="16" class="text-blue-500"></lucide-icon>
+                        <span class="text-sm font-medium text-blue-600">
+                            {{ filteredUsers().length }} usuarios encontrados
+                        </span>
+                    </div>
+                    <div
+                        class="flex items-center space-x-2 px-3 py-1 bg-green-100 border border-green-200 rounded-full">
+                        <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-green-600"></lucide-icon>
+                        <span class="text-sm font-medium text-green-600">
+                            {{ selectedUsers().length}} seleccionados
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <!-- <ImportExport /> -->
+                <app-button variant="default" (btnClick)="handleCreateUser()" iconName="UserPlus" iconPosition="left"
+                    [iconSize]="18">
+                    <span>Nuevo Usuario</span>
+                </app-button>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-card border border-border rounded-lg p-6 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                <div class="lg:col-span-2">
+                    <app-input placeholder="Buscar por nombre, email o institución..." [value]="searchTerm()"
+                        [leadingIcon]="icons.search">
+                    </app-input>
+                </div>
+                <div class="lg:col-span-2">
+                     <app-user-filters
+                        [filters]="filters()"
+                        (filtersChange)="setFilters($event)"
+                    />
+                </div>
+            </div>
+
+            <div *ngIf="selectedUsers().length > 0">
+                <!-- <BulkActions 
+                    selectedCount={selectedUsers?.length}
+                    onBulkAction={handleBulkAction}
+                    onClearSelection={() => setSelectedUsers([])}
+                    /> -->
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-card border border-border rounded-lg overflow-hidden">
+            <app-user-table
+                [users]="getCurrentPageUsers()"
+                [selectedUsers]="selectedUsers()"
+                [sortConfig]="sortConfig()"
+                (sort)="handleSort($event)"
+                [loading]="isLoading"
+                (selectUser)="handleSelectUser($event)"
+                (selectAll)="handleSelectAll()"
+                (viewUser)="handleViewUser($event)"
+                (editUser)="handleEditUser($event)"
+                (deleteUser)="handleDeleteUser($event)"
+            ></app-user-table>
+
+            <!-- Pagination -->
+            @if(totalPages > 1){
+            <div class="px-6 py-4 border-t border-border">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-muted-foreground">
+                        Mostrando {{ ((currentPage() - 1) * usersPerPage) + 1 }} a {{ Math.min(currentPage() * usersPerPage, totalRecordsInDB()) }} de {{ totalRecordsInDB() }} usuarios
+                    </p>
+
+                    <div class="flex items-center space-x-2">
+                        <app-button
+                            variant="outline"
+                            size="sm"
+                            (btnClick)="goToPage(1)"
+                            iconName="ChevronLeft"
+                            iconPosition="left" 
+                            [iconSize]="16"
+                        ></app-button>
+
+                        <app-button variant="outline" size="sm"
+                            (btnClick)="goToPage(currentPage() - 1)"
+                            [disabled]="currentPage() === 1" iconName="ChevronLeft" iconPosition="left" [iconSize]="16">
+                            <span>Anterior</span></app-button>
+
+                        <div class="flex items-center space-x-1">
+                            <button *ngFor="let pageNumber of paginationPages" (click)="goToPage(pageNumber)"
+                                class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer"
+                                [ngClass]="currentPage() === pageNumber 
+                                ? 'bg-primary text-primary-foreground' 
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted'">
+                                {{ pageNumber }}
+                            </button>
+                        </div>
+                        <app-button 
+                            variant="outline"
+                            size="sm"
+                            (btnClick)="goToPage(currentPage() + 1)"
+                            [disabled]="currentPage() === totalPages"
+                            iconName="ChevronRight"
+                            iconPosition="right" 
+                            [iconSize]="16"
+                        > <span>Siguiente</span> </app-button>
+                        <app-button
+                            variant="outline"
+                            size="sm"
+                            (btnClick)="goToPage(totalPages)"
+                            iconName="ChevronRight"
+                            iconPosition="right" 
+                            [iconSize]="16"
+                        ></app-button>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- User Modal -->
+     <!-- <UserModal
+          user={editingUser}
+          onClose={() => {
+            setShowUserModal(false);
+            setEditingUser(null);
+          }}
+          onSave={(userData) => {
+            if (editingUser) {
+              setUsers(prev => prev?.map(u => u?.id === editingUser?.id ? { ...userData, id: editingUser?.id } : u));
+            } else {
+              setUsers(prev => [...prev, { ...userData, id: Date.now() }]);
+            }
+            setShowUserModal(false);
+            setEditingUser(null);
+          }}
+        /> -->
+        <app-user-modal
+            *ngIf="showUserModal()"
+            [user]="editingUser()"
+            [isSaving]="isSaving()"
+            (close)="handleCloseModal()"
+            (save)="handleSaveUser($event)"
+        >
+        </app-user-modal>
+</div>

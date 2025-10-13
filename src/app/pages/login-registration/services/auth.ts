@@ -67,7 +67,7 @@ export class Auth {
 
     return this.http.post<BaseApiResponse<string>>(requestUrl, request).pipe(
       switchMap((response: BaseApiResponse<string>) => {
-        if (response.isSuccess && response.accessToken) {
+        if (response.isSuccess && response.accessToken && response.message !== 'Recovery') {
           const token = response.accessToken;
 
           localStorage.setItem('token', token);
@@ -88,6 +88,13 @@ export class Auth {
             );
           }
         }
+
+        if (response.message === 'Recovery') {
+          this.userTokenSubject.next(null);
+          this.currentUserSubject.next(null);
+          localStorage.removeItem('token');
+          localStorage.removeItem('isAuthenticated');
+        }
         this.currentUserSubject.next(null);
         return of(response);
       }),
@@ -100,6 +107,8 @@ export class Auth {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userData');
+    localStorage.removeItem('isAuthenticated');
     this.userTokenSubject.next(null);
     this.currentUserSubject.next(null);
     this.router.navigate(['/congress-homepage']);

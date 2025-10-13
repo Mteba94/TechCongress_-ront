@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { CalendarPlus, Check, Download, Eye, EyeOff, FileText, Filter, Grid3X3, Home, LucideAngularModule, Save, Search, Send, X } from 'lucide-angular';
+import { CalendarPlus, Check, ChevronLeft, ChevronRight, Download, Edit2, Eye, EyeOff, FileText, Filter, Grid3X3, Home, LucideAngularModule, Save, Search, Send, Trash2, X } from 'lucide-angular';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   LogIn, UserPlus, ArrowDown,
@@ -29,6 +29,7 @@ export class Button {
   @Input() iconSize: number | null = null;
   @Input() fullWidth: boolean = false;
   @Input() disabled: boolean = false;
+  @Input() type: 'button' | 'submit' | 'reset' = 'button'; 
 
   @Output() btnClick = new EventEmitter<MouseEvent>();
 
@@ -53,7 +54,11 @@ export class Button {
     Save,
     CalendarPlus,
     Download,
-    FileText
+    FileText,
+    ChevronLeft,
+    ChevronRight,
+    Edit2,
+    Trash2
   };
 
   get children(): boolean {

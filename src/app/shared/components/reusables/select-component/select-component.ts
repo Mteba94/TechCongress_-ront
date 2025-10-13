@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, Output, SimpleChanges } from '@angular/core';
 import { Check, ChevronDown, LucideAngularModule, Search, X } from 'lucide-angular';
 import { Button } from '../button/button';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
@@ -95,16 +95,20 @@ export class SelectComponent {
   }
 
   get selectedDisplay(): string {
+    // if (!this.value) return this.placeholder;
+
+    // if (this.multiple) {
+    //   const selectedOptions = this.options.filter(opt => this.value.includes(opt.value));
+    //   if (selectedOptions.length === 0) return this.placeholder;
+    //   if (selectedOptions.length === 1) return selectedOptions[0].label;
+    //   return `${selectedOptions.length} items seleccionados`;
+    // }
+
+    // const selectedOption = this.options.find(opt => opt.value === this.value);
+    // return selectedOption ? selectedOption.label : this.placeholder;
+
     if (!this.value) return this.placeholder;
-
-    if (this.multiple) {
-      const selectedOptions = this.options.filter(opt => this.value.includes(opt.value));
-      if (selectedOptions.length === 0) return this.placeholder;
-      if (selectedOptions.length === 1) return selectedOptions[0].label;
-      return `${selectedOptions.length} items seleccionados`;
-    }
-
-    const selectedOption = this.options.find(opt => opt.value === this.value);
+    const selectedOption = this.options.find(opt => opt.value == this.value); // <= ==
     return selectedOption ? selectedOption.label : this.placeholder;
   }
 
@@ -114,12 +118,21 @@ export class SelectComponent {
 
   // === MÉTODOS DEL COMPONENTE ===
   ngOnInit(): void {
+    //console.log(this._value)
     if (!this.id) {
       this.selectId = `select-${Math.random().toString(36).substring(2, 9)}`;
     } else {
       this.selectId = this.id;
     }
   }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['value']) {
+      //console.log('Nuevo value:', changes['value'].currentValue);
+    }
+  }
+
+  
 
   handleToggle(): void {
     if (!this.disabled) {
@@ -156,20 +169,26 @@ export class SelectComponent {
     this.valueChange.emit(this.value);
   }
 
-  handleSearchChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchTerm = input.value;
+  handleSearchChange(value: string): void {
+    //const input = event.target as HTMLInputElement;
+    //this.searchTerm = input.value;
+    this.searchTerm = value;
   }
   
   isSelected(optionValue: any): boolean {
+    // if (this.multiple) {
+    //   return this.value?.includes(optionValue) || false;
+    // }
+    // return this.value == optionValue;
     if (this.multiple) {
-      return this.value?.includes(optionValue) || false;
+      return this.value?.some((v: any) => v == optionValue) || false; // <= nota el ==
     }
-    return this.value === optionValue;
+    return this.value == optionValue;
   }
 
   // === MÉTODOS DE ControlValueAccessor ===
   writeValue(value: any): void {
+    //console.log('writeValue', value)
     this._value = value;
   }
 

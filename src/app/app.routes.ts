@@ -6,6 +6,8 @@ import { NotFound } from './pages/not-found/not-found';
 import { UserDashboard } from './pages/layout/user-dashboard/user-dashboard';
 import { WorkshopActivityCatalog } from './pages/layout/workshop-activity-catalog/workshop-activity-catalog';
 import { AdminDashboard } from './pages/layout/admin-dashboard/admin-dashboard';
+import { UserManagementSystem } from './pages/layout/user-management-system/user-management-system';
+import { UserSettingsProfileManagement } from './pages/layout/user-settings-profile-management/user-settings-profile-management';
 
 export const routes: Routes = [
     {
@@ -31,6 +33,14 @@ export const routes: Routes = [
     {
         path: 'admin-dashboard',
         component: AdminDashboard
+    },
+    {
+        path: 'user-management-system',
+        component: UserManagementSystem
+    },
+    {
+        path: 'user-settings-profile-management',
+        component: UserSettingsProfileManagement
     },
     {
         path: '**',

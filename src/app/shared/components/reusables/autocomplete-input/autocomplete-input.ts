@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface SelectOption {
   value: any;
@@ -15,7 +15,14 @@ export interface SelectOption {
     CommonModule
   ],
   templateUrl: './autocomplete-input.html',
-  styleUrl: './autocomplete-input.css'
+  styleUrl: './autocomplete-input.css',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => AutocompleteInput),
+      multi: true
+    }
+  ]
 })
 export class AutocompleteInput {
   @Input() inputId: string = '';
@@ -39,6 +46,9 @@ export class AutocompleteInput {
   selectedLabel: string = '';
   private typingTimeout: any;
 
+  private onChange = (_: any) => {};
+  private onTouched = () => {};
+
   constructor() {
     this.filteredOptions = this.options;
   }
@@ -56,6 +66,8 @@ export class AutocompleteInput {
         option.label.toLowerCase().includes(inputValue.toLowerCase())
       );
     }, 300);
+
+    this.onChange(inputValue);
   }
 
   // Se ejecuta al hacer clic en una opción del dropdown
@@ -67,12 +79,38 @@ export class AutocompleteInput {
     this.optionSelected.emit(option.value);
     this.optionSelectedObject.emit(option); // Emitimos el objeto completo
     this.showDropdown = false;
+
+    this.onChange(option.value);
+    this.onTouched();
   }
 
   onBlur() {
     setTimeout(() => {
       this.showDropdown = false;
     }, 200);
+    this.onTouched();
+  }
+
+   writeValue(value: any): void {
+    console.log(value)
+    if (value !== undefined && value !== null) {
+      const option = this.options.find(opt => opt.value === value);
+      this.selectedLabel = option ? option.label : value;
+    } else {
+      this.selectedLabel = '';
+    }
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
   }
   
 }

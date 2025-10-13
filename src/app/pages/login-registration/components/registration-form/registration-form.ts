@@ -368,31 +368,31 @@ export class RegistrationForm {
   }
 
     handleUserTypeChange(type: 'internal' | 'external'): void {
-    this.userType = type;
+      this.userType = type;
 
-    const nivelAcademicoIdControl = this.registrationForm.get('nivelAcademicoId');
-    if(nivelAcademicoIdControl){
-      const newValue = this.userType === 'internal' ? 4 : '';
-      nivelAcademicoIdControl.setValue(newValue);
-    }
+      const nivelAcademicoIdControl = this.registrationForm.get('nivelAcademicoId');
+      if(nivelAcademicoIdControl){
+        const newValue = this.userType === 'internal' ? 4 : '';
+        nivelAcademicoIdControl.setValue(newValue);
+      }
 
-    const schoolIdControl = this.registrationForm.get('schoolId');
-    if (schoolIdControl) {
-      const newSchoolValue = this.userType === 'internal' && this.internalSchool ? this.internalSchool.value : '';
-      schoolIdControl.setValue(newSchoolValue);
-    }
+      const schoolIdControl = this.registrationForm.get('schoolId');
+      if (schoolIdControl) {
+        const newSchoolValue = this.userType === 'internal' && this.internalSchool ? this.internalSchool.value : '';
+        schoolIdControl.setValue(newSchoolValue);
+      }
 
-    const tipoParticipanteIdControl = this.registrationForm.get('tipoParticipanteId');
-    if(tipoParticipanteIdControl){
-      const valuenew = this.userType === 'external' ? 1 : 2;
-      tipoParticipanteIdControl.setValue(valuenew)
-    }
+      const tipoParticipanteIdControl = this.registrationForm.get('tipoParticipanteId');
+      if(tipoParticipanteIdControl){
+        const valuenew = this.userType === 'external' ? 1 : 2;
+        tipoParticipanteIdControl.setValue(valuenew)
+      }
 
-    if (type === 'internal' && this.carneId) {
-      this.registrationForm.get('tipoIdentificacionId')?.setValue(this.carneId);
-    } else {
-      this.registrationForm.get('tipoIdentificacionId')?.setValue(0);
-    }
+      if (type === 'internal' && this.carneId) {
+        this.registrationForm.get('tipoIdentificacionId')?.setValue(this.carneId);
+      } else {
+        this.registrationForm.get('tipoIdentificacionId')?.setValue(0);
+      }
 
     this.updateValidatorsForUserType();
     this.registrationForm.get('email')?.updateValueAndValidity();
@@ -412,7 +412,7 @@ export class RegistrationForm {
     this.registrationForm.markAllAsTouched();
 
     if (this.registrationForm.invalid) {
-      console.log(this.registrationForm.getRawValue());
+      //console.log(this.registrationForm.getRawValue());
       Object.keys(this.registrationForm.controls).forEach(key => {
         const controlS = this.registrationForm.get(key);
 
