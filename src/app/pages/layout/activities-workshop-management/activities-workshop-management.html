@@ -1,0 +1,244 @@
+@if(!user){
+<div class="min-h-screen bg-background flex items-center justify-center">
+    <div class="text-center">
+        <lucide-icon [img]="icons.loader" [size]="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
+        <p class="text-muted-foreground">Verificando permisos...</p>
+    </div>
+</div>
+}
+
+<div class="min-h-screen bg-background">
+    <app-header />
+    <div class="container mx-auto px-4 py-6">
+        <app-breadcrumbs />
+
+        <!-- Header Section -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+            <div class="mb-6 lg:mb-0">
+                <div class="flex items-center space-x-3 mb-2">
+                    <lucide-icon [img]="icons.calendar" [size]="24" class="text-primary"></lucide-icon>
+                    <h1 class="text-3xl font-heading font-bold text-foreground">
+                        Gestión de Actividades y Talleres
+                    </h1>
+                </div>
+                <p class="text-muted-foreground font-body">
+                    Centro de control integral para la creación y administración de actividades del TechCongress ongreso
+                </p>
+                <div class="flex items-center space-x-4 mt-4">
+                    <div
+                        class="flex items-center space-x-2 px-3 py-1 bg-success/10 border border-success/20 rounded-full">
+                        <lucide-icon [img]="icons.activity" [size]="16" class="text-success"></lucide-icon>
+                        <span class="text-sm font-medium text-success">
+                            {{processedActivities().length}} Actividades
+                        </span>
+                    </div>
+                    @if(selectedActivities().length > 0){
+                    <div
+                        class="flex items-center space-x-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+                        <lucide-icon [img]="icons.checkSquare" [size]="16" class="text-primary"></lucide-icon>
+                        <span class="text-sm font-medium text-primary">
+                            {{selectedActivities().length}} Seleccionadas
+                        </span>
+                    </div>
+                    }
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <app-button variant="outline" [iconName]="showCalendarView() ? 'Grid' : 'Calendar'"  [iconSize]="16">
+                    <span>{{showCalendarView() ? 'Vista Lista' : 'Vista Calendario'}}</span>
+                </app-button>
+                <app-button variant="outline" [iconSize]="16" [disabled]="selectedActivities().length === 0"
+                    (click)="handleBulkApply()" iconName="Settings" iconPosition="left">
+                    <span>Operaciones en Lote</span>
+                </app-button>
+                <app-button iconName="Plus" iconPosition="left" [iconSize]="16" (click)="showCreateWizard.set(true)">
+                    <span>Nueva Actividad</span>
+                </app-button>
+            </div>
+        </div>
+        <!-- Quick Actions Bar -->
+        <div class="bg-card border border-border rounded-lg p-4 mb-6">
+            <div class="flex flex-wrap gap-2">
+                <app-button variant="outline" size="sm" (click)="showCreateWizard.set(true)" iconName="Code">
+                    <span>Crear Taller Técnico</span>
+                </app-button>
+                <app-button variant="outline" size="sm" (click)="showCreateWizard.set(true)" iconName="Trophy">
+                    <span>Crear Competencia</span>
+                </app-button>
+                <app-button variant="outline" size="sm" (click)="showCreateWizard.set(true)" iconName="Users">
+                    <span>Crear Evento Social</span>
+                </app-button>
+                <app-button variant="outline" size="sm" (click)="showCreateWizard.set(true)" iconName="LayoutTemplate">
+                    <span>Plantillas</span>
+                </app-button>
+                <app-button variant="outline" size="sm" (click)="showCreateWizard.set(true)" iconName="Upload">
+                    <span>Importar Actividades</span>
+                </app-button>
+            </div>
+        </div>
+
+        <!-- Analytics Dashboard -->
+        <!-- <AnalyticsDashboard activities={activities} /> -->
+
+        <!-- Search and Filter Bar -->
+        <div class="bg-card border border-border rounded-lg p-6 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <app-input type="search" placeholder="Buscar actividades, instructores, etiquetas..."
+                            [value]="filters().searchTerm" (valueChange)="handleFilterChange('searchTerm', $event)"
+                            [leadingIcon]="icons.search"></app-input>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <app-select [options]="categoryOptions" [value]="filters().category"
+                        (valueChange)="handleFilterChange('category',$event)" placeholder="Categoría"></app-select>
+                    <app-select [options]="categoryOptions" [value]="filters().category"
+                        (valueChange)="handleFilterChange('category',$event)" placeholder="Estado"></app-select>
+                    <div class="flex items-center space-x-2 border border-border rounded-lg p-2">
+                        <app-button [variant]="viewMode() === 'grid' ? 'default' : 'ghost'" size="sm"
+                            (click)="setViewMode('grid')" iconName="Grid3X3" [iconSize]="16">
+                        </app-button>
+                        <app-button [variant]="viewMode() === 'list' ? 'default' : 'ghost'" size="sm"
+                            (click)="setViewMode('list')" iconName="List" [iconSize]="16">
+                        </app-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <!-- Resource Management Sidebar -->
+            <div class="xl:col-span-1">
+                <!-- <ResourceManagement activities={activities} /> -->
+            </div>
+            <!-- Activities Display -->
+            <div class="xl:col-span-3">
+                @if(showCalendarView()){
+                <!-- <SchedulingCalendar 
+                            activities={filteredActivities}
+                            onEditActivity={handleEditActivity}
+                        /> -->
+                }@else{
+                <!-- Selection Controls -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <button (onclick)="handleSelectAll()"
+                            class="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground">
+                            <lucide-icon
+                                [img]="selectedActivities().length === processedActivities().length ? icons.checkSquare : icons.square"
+                                [size]="16"></lucide-icon>
+                            <span>{{selectedActivities().length === processedActivities().length ? 'Deseleccionar' :
+                                'Seleccionar'}} todo</span>
+                        </button>
+                        @if(selectedActivities().length > 0){
+                        <span class="text-sm text-muted-foreground">
+                            {{selectedActivities().length}} de {{processedActivities().length}} seleccionadas
+                        </span>
+                        }
+                    </div>
+                    <div class="text-sm text-muted-foreground">
+                        @if(processedActivities().length){
+                        actividades encontradas
+                        }
+                    </div>
+                </div>
+                @if(viewMode() === 'grid'){
+                <!-- <ActivityGrid
+                                activities={filteredActivities}
+                                loading={loading}
+                                selectedActivities={selectedActivities}
+                                onActivitySelect={handleActivitySelect}
+                                onEditActivity={handleEditActivity}
+                                onDeleteActivity={handleDeleteActivity}
+                            /> -->
+                    <app-activity-grid
+                        [activities]="processedActivities()"
+                        [loading]="loading()"
+                        [selectedActivities]="selectedActivities()"
+                        (editActivity)="handleViewDetails($event)"
+                    />
+                }@else {
+                <!-- <ActivityList
+                                activities={filteredActivities}
+                                loading={loading}
+                                selectedActivities={selectedActivities}
+                                onActivitySelect={handleActivitySelect}
+                                onEditActivity={handleEditActivity}
+                                onDeleteActivity={handleDeleteActivity}
+                            /> -->
+                    <app-activity-list
+                        [activities]="processedActivities()"
+                        [loading]="loading()"
+                        ></app-activity-list>
+                }
+                }
+            </div>
+        </div>
+    </div>
+    <!-- Enhanced Create Activity Wizard -->
+     @if(showCreateWizard()){
+        <!-- <CreateActivityWizard
+          onClose={() => setShowCreateWizard(false)}
+          onSave={handleCreateSave}
+        /> -->
+        <app-create-activity-wizard
+          (close)="showCreateWizard.set(false)"
+          (save)="handleCreateSave($event)"></app-create-activity-wizard>
+     }
+
+     <!-- Modals -->
+      @if(showActivityModal()){
+        <!-- <ActivityModal
+          activity={selectedActivity}
+          onClose={() => {
+            setShowActivityModal(false);
+            setSelectedActivity(null);
+          }}
+          onSave={(activityData) => {
+            if (selectedActivity) {
+              // Update existing activity
+              setActivities(prev => 
+                prev?.map(activity => 
+                  activity?.id === selectedActivity?.id 
+                    ? { ...activity, ...activityData, updatedAt: new Date()?.toISOString() }
+                    : activity
+                )
+              );
+            } else {
+              // This case is now handled by CreateActivityWizard
+              const newActivity = {
+                ...activityData,
+                id: `activity_${Date.now()}`,
+                createdAt: new Date()?.toISOString(),
+                updatedAt: new Date()?.toISOString()
+              };
+              setActivities(prev => [...prev, newActivity]);
+            }
+            setShowActivityModal(false);
+            setSelectedActivity(null);
+          }}
+        /> -->
+      }
+
+      @if(showBulkModal()){
+        <!-- <BulkOperationsModal
+          selectedActivities={selectedActivities}
+          activities={activities}
+          onClose={() => setShowBulkModal(false)}
+          onApply={(operation, data) => {
+            // Apply bulk operations
+            setActivities(prev => 
+              prev?.map(activity => 
+                selectedActivities?.includes(activity?.id)
+                  ? { ...activity, ...data, updatedAt: new Date()?.toISOString() }
+                  : activity
+              )
+            );
+            setSelectedActivities([]);
+            setShowBulkModal(false);
+          }}
+        /> -->
+      }
+</div>

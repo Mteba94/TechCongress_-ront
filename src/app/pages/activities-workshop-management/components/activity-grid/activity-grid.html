@@ -1,0 +1,171 @@
+<!-- Loading Skeleton -->
+@if (loading()) {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (item of loadingPlaceholder; track $index) {
+      <div class="bg-card border border-border rounded-lg p-6 animate-pulse">
+        <div class="h-4 bg-muted rounded mb-4"></div>
+        <div class="h-3 bg-muted rounded mb-2"></div>
+        <div class="h-3 bg-muted rounded mb-4"></div>
+        <div class="h-8 bg-muted rounded"></div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Empty State -->
+@else if (activities().length === 0) {
+  <div class="text-center py-12">
+    <lucide-icon [img]="icons.calendar" [size]="64" class="text-muted-foreground mx-auto mb-4"></lucide-icon>
+    <h3 class="text-xl font-semibold text-foreground mb-2">
+      No se encontraron actividades
+    </h3>
+    <p class="text-muted-foreground mb-6">
+      Ajusta los filtros o crea una nueva actividad para comenzar
+    </p>
+    <app-button iconName="Plus" iconPosition="left" [iconSize]="16">
+      <span>Crear Primera Actividad</span>
+    </app-button>
+  </div>
+}
+
+<!-- Activities Grid -->
+@else {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (activity of activities(); track activity.id) {
+      <div 
+        class="bg-card border rounded-lg p-6 hover:shadow-md transition-all duration-200"
+        [ngClass]="{
+          'border-primary shadow-md ring-2 ring-primary/20': isSelected(activity.id),
+          'border-border': !isSelected(activity.id)
+        }">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center space-x-3">
+            <button (click)="onToggleSelect(activity.id)" class="text-muted-foreground hover:text-foreground cursor-pointer">
+              <lucide-icon [img]="isSelected(activity.id) ? icons.checkSquare : icons.square" [class]="isSelected(activity.id) ? 'text-primary' : ''"></lucide-icon>
+            </button>
+            <lucide-icon [img]="getCategoryIcon(activity.category)" class="text-primary"></lucide-icon>
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ' + getStatusColor(activity.status)">
+              {{ activity.status?.toUpperCase() }}
+            </span>
+            
+            <div class="flex items-center space-x-1">
+              <app-button variant="ghost" size="sm" (click)="editActivity.emit(activity)" iconName="Edit" [iconSize]="14">
+              </app-button>
+              <app-button variant="ghost" size="sm" (click)="deleteActivity.emit(activity.id)" iconName="Trash2" [iconSize]="14">
+              </app-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-foreground mb-2 line-clamp-2">
+            {{ activity.title }}
+          </h3>
+          <p class="text-sm text-muted-foreground line-clamp-3 mb-3">
+            {{ activity.description }}
+          </p>
+          
+          <!-- Instructor -->
+          <div class="flex items-center space-x-2 mb-3">
+            <lucide-icon [img]="icons.user" size="14" class="text-muted-foreground"></lucide-icon>
+            <span class="text-sm text-foreground">
+              {{ activity.instructor || 'Sin instructor' }}
+            </span>
+          </div>
+
+          <!-- Schedule -->
+          <div class="flex items-center space-x-2 mb-3">
+            <lucide-icon [img]="icons.calendar" size="14" class="text-muted-foreground"></lucide-icon>
+            <span class="text-sm text-foreground">
+              {{ formatDates(activity.date) }} • {{ formatTime(activity.startTime) }}
+            </span>
+          </div>
+
+          <!-- Location -->
+          <div class="flex items-center space-x-2 mb-4">
+            <lucide-icon [img]="activity.location?.type === 'virtual' ? icons.monitor : icons.mapPin" size="14" class="text-muted-foreground"></lucide-icon>
+            <span class="text-sm text-foreground">
+              {{ activity.location || 'Por definir' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Capacity -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-foreground">Capacidad</span>
+            <span [class]="'text-sm font-medium ' + getCapacityColor(getCapacityUtilization(activity.capacity, activity.enrolled))">
+              {{ activity.enrolled || 0 }}/{{ activity.capacity || 0 }} ({{ getCapacityUtilization(activity.capacity, activity.enrolled) }}%)
+
+              {{activity.capacity}}
+            </span>
+          </div>
+          
+          <div class="w-full bg-muted rounded-full h-2">
+            <div
+              [class]="'h-2 rounded-full transition-all duration-300 ' + getCapacityBarColor(getCapacityUtilization(activity.capacity, activity.enrolled))"
+              [style.width.%]="getCapacityUtilization(activity.capacity, activity.enrolled) > 100 ? 100 : getCapacityUtilization(activity.capacity, activity.enrolled)">
+            </div>
+          </div>
+          
+          @if (activity.capacity?.waitlist > 0) {
+            <div class="flex items-center space-x-2 mt-2">
+              <lucide-icon [img]="icons.clock" size="12" class="text-yellow-600"></lucide-icon>
+              <span class="text-xs text-yellow-600">
+                {{ activity.capacity?.waitlist }} en lista de espera
+              </span>
+            </div>
+          }
+        </div>
+
+        <!-- Tags -->
+        @if (activity.tags && activity.tags?.length > 0) {
+          <div class="flex flex-wrap gap-1 mb-4">
+            @for (tag of activity.tags.slice(0, 3); track $index) {
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                {{ tag }}
+              </span>
+            }
+            @if (activity.tags.length > 3) {
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                +{{ activity.tags.length - 3 }}
+              </span>
+            }
+          </div>
+        }
+
+        <!-- Pricing -->
+        <div class="flex items-center justify-between">
+          <!-- <div class="flex items-center space-x-2">
+            <lucide-icon [img]="activity.pricing?.type === 'free' ? icons.gift : icons.dollarSign" size="14" class="text-muted-foreground"></lucide-icon>
+            <span class="text-sm font-medium text-foreground">
+              @if (activity.pricing?.type === 'free') {
+                Gratis
+              } @else {
+                ${{ activity.pricing?.amount }} {{ activity.pricing?.currency }}
+              }
+            </span>
+          </div> -->
+          
+          <div class="text-xs text-muted-foreground">
+            @if (activity.category.toLowerCase() === 'taller') {
+              Taller
+            } @else if (activity.category.toLowerCase() === 'competencia') {
+              Competencia
+            } @else if (activity.category.toLowerCase() === 'social') {
+              Social
+            } @else {
+              Actividad
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

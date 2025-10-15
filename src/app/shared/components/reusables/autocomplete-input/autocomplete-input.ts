@@ -92,7 +92,7 @@ export class AutocompleteInput {
   }
 
    writeValue(value: any): void {
-    console.log(value)
+    //console.log(value)
     if (value !== undefined && value !== null) {
       const option = this.options.find(opt => opt.value === value);
       this.selectedLabel = option ? option.label : value;

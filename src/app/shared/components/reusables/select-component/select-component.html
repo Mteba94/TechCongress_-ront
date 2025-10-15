@@ -62,7 +62,7 @@
       [required]="required"
     >
       <option value="">{{ placeholder }}</option>
-      @for (option of options; track option.value) {
+      @for (option of options; track option.value) { 
         <option [value]="option.value">{{ option.label }}</option>
       }
     </select>

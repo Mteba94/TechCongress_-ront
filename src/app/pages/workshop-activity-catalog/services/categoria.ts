@@ -5,6 +5,7 @@ import { BaseApiResponse } from '../../../shared/models/reusables/base-api-respo
 import { endpoint } from '../../../shared/utils/endpoints.util';
 import { environment as env } from '../../../../environments/environment.development';
 import { SelectResponse } from '../../login-registration/models/select-response.interface';
+import { CategoryResponse } from '../models/category-resp.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,11 @@ export class Categoria {
   private readonly httpClient = inject(HttpClient);
 
 
-  getAllCategoria(): Observable<BaseApiResponse<SelectResponse[]>> {
+  getAllCategoria(): Observable<BaseApiResponse<CategoryResponse[]>> {
       const requestUrl = `${env.api}${endpoint.LIST_CATEGORIA}`;
   
       return this.httpClient
-        .get<BaseApiResponse<SelectResponse[]>>(requestUrl)
+        .get<BaseApiResponse<CategoryResponse[]>>(requestUrl)
         .pipe(
           map((resp) => {
             return resp

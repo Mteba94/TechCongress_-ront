@@ -118,7 +118,7 @@ export class UserSettingsProfileManagement {
       .then(() => {
         this.hasUnsavedChanges.set(false);
         // Aquí se mostraría un toast o mensaje de éxito
-        console.log('Cambios guardados con éxito!');
+        //console.log('Cambios guardados con éxito!');
       })
       .catch(error => {
         console.error('Error saving changes:', error);

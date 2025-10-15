@@ -279,7 +279,7 @@ export class UserManagementSystem {
   }
 
   handleEditUser(user: User) {
-    console.log(user)
+    //console.log(user)
     this.editingUser.set(user);
     this.showUserModal.set(true);
     //console.log('Modal abierto:', this.showUserModal());
@@ -294,7 +294,7 @@ export class UserManagementSystem {
   }
 
   handleBulkAction(action: string) {
-    console.log(`Executing ${action} on users`, this.selectedUsers());
+    //console.log(`Executing ${action} on users`, this.selectedUsers());
     this.selectedUsers.set([]);
   }
 
@@ -365,7 +365,7 @@ export class UserManagementSystem {
         
         // Simulación de llamada a API de UPDATE:
         // En un entorno real, usarías: await firstValueFrom(this.userService.updateUser(fullUser));
-        console.log('Iniciando UPDATE de usuario:', fullUser);
+        //console.log('Iniciando UPDATE de usuario:', fullUser);
         await new Promise((resolve, reject) => setTimeout(() => {
           // 10% de probabilidad de error para demostrar el catch block
           if (Math.random() < 0.1) {
@@ -375,7 +375,7 @@ export class UserManagementSystem {
           }
         }, 1500)); // Esperar 1.5s
         
-        console.log('UPDATE exitoso.');
+        //console.log('UPDATE exitoso.');
         this.notificacionService.show('Usuario actualizado exitosamente.', 'success');
       } else {
         

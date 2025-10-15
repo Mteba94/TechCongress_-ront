@@ -1,0 +1,493 @@
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  <div class="bg-background rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div class="p-6 border-b border-border">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-foreground">Crear Nueva Actividad</h2>
+        <app-button variant="ghost" size="icon" (click)="close.emit()">
+          <lucide-icon [img]="icons.x" size="20"></lucide-icon>
+        </app-button>
+      </div>
+
+      <div class="flex items-center space-x-2 overflow-x-auto">
+        <ng-container *ngFor="let step of steps; let i = index">
+          <div class="flex items-center">
+            <button
+              (click)="currentStep.set(step.id)"
+              [disabled]="step.id > currentStep() + 1"
+              class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+              [ngClass]="{
+                'bg-primary text-primary-foreground': currentStep() === step.id,
+                'bg-success/10 text-success hover:bg-success/20': currentStep() > step.id,
+                'text-muted-foreground hover:text-foreground': currentStep() < step.id
+              }"
+            >
+              <lucide-icon [img]="step.icon" size="16"></lucide-icon>
+              <span>{{ step.title }}</span>
+            </button>
+            <lucide-icon *ngIf="i < steps.length - 1" [img]="icons.chevronRight" size="16" class="mx-1 text-muted-foreground"></lucide-icon>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 160px);">
+      <ng-container [ngSwitch]="currentStep()">
+        <div *ngSwitchCase="1" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              label="Título de la Actividad"
+              [value]="formData()?.title"
+              (valueChange)="handleInputChange('title', $event)"
+              placeholder="Ej: Taller de React Avanzado"
+              [required]="true"
+              [error]="errors()?.title"
+            ></app-input>
+            <app-select
+              label="Categoría"
+              [value]="formData()?.category"
+              (valueChange)="handleInputChange('category', $event)"
+              [options]="categoryOptions"
+              [error]="errors()?.category"
+            ></app-select>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- <app-select
+              label="Tipo"
+              [value]="formData()?.type"
+              (valueChange)="handleInputChange('type', $event)"
+              [options]="typeOptions"
+              [error]="errors()?.type"
+            ></app-select> -->
+            <app-select
+              label="Dificultad"
+              [value]="formData()?.difficulty"
+              (valueChange)="handleInputChange('difficulty', $event)"
+              [options]="difficultyOptions"
+            ></app-select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground">Descripción</label>
+            <textarea
+              [value]="formData()?.description"
+              (input)="handleInputChange('description', $event)"
+              class="w-full h-32 p-3 border rounded-md resize-none bg-background text-foreground"
+              [ngClass]="errors()?.description ? 'border-error' : 'border-input'"
+              placeholder="Descripción detallada de la actividad..."
+            ></textarea>
+            <p *ngIf="errors()?.description" class="text-sm text-error">{{ errors()?.description }}</p>
+          </div>
+          <!-- <app-input
+            label="Audiencia Objetivo"
+            [value]="formData()?.targetAudience"
+            (valueChange)="handleInputChange('targetAudience', $event)"
+            placeholder="Estudiantes de ingeniería, desarrolladores, etc."
+          ></app-input> -->
+        </div>
+
+        <div *ngSwitchCase="2" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              label="Fecha de Inicio"
+              type="date"
+              [value]="formData()?.startDate"
+              (valueChange)="handleInputChange('startDate', $event)"
+              [required]="true"
+              [error]="errors()?.startDate"
+            ></app-input>
+            <!-- <app-input
+              label="Fecha de Fin"
+              type="date"
+              [value]="formData()?.endDate"
+              (valueChange)="handleInputChange('endDate', $event)"
+              [min]="formData()?.startDate"
+            ></app-input> -->
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <app-input
+              label="Hora de Inicio"
+              type="time"
+              [value]="formData()?.startTime"
+              (valueChange)="handleInputChange('startTime', $event)"
+              [required]="true"
+              [error]="errors()?.startTime"
+            ></app-input>
+            <app-input
+              label="Hora de Fin"
+              type="time"
+              [value]="formData()?.endTime"
+              (valueChange)="handleInputChange('endTime', $event)"
+              [required]="true"
+              [error]="errors()?.endTime"
+            ></app-input>
+            <!-- <app-select
+              label="Zona Horaria"
+              [value]="formData()?.timezone"
+              (valueChange)="handleInputChange('timezone', $event)"
+              [options]="[{ value: 'America/Mexico_City', label: 'México (GMT-6)' }, { value: 'America/New_York', label: 'Nueva York (GMT-5)' }, { value: 'Europe/Madrid', label: 'Madrid (GMT+1)' }]"
+            ></app-select> -->
+          </div>
+          <div class="space-y-4">
+            <label class="text-sm font-medium text-foreground">Tipo de Ubicación</label>
+            <div class="grid grid-cols-3 gap-4">
+              <button
+                *ngFor="let type of ['virtual', 'presential', 'hybrid']"
+                type="button"
+                (click)="handleInputChange('locationType', type)"
+                class="p-4 border rounded-lg text-center transition-colors"
+                [ngClass]="formData()?.locationType === type ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/50'"
+              >
+                <lucide-icon
+                  [img]="type === 'virtual' ? icons.monitor : type === 'presential' ? icons.mapPin : icons.combine"
+                  size="24"
+                  class="mx-auto mb-2"
+                ></lucide-icon>
+                <span class="text-sm font-medium">
+                  {{ type === 'virtual' ? 'Virtual' : type === 'presential' ? 'Presencial' : 'Híbrido' }}
+                </span>
+              </button>
+            </div>
+          </div>
+          <app-input
+            *ngIf="formData()?.locationType === 'virtual'"
+            label="Plataforma Virtual"
+            [value]="formData()?.platform"
+            (valueChange)="handleInputChange('platform', $event)"
+            placeholder="Zoom, Google Meet, Teams"
+            [error]="errors()?.platform"
+          ></app-input>
+          <div *ngIf="formData()?.locationType === 'presential' || formData()?.locationType === 'hybrid'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              label="Sala"
+              [value]="formData()?.room"
+              (valueChange)="handleInputChange('room', $event)"
+              placeholder="Aula Magna, Sala A"
+              [error]="errors()?.room"
+            ></app-input>
+            <app-input
+              label="Dirección"
+              [value]="formData()?.address"
+              (valueChange)="handleInputChange('address', $event)"
+              placeholder="Dirección completa del lugar"
+            ></app-input>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="3" class="space-y-6 min-h-[350px]">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground">Opciones de Instructor</label>
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <input type="radio" id="existingInstructor" name="instructorOption" [value]="'existing'" [checked]="instructorSelectionMode() === 'existing'" (change)="instructorSelectionMode.set('existing')" class="radio radio-primary">
+                <label for="existingInstructor">Seleccionar Existente</label>
+              </div>
+              <!-- <div class="flex items-center space-x-2">
+                <input type="radio" id="newInstructor" name="instructorOption" [value]="'new'" [checked]="instructorSelectionMode() === 'new'" (change)="instructorSelectionMode.set('new')" class="radio radio-primary">
+                <label for="newInstructor">Crear Nuevo</label>
+              </div> -->
+            </div>
+          </div>
+
+          <div *ngIf="instructorSelectionMode() === 'existing'" class="animate-fade-in">
+            <app-select
+              label="Instructor"
+              [value]="formData()?.instructorId"
+              (valueChange)="handleInputChange('instructorId', $event)"
+              [options]="instructorOptions"
+              [error]="errors()?.instructorId"
+              placeholder="Seleccione un instructor"
+            ></app-select>
+          </div>
+          <!-- <div *ngIf="instructorSelectionMode() === 'new'" class="space-y-4 animate-fade-in border border-border p-4 rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <app-input
+                label="Nombre del Instructor"
+                [value]="formData()?.instructorName"
+                (valueChange)="handleInputChange('instructorName', $event)"
+                placeholder="Dr. Ana María García"
+                [required]="true"
+                [error]="errors()?.instructorName"
+              ></app-input>
+              <app-input
+                label="Email del Instructor"
+                type="email"
+                [value]="formData()?.instructorEmail"
+                (valueChange)="handleInputChange('instructorEmail', $event)"
+                placeholder="instructor@email.com"
+                [required]="true"
+                [error]="errors()?.instructorEmail"
+              ></app-input>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-foreground">Biografía del Instructor</label>
+              <textarea
+                [value]="formData()?.instructorBio"
+                (input)="handleInputChange('instructorBio', $event)"
+                class="w-full h-24 p-3 border border-input rounded-md resize-none bg-background text-foreground"
+                placeholder="Breve descripción del instructor..."
+              ></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Equipo Necesario</label>
+                <app-input
+                  [value]="formData()?.equipment"
+                  (valueChange)="handleInputChange('equipment', $event)"
+                  placeholder="Proyector, Micrófono, Laptops (separar por comas)"
+                ></app-input>
+              </div>
+              <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Materiales</label>
+                <app-input
+                  [value]="formData()?.materials"
+                  (valueChange)="handleInputChange('materials', $event)"
+                  placeholder="Presentaciones, Código fuente (separar por comas)"
+                ></app-input>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-foreground">Prerequisitos</label>
+              <app-input
+                [value]="formData()?.prerequisites"
+                (valueChange)="handleInputChange('prerequisites', $event)"
+                placeholder="JavaScript básico, React fundamentos (separar por comas)"
+              ></app-input>
+            </div>
+          </div> -->
+        </div>
+
+        <div *ngSwitchCase="4" class="space-y-6">
+          <div class="space-y-4">
+            <label class="text-sm font-medium text-foreground">Objetivos del Curso</label>
+            <div *ngFor="let objective of formData().objectives; let i = index; trackBy: trackByIndex" class="flex items-center space-x-2">
+              <app-input
+                class="flex-grow"
+                [value]="objective"
+                (valueChange)="handleObjectiveChange(i, $event)"
+                placeholder="Ej: Implementar autenticación con JWT"
+              ></app-input>
+              <button
+                type="button"
+                (click)="removeObjective(i)"
+                [disabled]="formData().objectives.length <= 1"
+                class="flex-shrink-0 p-2 text-red-500 hover:bg-red-500/10 rounded-full"
+              >
+                <lucide-icon [img]="icons.trash2" size="16"></lucide-icon>
+              </button>
+            </div>
+            <button type="button" (click)="addObjective()" class="flex items-center space-x-2 text-sm font-medium text-primary hover:text-primary/80">
+              <lucide-icon [img]="icons.plusCircle" size="16"></lucide-icon>
+              <span>Añadir Objetivo</span>
+            </button>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground">Temario/Syllabus</label>
+            <textarea
+              [value]="formData()?.syllabus"
+              (input)="handleInputChange('syllabus', $event)"
+              class="w-full h-40 p-3 border border-input rounded-md resize-none bg-background text-foreground"
+              placeholder="Detalla el contenido temático del curso..."
+            ></textarea>
+          </div>
+          <!-- <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground">Tags/Etiquetas</label>
+            <app-input
+              [value]="formData()?.tags"
+              (valueChange)="handleInputChange('tags', $event)"
+              placeholder="react, javascript, frontend, hooks (separar por comas)"
+            ></app-input>
+          </div> -->
+          <!-- <div class="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="certificateEnabled"
+              [checked]="formData()?.certificateEnabled"
+              (change)="handleInputChange('certificateEnabled', $event)"
+              class="rounded border-input"
+            />
+            <label for="certificateEnabled" class="text-sm text-foreground">
+              Emitir certificado de participación
+            </label>
+          </div> -->
+        </div>
+
+        <div *ngSwitchCase="5" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              label="Capacidad Máxima"
+              type="number"
+              [value]="formData()?.maxCapacity"
+              (valueChange)="handleInputChange('maxCapacity', $event)"
+              placeholder="30"
+              min="1"
+              max="1000"
+              [required]="true"
+              [error]="errors()?.maxCapacity"
+            ></app-input>
+            <!-- <app-input
+              label="Fecha Límite de Inscripción"
+              type="datetime-local"
+              [value]="formData()?.enrollmentDeadline"
+              (input)="handleInputChange('enrollmentDeadline', $event)"
+            ></app-input> -->
+          </div>
+          <!-- <div class="space-y-4">
+            <label class="text-sm font-medium text-foreground">Tipo de Precio</label>
+            <div class="grid grid-cols-2 gap-4">
+              <button
+                *ngFor="let type of ['free', 'paid']"
+                type="button"
+                (click)="handleInputChange('pricingType', type)"
+                class="p-4 border rounded-lg text-center transition-colors"
+                [ngClass]="formData()?.pricingType === type ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/50'"
+              >
+                <lucide-icon [img]="type === 'free' ? icons.gift : icons.creditCard" size="24" class="mx-auto mb-2"></lucide-icon>
+                <span class="text-sm font-medium">{{ type === 'free' ? 'Gratuito' : 'De Pago' }}</span>
+              </button>
+            </div>
+          </div> -->
+          <!-- <div *ngIf="formData()?.pricingType === 'paid'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <app-input
+              label="Precio"
+              type="number"
+              [value]="formData()?.amount"
+              (valueChange)="handleInputChange('amount', $event)"
+              placeholder="150"
+              min="0"
+              step="0.01"
+              [error]="errors()?.amount"
+            ></app-input>
+            <app-select
+              label="Moneda"
+              [value]="formData()?.currency"
+              (valueChange)="handleInputChange('currency', $event)"
+              [options]="[{ value: 'MXN', label: 'Pesos Mexicanos (MXN)' }, { value: 'USD', label: 'Dólares (USD)' }, { value: 'EUR', label: 'Euros (EUR)' }]"
+            ></app-select>
+          </div> -->
+          <!-- <div class="space-y-4">
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="waitlistEnabled"
+                [checked]="formData()?.waitlistEnabled"
+                (change)="handleInputChange('waitlistEnabled', $event)"
+                class="rounded border-input"
+              />
+              <label for="waitlistEnabled" class="text-sm text-foreground">Habilitar lista de espera</label>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="allowCancellation"
+                [checked]="formData()?.allowCancellation"
+                (change)="handleInputChange('allowCancellation', $event)"
+                class="rounded border-input"
+              />
+              <label for="allowCancellation" class="text-sm text-foreground">Permitir cancelación de inscripciones</label>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="sendReminders"
+                [checked]="formData()?.sendReminders"
+                (change)="handleInputChange('sendReminders', $event)"
+                class="rounded border-input"
+              />
+              <label for="sendReminders" class="text-sm text-foreground">Enviar recordatorios por email</label>
+            </div>
+          </div> -->
+          <!-- <app-select
+            label="Estado Inicial"
+            [value]="formData()?.status"
+            (valueChange)="handleInputChange('status', $event)"
+            [options]="[{ value: 'draft', label: 'Borrador' }, { value: 'active', label: 'Activo' }, { value: 'scheduled', label: 'Programado' }]"
+          ></app-select> -->
+        </div>
+
+        <div *ngSwitchCase="6" class="space-y-6">
+          <div class="bg-muted/50 p-6 rounded-lg">
+            <h3 class="font-semibold text-foreground mb-4">Resumen de la Actividad</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-3">
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Título</p>
+                  <p class="text-foreground">{{ formData()?.title }}</p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Categoría</p>
+                  <p class="text-foreground">{{ formData()?.category }}</p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Instructor</p>
+                  <p class="text-foreground">{{ formData()?.instructorName }}</p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Capacidad</p>
+                  <p class="text-foreground">{{ formData()?.maxCapacity }} participantes</p>
+                </div>
+              </div>
+              
+              <div class="space-y-3">
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Fecha</p>
+                  <p class="text-foreground">{{ formData().startDate | date:'shortDate':'':'es-MX' }}</p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Horario</p>
+                  <p class="text-foreground">{{ formData()?.startTime }} - {{ formData()?.endTime }}</p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-muted-foreground">Ubicación</p>
+                  <p class="text-foreground">
+                    <span *ngIf="formData()?.locationType === 'virtual'">Virtual ({{ formData()?.platform }})</span>
+                    <span *ngIf="formData()?.locationType === 'presential'">{{ formData()?.room }}</span>
+                    <span *ngIf="formData()?.locationType === 'hybrid'">Híbrido ({{ formData()?.room }} + {{ formData()?.platform }})</span>
+                  </p>
+                </div>
+                <!-- <div>
+                  <p class="text-sm font-medium text-muted-foreground">Precio</p>
+                  <p class="text-foreground">
+                    <span *ngIf="formData()?.pricingType === 'free'">Gratuito</span>
+                    <span *ngIf="formData()?.pricingType !== 'free'">{{ formData()?.amount | currency:formData()?.currency:'symbol':'1.2-2' }}</span>
+                  </p>
+                </div> -->
+              </div>
+            </div>
+
+            <div *ngIf="formData()?.description" class="mt-4">
+              <p class="text-sm font-medium text-muted-foreground mb-1">Descripción</p>
+              <p class="text-sm text-foreground">{{ formData()?.description }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngSwitchDefault>Paso no encontrado</div>
+      </ng-container>
+    </div>
+
+    <div class="p-6 border-t border-border mt-auto">
+      <div class="flex items-center justify-between">
+        <app-button
+          variant="outline"
+          (click)="handlePrevious()"
+          [disabled]="currentStep() === 1"
+          iconName="ChevronLeft"
+          iconPosition="left"
+        >
+          Anterior
+        </app-button>
+
+        <div class="text-sm text-muted-foreground">
+          Paso {{ currentStep() }} de {{ steps.length }}
+        </div>
+
+        <app-button *ngIf="steps && currentStep() < steps.length" (click)="handleNext()" iconName="ChevronRight" iconPosition="right">
+          Siguiente
+        </app-button>
+        <app-button *ngIf="currentStep() === steps?.length" (click)="handleSubmit()" iconName="Check" iconPosition="left">
+          Crear Actividad
+        </app-button>
+      </div>
+    </div>
+  </div>
+</div>

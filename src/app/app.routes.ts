@@ -8,6 +8,7 @@ import { WorkshopActivityCatalog } from './pages/layout/workshop-activity-catalo
 import { AdminDashboard } from './pages/layout/admin-dashboard/admin-dashboard';
 import { UserManagementSystem } from './pages/layout/user-management-system/user-management-system';
 import { UserSettingsProfileManagement } from './pages/layout/user-settings-profile-management/user-settings-profile-management';
+import { ActivitiesWorkshopManagement } from './pages/layout/activities-workshop-management/activities-workshop-management';
 
 export const routes: Routes = [
     {
@@ -41,6 +42,10 @@ export const routes: Routes = [
     {
         path: 'user-settings-profile-management',
         component: UserSettingsProfileManagement
+    },
+    {
+        path: 'activities-workshop-management',
+        component: ActivitiesWorkshopManagement
     },
     {
         path: '**',

@@ -60,7 +60,13 @@ export class Breadcrumbs {
       { label: 'Inicio', path: '/congress-homepage' },
       { label: 'Mi Panel', path: '/user-dashboard' },
       { label: 'Configuración de Perfil', path: '/user-settings-profile-management' }
-    ]
+    ],
+    '/activities-workshop-management': [
+      { label: 'Inicio', path: '/congress-homepage' },
+      { label: 'Panel Admin', path: '/admin-dashboard' },
+      { label: 'Gestión de Actividades', path: '/activities-workshop-management' }
+    ],
+
   };
 
   constructor() {

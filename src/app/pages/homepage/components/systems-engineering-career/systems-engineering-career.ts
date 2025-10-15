@@ -160,6 +160,6 @@ export class SystemsEngineeringCareer {
   // Manejador para la redirección, se usó un enlace en el template para esta funcionalidad
   handleLearnMore(): void {
     this.router.navigate(['/workshop-activity-catalog']);
-    console.log('Navegando a /workshop-activity-catalog');
+    //console.log('Navegando a /workshop-activity-catalog');
   }
 }

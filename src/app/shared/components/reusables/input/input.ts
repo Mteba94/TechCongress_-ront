@@ -32,6 +32,9 @@ export class InputComponent implements OnChanges {
   @Input() value: any;
   @Input() disabled: boolean = false;
   @Input() leadingIcon: any;
+  @Input() min: string | number | null = null;
+  @Input() max: string | number | null = null;
+  @Input() step: string | number | null = null;
 
   @Output() valueChange = new EventEmitter<any>();
 

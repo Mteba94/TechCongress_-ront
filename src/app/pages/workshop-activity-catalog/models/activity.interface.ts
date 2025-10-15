@@ -22,5 +22,5 @@ export interface Activity {
   conflictingActivities?: string[];
   isExpanded?: boolean;
   featured?: boolean;
-
+  status?: 'draft' | 'active' | 'completed' | 'cancelled';
 }

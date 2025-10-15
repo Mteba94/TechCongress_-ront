@@ -1,6 +1,7 @@
 export const endpoint = {
     //ACTIVIDAD
     LIST_ACTIVIDAD: 'Actividad',
+    CREATE_ACTIVIDAD: 'Actividad/Create',
 
     //ACTIVIDAD-PONENTE
     LIST_ACTIVIDAD_PONENTE: 'ActividadPonente',

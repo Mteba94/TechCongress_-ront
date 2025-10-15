@@ -323,8 +323,8 @@ export class UserModal {
         const controlS = this.form.get(key);
 
         if (controlS!.invalid) {
-          console.log(`El control '${key}' es inválido.`);
-          console.log('Errores:', controlS!.errors);
+          //console.log(`El control '${key}' es inválido.`);
+          //console.log('Errores:', controlS!.errors);
         }
       });
       this.generalError = ['Por favor, corrige los errores del formulario.'];
@@ -420,7 +420,7 @@ export class UserModal {
   }
 
   async updatePart(request: ParticipanteRequest){
-    console.log('update')
+    //console.log('update')
   }
 
   getControlError(controlName: string): string | null {

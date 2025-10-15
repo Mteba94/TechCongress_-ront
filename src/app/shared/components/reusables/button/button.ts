@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { CalendarPlus, Check, ChevronLeft, ChevronRight, Download, Edit2, Eye, EyeOff, FileText, Filter, Grid3X3, Home, LucideAngularModule, Save, Search, Send, Trash2, X } from 'lucide-angular';
+import { Calendar, CalendarPlus, Check, ChevronLeft, ChevronRight, Code, Download, Edit, Edit2, Eye, EyeOff, FileText, Filter, Grid, Grid3X3, Home, LayoutTemplate, List, LucideAngularModule, Plus, Save, Search, Send, Settings, Trash2, Trophy, Upload, Users, X } from 'lucide-angular';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   LogIn, UserPlus, ArrowDown,
@@ -58,7 +58,18 @@ export class Button {
     ChevronLeft,
     ChevronRight,
     Edit2,
-    Trash2
+    Trash2,
+    Settings,
+    Plus,
+    Code,
+    Trophy,
+    Users,
+    LayoutTemplate,
+    Upload,
+    List,
+    Edit,
+    Calendar,
+    Grid
   };
 
   get children(): boolean {

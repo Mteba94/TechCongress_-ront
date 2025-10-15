@@ -101,7 +101,7 @@ export class PasswordRecoveryForm {
 
   handleVerificationSuccess(code: string): void {
     this.codeValidate = code;
-    console.log(this.codeValidate)
+    //console.log(this.codeValidate)
     this.currentStep.set('newPassword');
   }
 
@@ -210,6 +210,7 @@ export class PasswordRecoveryForm {
 
         //setTimeout(() => this.onSuccess.emit(), 3000);
         this.onSuccess.emit();
+        this.resetForm();
        }else{
         this.notificacionService.show('Error al actualizar la contraseña.', 'error')
         setTimeout(() => this.hideEnrollmentMessage(), 3000);
@@ -252,6 +253,24 @@ export class PasswordRecoveryForm {
     // } finally {
     //   this.isLoading.set(false);
     // }
+  }
+
+  private resetForm(): void {
+    this.currentStep.set('email');
+    this.formData.set({
+      email: '',
+      verificationCode: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    this.errors.set({});
+    this.isLoading.set(false);
+    this.showPassword.set(false);
+    this.showConfirmPassword.set(false);
+    this.resendCooldown.set(0);
+    this.registrationEmail = '';
+    this.registrationPass = '';
+    this.codeValidate = '';
   }
 
 }

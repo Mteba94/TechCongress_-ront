@@ -122,23 +122,23 @@ export class AdminDashboard {
     if (this.refreshing()) return;
 
     this.refreshing.set(true);
-    console.log('Iniciando actualización de datos para el rango:', this.selectedTimeRange());
+    //console.log('Iniciando actualización de datos para el rango:', this.selectedTimeRange());
 
     // Simular retraso de carga (como el setTimeout en React)
     setTimeout(() => {
       this.refreshing.set(false);
-      console.log('Datos actualizados.');
+      //console.log('Datos actualizados.');
     }, 1500);
   }
 
   handleTimeRangeChange(range: string): void {
     this.selectedTimeRange.set(range);
-    console.log('Rango de tiempo seleccionado:', range);
+    //console.log('Rango de tiempo seleccionado:', range);
   }
   
   simulateLogOut(): void {
       localStorage.removeItem('userData');
       //this.user.set(null); // Esto dispara la vista de Acceso Denegado/Login
-      console.log('Sesión cerrada simuladamente.');
+      //console.log('Sesión cerrada simuladamente.');
   }
 }

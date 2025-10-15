@@ -10,6 +10,7 @@ export class NotificacionService {
   show(message: string, type: 'success' | 'error' = 'success') {
     this.message.set(message);
     this.type.set(type);
+    setTimeout(() => this.clear(), 3000);
   }
 
   clear() {

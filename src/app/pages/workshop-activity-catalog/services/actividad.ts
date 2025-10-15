@@ -95,4 +95,61 @@ export class Actividad {
           })
         )
   }
+
+  createActividad(activityData: any): Observable<any> {
+    const formData = new FormData();
+
+    // TODO: Obtener el CongresoId dinámicamente si es necesario.
+    formData.append('CongresoId', '1'); 
+    formData.append('Titulo', activityData.title);
+    formData.append('Descripcion', activityData.shortDescription);
+    formData.append('DescripcionTotal', activityData.description);
+    formData.append('TipoActividadId', activityData.category);
+    formData.append('Fecha', activityData.startDate);
+    formData.append('HoraInicio', activityData.startTime);
+    formData.append('HoraFin', activityData.endTime);
+    formData.append('CuposTotal', activityData.maxCapacity);
+
+    let ubicacion = '';
+    if (activityData.locationType === 'virtual') {
+      ubicacion = activityData.platform;
+    } else if (activityData.locationType === 'presential') {
+      ubicacion = activityData.room;
+    }
+    if(activityData.address){
+        ubicacion += `, ${activityData.address}`;
+    }
+    formData.append('Ubicacion', ubicacion);
+
+    formData.append('Requisitos', activityData.prerequisites);
+    formData.append('NivelDificultadId', activityData.difficulty);
+
+    if (activityData.imagen) {
+      formData.append('Imagen', activityData.imagen, activityData.imagen.name);
+    }
+
+    if (activityData.instructorId) {
+      const actividadPonente = { PonenteId: parseInt(activityData.instructorId, 10) };
+      formData.append('ActividadPonente', JSON.stringify(actividadPonente));
+    }
+
+    if (activityData.objectives) {
+      const objetivos = activityData.objectives.map((obj: string) => ({ ObjetoDesc: obj.trim() }));
+      if(objetivos.length > 0){
+        formData.append('ObjetivosActividad', JSON.stringify(objetivos));
+      }
+    }
+
+    if (activityData.status) {
+      const statusMap: { [key: string]: number } = {
+        draft: 1,
+        active: 2,
+        scheduled: 3
+      };
+      formData.append('Estado', statusMap[activityData.status].toString());
+    }
+    
+    const requestUrl = `${env.api}${endpoint.CREATE_ACTIVIDAD}`;
+    return this.httpClient.post(requestUrl, formData);
+  }
 }

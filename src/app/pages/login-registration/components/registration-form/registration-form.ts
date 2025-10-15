@@ -417,8 +417,8 @@ export class RegistrationForm {
         const controlS = this.registrationForm.get(key);
 
         if (controlS!.invalid) {
-          console.log(`El control '${key}' es inválido.`);
-          console.log('Errores:', controlS!.errors);
+          //console.log(`El control '${key}' es inválido.`);
+          //console.log('Errores:', controlS!.errors);
         }
       });
       this.generalError = ['Por favor, corrige los errores del formulario.'];

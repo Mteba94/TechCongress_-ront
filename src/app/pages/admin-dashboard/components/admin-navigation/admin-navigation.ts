@@ -46,7 +46,13 @@ export class AdminNavigation {
       href: '/user-activity-logging-management'
     },
     { 
-      id: 'activities', label: 'Gestión de Actividades', icon: Calendar, description: 'Talleres y competencias', badge: '8', href: '/activities-workshop-management' },
+      id: 'activities',
+      label: 'Gestión de Actividades',
+      icon: Calendar,
+      description: 'Talleres y competencias',
+      badge: '8',
+      href: '/activities-workshop-management'
+    },
     { 
       id: 'speakers', label: 'Gestión de Ponentes', icon: Mic, description: 'Ponentes e instructores', badge: '24', href: '/speaker-instructor-management' },
     { id: 'catalog', label: 'Sistema de Catálogo', icon: Database, description: 'Gestión de contenido', badge: '156', href: '/catalog-management-system' },
@@ -106,7 +112,7 @@ export class AdminNavigation {
 
     if (item.href) {
       this.router.navigate([item.href]);
-      console.log(item.href);
+      //console.log(item.href);
     }
   }
 
