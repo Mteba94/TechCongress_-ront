@@ -6,14 +6,27 @@ import { Injectable, signal } from '@angular/core';
 export class NotificacionService {
   message = signal<string | null>(null);
   type = signal<'success' | 'error'>('success');
+  private timeoutId: any;
 
   show(message: string, type: 'success' | 'error' = 'success') {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
     this.message.set(message);
     this.type.set(type);
-    setTimeout(() => this.clear(), 3000);
+
+    this.timeoutId = setTimeout(() => {
+      this.clear();
+      this.timeoutId = null;
+    }, 3000);
   }
 
   clear() {
     this.message.set(null);
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
   }
 }

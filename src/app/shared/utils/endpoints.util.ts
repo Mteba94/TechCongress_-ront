@@ -36,6 +36,9 @@ export const endpoint = {
     //PARTICIPANTE
     CREATE_PARTICIPANTE: 'Participante/Create',
 
+    //MATERIAL-ACTIVIDAD
+    LIST_MATERIAL_ACTIVIDAD: 'MaterialActividad',
+
     //PONENTES
     LIST_PONENTES: 'Ponente',
     POPULAR_PONENTES: 'Ponente/Popular',

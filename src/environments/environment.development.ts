@@ -1,8 +1,8 @@
 export const environment = {
-    //api: 'https://localhost:44378/api/',
+    //api: 'https://localhost:44379/api/',
     //api: 'http://localhost/servicios/ws_congreso/api/'
     //api: 'http://localhost:81/api/'
     //api: 'https://www.congress.somee.com/api/'
-    api: 'https://techcongress.azurewebsites.net/api/'
-    //api: 'https://localhost:7126/api/',
+    //api: 'https://techcongress.azurewebsites.net/api/'
+    api: 'https://localhost:7126/api/',
 };

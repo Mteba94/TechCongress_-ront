@@ -13,6 +13,7 @@ import { ActividadPonente } from './actividad-ponente';
 import { PonenteResponse } from '../../homepage/models/ponente-response.interface';
 import { NivelActividad } from './nivel-actividad';
 import { ObjetivoActividad } from './objetivo-actividad';
+import { MaterialActividad } from './material-actividad';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,8 @@ export class Actividad {
   private readonly actividadPonenteService = inject(ActividadPonente);
   private readonly nivelActividad = inject(NivelActividad);
   private readonly objetivoActividad = inject(ObjetivoActividad)
+  private readonly materialActividad = inject(MaterialActividad)
+
 
   getAll(
     size: number,
@@ -42,7 +45,8 @@ export class Actividad {
         ponentes: this.ponenteService.getAllPonente(),
         actividadPonentes: this.actividadPonenteService.getAllActividadPonente(),
         nivelActividad: this.nivelActividad.getAllNivelActividad(),
-        objetivoActividad: this.objetivoActividad.getAllObjetivoActividad()
+        objetivoActividad: this.objetivoActividad.getAllObjetivoActividad(),
+        materialActividad: this.materialActividad.getAllMaterialActividad()
       }) 
         .pipe(
           map(({ 
@@ -51,7 +55,8 @@ export class Actividad {
             ponentes, 
             actividadPonentes,
             nivelActividad,
-            objetivoActividad
+            objetivoActividad,
+            materialActividad
           }) => {
             const tipoCategoria = new Map<number, string>();
             categorias.data.forEach((tipo: any) => {
@@ -81,6 +86,15 @@ export class Actividad {
               objetivosActividad.get(objetivo.actividadId)!.push(objetivo.objetivoDescripcion);
             });
 
+            const materialesActividad = new Map<number, string[]>();
+            materialActividad.data.forEach(material => {
+              if (!materialesActividad.has(material.actividadId)) {
+                materialesActividad.set(material.actividadId, []);
+              }
+              materialesActividad.get(material.actividadId)!.push(material.materialDesc);
+            });
+
+
             const mappedData = actividades.data.map(actividad => 
               mapActividadResponseToActivity(
                 actividad,
@@ -88,9 +102,12 @@ export class Actividad {
                 ponenteMap,
                 actividadPonenteMap,
                 nivelesActividad,
-                objetivosActividad
+                objetivosActividad,
+                materialesActividad
               )
             );
+
+            console.log(mappedData)
             return { ...actividades, data: mappedData };
           })
         )
@@ -99,16 +116,15 @@ export class Actividad {
   createActividad(activityData: any): Observable<any> {
     const formData = new FormData();
 
-    // TODO: Obtener el CongresoId dinámicamente si es necesario.
-    formData.append('CongresoId', '1'); 
-    formData.append('Titulo', activityData.title);
-    formData.append('Descripcion', activityData.shortDescription);
-    formData.append('DescripcionTotal', activityData.description);
-    formData.append('TipoActividadId', activityData.category);
-    formData.append('Fecha', activityData.startDate);
-    formData.append('HoraInicio', activityData.startTime);
-    formData.append('HoraFin', activityData.endTime);
-    formData.append('CuposTotal', activityData.maxCapacity);
+    formData.append('CongresoId', activityData.congresoId);
+    formData.append('Titulo', activityData.titulo);
+    formData.append('Descripcion', activityData.descripcion);
+    formData.append('DescripcionTotal', activityData.descripcionTotal);
+    formData.append('TipoActividadId', activityData.tipoActividadId);
+    formData.append('Fecha', activityData.fecha);
+    formData.append('HoraInicio', activityData.horaInicio);
+    formData.append('HoraFin', activityData.horaFin);
+    formData.append('CuposTotal', activityData.cuposTotal);
 
     let ubicacion = '';
     if (activityData.locationType === 'virtual') {
@@ -116,37 +132,28 @@ export class Actividad {
     } else if (activityData.locationType === 'presential') {
       ubicacion = activityData.room;
     }
-    if(activityData.address){
-        ubicacion += `, ${activityData.address}`;
-    }
     formData.append('Ubicacion', ubicacion);
 
-    formData.append('Requisitos', activityData.prerequisites);
-    formData.append('NivelDificultadId', activityData.difficulty);
+    formData.append('Requisitos', activityData.requisitos);
+    formData.append('NivelDificultadId', activityData.nivelDificultadId);
 
     if (activityData.imagen) {
       formData.append('Imagen', activityData.imagen, activityData.imagen.name);
     }
 
-    if (activityData.instructorId) {
-      const actividadPonente = { PonenteId: parseInt(activityData.instructorId, 10) };
+    if (activityData.ponenteId) {
+      const actividadPonente = { PonenteId: parseInt(activityData.ponenteId, 10) };
       formData.append('ActividadPonente', JSON.stringify(actividadPonente));
     }
 
-    if (activityData.objectives) {
-      const objetivos = activityData.objectives.map((obj: string) => ({ ObjetoDesc: obj.trim() }));
-      if(objetivos.length > 0){
-        formData.append('ObjetivosActividad', JSON.stringify(objetivos));
-      }
+    if (activityData.objetivosActividad && activityData.objetivosActividad.length > 0 && activityData.objetivosActividad[0].trim() !== '') {
+      const objetivos = activityData.objetivosActividad.map((obj: string) => ({ ObjetoDesc: obj.trim() }));
+      formData.append('ObjetivosActividad', JSON.stringify(objetivos));
     }
-
-    if (activityData.status) {
-      const statusMap: { [key: string]: number } = {
-        draft: 1,
-        active: 2,
-        scheduled: 3
-      };
-      formData.append('Estado', statusMap[activityData.status].toString());
+    
+    if (activityData.materialesActividad && activityData.materialesActividad.length > 0 && activityData.materialesActividad[0].trim() !== '') {
+      const materiales = activityData.materialesActividad.map((mat: string) => ({ MaterialDesc: mat.trim() }));
+      formData.append('MaterialesActividad', JSON.stringify(materiales));
     }
     
     const requestUrl = `${env.api}${endpoint.CREATE_ACTIVIDAD}`;

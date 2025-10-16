@@ -12,6 +12,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { ActivityList } from '../../activities-workshop-management/components/activity-list/activity-list';
 import { CreateActivityWizard } from '../../activities-workshop-management/components/create-activity-wizard/create-activity-wizard';
+import { NotificacionService } from '../../../shared/services/notificacion-service';
 
 /** Interface for component filter values. */
 interface Filters {
@@ -58,6 +59,7 @@ export class ActivitiesWorkshopManagement implements OnDestroy {
 
   /** Service for fetching activity data. */
   private readonly actividadService = inject(Actividad);
+  private readonly notificationService = inject(NotificacionService);
   
   /** Subject to manage subscription cleanup on component destruction. */
   private readonly destroy$ = new Subject<void>();
@@ -283,8 +285,10 @@ export class ActivitiesWorkshopManagement implements OnDestroy {
     this.viewMode.set(mode);
   }
 
-  handleCreateSave(activity: ActivityInterface){
-
+  handleCreateSave(activity: any): void {
+    this.showCreateWizard.set(false);
+    this._fetchActivities();
+    this.notificationService.show('La actividad ha sido creada exitosamente.', 'success');
   }
 
 }

@@ -8,8 +8,10 @@ export function mapActividadResponseToActivity(
   ponenteMap: Map<number, PonenteResponse>,
   actividadPonenteMap: Map<number, number>,
   nivelActividadMap: Map<number, string>,
-  objetivoActividadMap: Map<number, string[]>
+  objetivoActividadMap: Map<number, string[]>,
+  materialActividadMap: Map<number, string[]>
   ): Activity {
+    
   const enrolled = response.cuposTotales - response.cuposDisponibles;
 
   const fecha = response.fechaActividad.split('T')[0];
@@ -66,7 +68,7 @@ export function mapActividadResponseToActivity(
     enrolled: enrolled,
     code: `ACT-${response.actividadId}`,
     learningObjectives: objetivoActividadMap.get(response.actividadId) || [],
-    materials: [],
+    materials: materialActividadMap.get(response.actividadId) || [],
     conflictingActivities: [],
   };
 }

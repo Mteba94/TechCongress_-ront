@@ -7,9 +7,7 @@ import { Button } from '../../../../shared/components/reusables/button/button';
 import { InputComponent } from '../../../../shared/components/reusables/input/input';
 import { SelectComponent, SelectOption } from '../../../../shared/components/reusables/select-component/select-component';
 import { NivelActividad } from '../../../workshop-activity-catalog/services/nivel-actividad';
-import { nivelActividadResponse } from '../../../workshop-activity-catalog/models/nivel-actividad.interface';
 import { Ponente } from '../../../workshop-activity-catalog/services/ponente';
-import { PonenteResponse } from '../../../homepage/models/ponente-response.interface';
 import { Categoria } from '../../../workshop-activity-catalog/services/categoria';
 import { Actividad } from '../../../workshop-activity-catalog/services/actividad';
 
@@ -53,35 +51,36 @@ export class CreateActivityWizard implements OnInit {
   currentStep = signal(1);
   instructorSelectionMode = signal<'existing' | 'new'>('existing');
   formData = signal<any>({
+    congresoId: 1,
     // Basic Information
-    title: '',
-    description: '',
-    shortDescription: '',
-    category: '',
+    titulo: '',
+    descripcion: '',
+    descripcionTotal: '',
+    tipoActividadId: '',
     imagen: null,
     // Schedule & Location
-    startDate: '',
-    startTime: '',
-    endTime: '',
+    fecha: '',
+    horaInicio: '',
+    horaFin: '',
+    ubicacion: '',
     locationType: 'virtual',
     platform: '',
     room: '',
-    address: '',
     // Capacity & Enrollment
-    maxCapacity: '',
-    prerequisites: '',
+    cuposTotal: '',
+    requisitos: '',
     // Instructor & Resources
-    instructorId: '',
+    ponenteId: '',
     // Content & Materials
-    objectives: [''],
-    difficulty: 'beginner',
+    objetivosActividad: [''],
+    materialesActividad: [''],
+    nivelDificultadId: '',
     // Settings
     status: 'draft',
   });
   errors = signal<any>({});
 
   // --- DATA () ---
-  // TODO: Cargar desde servicios
   typeOptions = [
       { value: 'tecnico', label: 'Técnico' },
       { value: 'academico', label: 'Académico' },
@@ -118,7 +117,6 @@ export class CreateActivityWizard implements OnInit {
       },
       error: (err) => {
         console.error('Error loading difficulty levels', err);
-        // Manejar el error, por ejemplo, mostrando un mensaje al usuario
       }
     });
   }
@@ -164,22 +162,16 @@ export class CreateActivityWizard implements OnInit {
   handleInputChange(field: string, value: any) {
     let actualValue = value;
 
-    // Extraer el valor si el argumento es un objeto de evento (ej. InputEvent, ChangeEvent)
     if (value && value.target && typeof value.target.value !== 'undefined') {
       const target = value.target as HTMLInputElement;
-      if (target.type === 'checkbox') {
-        actualValue = target.checked;
-      } else {
-        actualValue = target.value;
-      }
+      actualValue = target.type === 'checkbox' ? target.checked : target.value;
     }
 
     this.formData.update(prev => ({ ...prev, [field]: actualValue }));
 
-    if (field === 'description') {
-      // Asegurarse de que la descripción corta se genere a partir del valor extraído
-      const shortDesc = (actualValue || '').substring(0, 150) + '...';
-      this.formData.update(prev => ({ ...prev, shortDescription: shortDesc }));
+    if (field === 'descripcionTotal') {
+      const shortDesc = (actualValue || '').substring(0, 150);
+      this.formData.update(prev => ({ ...prev, descripcion: shortDesc }));
     }
 
     if (this.errors()[field]) {
@@ -190,42 +182,83 @@ export class CreateActivityWizard implements OnInit {
   handleFileInput(event: Event) {
     const element = event.currentTarget as HTMLInputElement;
     let fileList: FileList | null = element.files;
-    if (fileList) {
+    if (fileList && fileList.length > 0) {
       this.formData.update(prev => ({ ...prev, imagen: fileList![0] }));
     }
-  }
-
-  handleNewInstructorChange(field: string, value: any) {
-    this.formData.update(prev => ({
-      ...prev,
-      newInstructor: {
-        ...prev.newInstructor,
-        [field]: value
-      }
-    }));
   }
 
   addObjective(): void {
     this.formData.update(prev => ({
       ...prev,
-      objectives: [...prev.objectives, '']
+      objetivosActividad: [...prev.objetivosActividad, '']
     }));
   }
 
   removeObjective(index: number): void {
-    if (this.formData().objectives.length <= 1) return;
+    if (this.formData().objetivosActividad.length <= 1) return;
     this.formData.update(prev => ({
       ...prev,
-      objectives: prev.objectives.filter((_: any, i: number) => i !== index)
+      objetivosActividad: prev.objetivosActividad.filter((_: any, i: number) => i !== index)
     }));
   }
 
   handleObjectiveChange(index: number, value: string): void {
     this.formData.update(prev => {
-      const newObjectives = [...prev.objectives];
+      const newObjectives = [...prev.objetivosActividad];
       newObjectives[index] = value;
-      return { ...prev, objectives: newObjectives };
+      return { ...prev, objetivosActividad: newObjectives };
     });
+  }
+
+  addMaterial(): void {
+    this.formData.update(prev => ({
+      ...prev,
+      materialesActividad: [...prev.materialesActividad, '']
+    }));
+  }
+
+  removeMaterial(index: number): void {
+    if (this.formData().materialesActividad.length <= 1) return;
+    this.formData.update(prev => ({
+      ...prev,
+      materialesActividad: prev.materialesActividad.filter((_: any, i: number) => i !== index)
+    }));
+  }
+
+  handleMaterialChange(index: number, value: string): void {
+    this.formData.update(prev => {
+      const newMaterials = [...prev.materialesActividad];
+      newMaterials[index] = value;
+      return { ...prev, materialesActividad: newMaterials };
+    });
+  }
+
+  getCategoryName(id: string): string {
+    if (!id) return 'N/A';
+    const category = this.categoryOptions.find(c => c.value === id);
+    return category ? category.label : 'N/A';
+  }
+
+  getInstructorName(id: string): string {
+    if (!id) return 'N/A';
+    const instructor = this.instructorOptions.find(i => i.value === id);
+    return instructor ? instructor.label : 'N/A';
+  }
+
+  goToStep(stepId: number): void {
+    const current = this.currentStep();
+    if (stepId > current) {
+      for (let i = current; i < stepId; i++) {
+        if (!this.validateStep(i)) {
+          this.currentStep.set(i);
+          return;
+        }
+      }
+    }
+    this.currentStep.set(stepId);
+    if (stepId === this.steps.length) {
+        this.formData.update(data => ({...data}));
+    }
   }
 
   validateStep(step: number): boolean {
@@ -234,14 +267,13 @@ export class CreateActivityWizard implements OnInit {
 
     switch (step) {
       case 1:
-        if (!data.title?.trim()) newErrors.title = 'Título es requerido';
-        if (!data.description?.trim()) newErrors.description = 'Descripción es requerida';
-        if (!data.category) newErrors.category = 'Categoría es requerida';
-        // if (!data.type) newErrors.type = 'Tipo es requerido';
+        if (!data.titulo?.trim()) newErrors.titulo = 'Título es requerido';
+        if (!data.descripcionTotal?.trim()) newErrors.descripcionTotal = 'La descripción detallada es requerida';
+        if (!data.tipoActividadId) newErrors.tipoActividadId = 'Categoría es requerida';
         break;
       case 2:
-        if (!data.startDate) newErrors.startDate = 'Fecha de inicio es requerida';
-        if (!data.startTime) newErrors.startTime = 'Hora de inicio es requerida';
+        if (!data.fecha) newErrors.fecha = 'Fecha de inicio es requerida';
+        if (!data.horaInicio) newErrors.horaInicio = 'Hora de inicio es requerida';
         if (data.locationType === 'virtual' && !data.platform) {
           newErrors.platform = 'Plataforma es requerida para eventos virtuales';
         }
@@ -250,20 +282,13 @@ export class CreateActivityWizard implements OnInit {
         }
         break;
       case 3:
-        if (this.instructorSelectionMode() === 'existing' && !data.instructorId) {
-          newErrors.instructorId = 'Debe seleccionar un instructor existente.';
-        } 
-        // else if (this.instructorSelectionMode() === 'new') {
-        //   if (!data.newInstructor.name?.trim()) newErrors.newInstructorName = 'El nombre es requerido.';
-        //   if (!data.newInstructor.email?.trim()) newErrors.newInstructorEmail = 'El email es requerido.';
-        // }
+        if (this.instructorSelectionMode() === 'existing' && !data.ponenteId) {
+          newErrors.ponenteId = 'Debe seleccionar un instructor existente.';
+        }
         break;
       case 5:
-        // if (data.pricingType === 'paid' && (!data.amount || data.amount <= 0)) {
-        //   newErrors.amount = 'Precio debe ser mayor a 0 para eventos pagados';
-        // }
-        if (!data.maxCapacity || data.maxCapacity < 1) {
-          newErrors.maxCapacity = 'Capacidad máxima debe ser al menos 1';
+        if (!data.cuposTotal || data.cuposTotal < 1) {
+          newErrors.cuposTotal = 'Capacidad máxima debe ser al menos 1';
         }
         break;
     }
@@ -273,8 +298,13 @@ export class CreateActivityWizard implements OnInit {
   }
 
   handleNext() {
-    if (this.validateStep(this.currentStep())) {
-      this.currentStep.update(prev => Math.min(prev + 1, this.steps.length));
+    const current = this.currentStep();
+    if (this.validateStep(current)) {
+      const nextStep = current + 1;
+      this.currentStep.set(nextStep);
+      if (nextStep === this.steps.length) { // Al entrar en la vista de resumen
+        this.formData.update(data => ({...data})); // Forzar actualización para el resumen
+      }
     }
   }
 
@@ -283,18 +313,23 @@ export class CreateActivityWizard implements OnInit {
   }
 
   handleSubmit() {
-    if (this.validateStep(this.currentStep())) {
-      this._actividadService.createActividad(this.formData()).subscribe({
-        next: (response) => {
-          console.log('Actividad creada exitosamente', response);
-          this.save.emit(this.formData());
-          this.close.emit();
-        },
-        error: (error) => {
-          console.error('Error al crear la actividad', error);
-          // Aquí podrías actualizar el estado de los errores para mostrar un mensaje al usuario
-        }
-      });
+    // Validate all steps before submitting
+    for (let i = 1; i <= this.steps.length; i++) {
+      if (!this.validateStep(i)) {
+        this.currentStep.set(i);
+        return;
+      }
     }
+
+    this._actividadService.createActividad(this.formData()).subscribe({
+      next: (response) => {
+        console.log('Actividad creada exitosamente', response);
+        this.save.emit(this.formData());
+        this.close.emit();
+      },
+      error: (error) => {
+        console.error('Error al crear la actividad', error);
+      }
+    });
   }
 }
