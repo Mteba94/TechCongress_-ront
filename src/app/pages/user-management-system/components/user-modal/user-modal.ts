@@ -306,6 +306,7 @@ export class UserModal {
 
       try {
     // espera a que el padre termine
+    console.log(dataToSend)
       await this.save.emit(dataToSend);
       } catch (err) {
         this.generalError = ['Ocurrió un error al guardar.'];

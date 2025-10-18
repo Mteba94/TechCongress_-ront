@@ -1,6 +1,6 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { NavigationItem } from '../../models/navigationItems.interface';
-import { Award, BarChart, Calendar, Clock, Database, ExternalLink, LucideAngularModule, Mic, Settings, Shield, TrendingUp, Trophy, Users } from 'lucide-angular';
+import { Award, BarChart, Calendar, CalendarDays, Clock, Database, ExternalLink, LucideAngularModule, Mic, Settings, Shield, TrendingUp, Trophy, Users } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { Router } from '@angular/router';
 
@@ -44,6 +44,14 @@ export class AdminNavigation {
       description: 'Auditoría y monitoreo',
       badge: '3',
       href: '/user-activity-logging-management'
+    },
+    { 
+      id: 'agenda',
+      label: 'Mantenimiento de Agenda',
+      icon: CalendarDays,
+      description: 'Programación del congreso',
+      badge: '',
+      href: '/congress-agenda-maintenance'
     },
     { 
       id: 'activities',

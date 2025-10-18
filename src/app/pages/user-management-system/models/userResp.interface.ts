@@ -16,6 +16,7 @@ export interface User {
   schoolId?: string | null;
   institution?: string;
   nivelAcademico?: number;
+  nivelAcademicoId?: number;
   grade?: string | null;
   activitiesCount?: number;
   certificatesCount?: number;
@@ -42,4 +43,23 @@ export interface UserApi {
   numeroIdentificacion?: string | null;
   estado: number;
   estadoDescripcion?: string | null;
+  school?: number | null;
+}
+
+
+export interface InscriptionByUser{
+  userId: number;
+  inscriptionsCount: number;
+}
+
+export interface CertificatesByUser{
+  userId: number;
+  certificatesCount: number;
+}
+
+export interface UserSummary{
+  userId: number;
+  userName: string;
+  inscriptionsCount: number;
+  certificatesCount: number;
 }

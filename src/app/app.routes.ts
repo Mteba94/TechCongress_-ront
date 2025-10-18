@@ -9,6 +9,7 @@ import { AdminDashboard } from './pages/layout/admin-dashboard/admin-dashboard';
 import { UserManagementSystem } from './pages/layout/user-management-system/user-management-system';
 import { UserSettingsProfileManagement } from './pages/layout/user-settings-profile-management/user-settings-profile-management';
 import { ActivitiesWorkshopManagement } from './pages/layout/activities-workshop-management/activities-workshop-management';
+import { CongressAgendaMaintenance } from './pages/layout/congress-agenda-maintenance/congress-agenda-maintenance';
 
 export const routes: Routes = [
     {
@@ -46,6 +47,10 @@ export const routes: Routes = [
     {
         path: 'activities-workshop-management',
         component: ActivitiesWorkshopManagement
+    },
+    {
+        path: 'congress-agenda-maintenance',
+        component: CongressAgendaMaintenance
     },
     {
         path: '**',

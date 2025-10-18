@@ -8,17 +8,17 @@
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[var(--color-foreground)] mb-6">
           Programa Completo
-          <span class="block text-[var(--color-primary)]">Tres Días de Aprendizaje</span>
+          <span class="block text-[var(--color-primary)]">de Aprendizaje</span>
         </h2>
         <p class="text-lg text-[var(--color-muted-foreground)] max-w-3xl mx-auto leading-relaxed font-body">
-          Descubre la agenda completa del TechCongress 2025 con talleres especializados,
+          Descubre la agenda completa del Congreso UMG 2025 con talleres especializados,
           conferencias magistrales y actividades de networking.
         </p>
       </div>
 
       <div class="flex flex-col sm:flex-row justify-center mb-12">
         <div class="bg-[var(--color-muted)] rounded-lg p-1 inline-flex space-x-2">
-          @for (day of agendaDays; track day.day) {
+          @for (day of agendaDays(); track day.day) {
             <button
               (click)="selectDay(day.day)"
               [ngClass]="{
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      @for (day of agendaDays; track day.day) {
+      @for (day of agendaDays(); track day.day) {
         @if (selectedDay === day.day) {
           <div class="space-y-8">
             <div class="text-center bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-8">
@@ -96,7 +96,7 @@
         }
       }
       
-      <div class="text-center mt-16">
+      <div *ngIf="!isLoggedIn" class="text-center mt-16">
         <div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-xl p-8 text-white">
           <h3 class="text-2xl font-heading font-bold mb-4">
             ¿Listo para Participar?

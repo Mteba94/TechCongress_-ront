@@ -49,8 +49,8 @@
           </div>
           
           <div class="flex items-center space-x-2">
-            <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ' + getStatusColor(activity.status)">
-              {{ activity.status?.toUpperCase() }}
+            <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ' + getStatusColor(activity.statusActivity)">
+              {{activity.statusActivity?.toUpperCase()}}
             </span>
             
             <div class="flex items-center space-x-1">
@@ -102,8 +102,6 @@
             <span class="text-sm font-medium text-foreground">Capacidad</span>
             <span [class]="'text-sm font-medium ' + getCapacityColor(getCapacityUtilization(activity.capacity, activity.enrolled))">
               {{ activity.enrolled || 0 }}/{{ activity.capacity || 0 }} ({{ getCapacityUtilization(activity.capacity, activity.enrolled) }}%)
-
-              {{activity.capacity}}
             </span>
           </div>
           

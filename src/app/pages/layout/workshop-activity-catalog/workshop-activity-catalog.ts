@@ -82,6 +82,14 @@ export class WorkshopActivityCatalog {
   enrollmentMessage = signal<string | null>(null);
   isEnrollmentError = signal<boolean>(false);
 
+  constructor() {
+    effect(() => {
+      if (this.showMyEnrollments()) {
+        this.loadMyEnrollments();
+      }
+    });
+  }
+
   // Lógica de filtrado y ordenamiento con computed
   filteredAndSortedActivities = computed(() => {
     let filtered = this.displayedActivities();
@@ -157,12 +165,31 @@ export class WorkshopActivityCatalog {
   ngOnInit() {
     // Comprobar estado de autenticación y inscripciones
     const authStatus = localStorage.getItem('isAuthenticated');
-    const enrollments = JSON.parse(localStorage.getItem('userEnrollments') || '[]');
-
     this.isAuthenticated.set(authStatus === 'true');
-    this.userEnrollments.set(enrollments);
+
+    if (this.isAuthenticated()) {
+      this.loadMyEnrollments();
+    }
 
     this.loadInitialActivities();
+  }
+
+  async loadMyEnrollments() {
+    const user = await firstValueFrom(this.auth.currentUser$);
+    if (user) {
+      try {
+        const response = await firstValueFrom(this.inscripcionService.ByUser(user.id));
+        if (response.isSuccess) {
+          console.log(response)
+
+          const enrolledActivityIds = response.data.map(enrollment => enrollment.actividadId);
+          this.userEnrollments.set(enrolledActivityIds);
+          console.log('User enrollments:', enrolledActivityIds)
+        }
+      } catch (error) {
+        console.error('Error fetching user enrollments:', error);
+      }
+    }
   }
 
   // Métodos del componente

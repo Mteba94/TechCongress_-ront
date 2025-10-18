@@ -7,6 +7,7 @@ import { WelcomeHeader } from '../../user-dashboard/components/welcome-header/we
 import { QuickStats } from '../../user-dashboard/components/quick-stats/quick-stats';
 import { firstValueFrom } from 'rxjs';
 import { Auth } from '../../login-registration/services/auth';
+import { MyEnrollments } from '../../user-dashboard/components/my-enrollments/my-enrollments';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -15,7 +16,8 @@ import { Auth } from '../../login-registration/services/auth';
     RegistrationCallToAction,
     Breadcrumbs,
     WelcomeHeader,
-    QuickStats
+    QuickStats,
+    MyEnrollments
   ],
   templateUrl: './user-dashboard.html',
   styleUrl: './user-dashboard.css'

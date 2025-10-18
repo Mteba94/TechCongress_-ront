@@ -13,9 +13,10 @@ import { UserFilters } from '../../user-management-system/components/user-filter
 import { UserTable } from '../../user-management-system/components/user-table/user-table';
 import { User } from '../../user-management-system/models/userResp.interface';
 import { Users as UsersService } from '../../user-management-system/services/users';
+import { CreateParticipanteCommand, UpdateParticipanteCommand } from '../../user-management-system/models/participante.commands';
+import { NotificacionService } from '../../../shared/services/notificacion-service';
 import { UserModal } from '../../user-management-system/components/user-modal/user-modal';
 import { NotificationsAlert } from '../../../shared/components/reusables/notifications-alert/notifications-alert';
-import { NotificacionService } from '../../../shared/services/notificacion-service';
 
 interface FilterConfig {
   role: string;
@@ -285,12 +286,21 @@ export class UserManagementSystem {
     //console.log('Modal abierto:', this.showUserModal());
   }
 
-  handleDeleteUser(userId: number | string) {
+  async handleDeleteUser(userId: number | string) {
     if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
 
-    this.users.set(this.users().filter(u => u.userId !== userId));
-    this.selectedUsers.set(this.selectedUsers().filter(id => id !== userId));
-    this.applyFiltersAndSorting();
+    try {
+      const response = await firstValueFrom(this.userService.deleteUser(Number(userId)));
+
+      if(response.isSuccess){
+        this.notificacionService.show('Usuario eliminado exitosamente.', 'success');
+        this.loadUsers();
+      }else{        
+        this.notificacionService.show(response.message, 'error');
+      }
+    } catch (error) {
+      this.notificacionService.show('Error al eliminar el usuario.', 'error');
+    }
   }
 
   handleBulkAction(action: string) {
@@ -358,30 +368,60 @@ export class UserManagementSystem {
   async handleSaveUser(newUserData: Omit<User, 'id'>): Promise<void> {
     this.isSaving.set(true);
     const userToEdit = this.editingUser();
+
+    console.log(newUserData)
     
     try {
       if (userToEdit) {
-        const fullUser: User = { ...userToEdit, ...newUserData };
-        
-        // Simulación de llamada a API de UPDATE:
-        // En un entorno real, usarías: await firstValueFrom(this.userService.updateUser(fullUser));
-        //console.log('Iniciando UPDATE de usuario:', fullUser);
-        await new Promise((resolve, reject) => setTimeout(() => {
-          // 10% de probabilidad de error para demostrar el catch block
-          if (Math.random() < 0.1) {
-            reject(new Error('Fallo simulado al actualizar el usuario.'));
-          } else {
-            resolve('OK');
-          }
-        }, 1500)); // Esperar 1.5s
-        
-        //console.log('UPDATE exitoso.');
-        this.notificacionService.show('Usuario actualizado exitosamente.', 'success');
+        const command: UpdateParticipanteCommand = {
+          participanteId: Number(userToEdit.userId),
+          pnombre: newUserData.pnombre,
+          snombre: newUserData.snombre,
+          papellido: newUserData.papellido,
+          sapellido: newUserData.sapellido,
+          tipoParticipanteId: newUserData.tipoParticipanteId,
+          email: newUserData.email,
+          telefono: newUserData.telefono,
+          fechaNacimiento: newUserData.registrationDate, // Assuming registrationDate is used for fechaNacimiento
+          tipoIdentificacionId: 1, // Assuming a default value
+          numeroIdentificacion: 'N/A', // Assuming a default value
+          schoolId: Number(newUserData.schoolId),
+          schoolName: newUserData.institution,
+          nivelAcademicoId: newUserData.nivelAcademicoId,
+          semestre: 1 // Assuming a default value
+        };
+
+        const response = await firstValueFrom(
+          this.userService.updateUser(command)
+        );
+
+        if(response.isSuccess){
+          this.notificacionService.show('Usuario actualizado exitosamente.', 'success');
+        }else{
+          this.notificacionService.show(response.message, 'error');
+        }
       } else {
+        const command: CreateParticipanteCommand = {
+          pnombre: newUserData.pnombre,
+          snombre: newUserData.snombre,
+          papellido: newUserData.papellido,
+          sapellido: newUserData.sapellido,
+          tipoParticipanteId: newUserData.tipoParticipanteId,
+          email: newUserData.email,
+          telefono: newUserData.telefono,
+          fechaNacimiento: newUserData.registrationDate, // Assuming registrationDate is used for fechaNacimiento
+          tipoIdentificacionId: 1, // Assuming a default value
+          numeroIdentificacion: 'N/A', // Assuming a default value
+          schoolId: Number(newUserData.schoolId),
+          schoolName: newUserData.institution,
+          nivelAcademicoId: newUserData.nivelAcademico,
+          semestre: 1, // Assuming a default value
+          password: '' // Assuming autogen is used for password
+        };
         
         this.loading.set(true);
         const response = await firstValueFrom(
-          this.userService.createUser(newUserData)
+          this.userService.createUser(command)
         );
 
         if(response.isSuccess){
@@ -389,40 +429,17 @@ export class UserManagementSystem {
         }else{
           this.notificacionService.show(response.message, 'error');
         }
-
-
-        // Simulación de llamada a API de CREATE:
-        // En un entorno real, usarías: await firstValueFrom(this.userService.createUser(newUserData));
-        // console.log('Iniciando CREATE de nuevo usuario:', newUserData);
-        // await new Promise((resolve, reject) => setTimeout(() => {
-        //   if (Math.random() < 0.1) {
-        //     reject(new Error('Fallo simulado al crear el usuario.'));
-        //   } else {
-        //     resolve('OK');
-        //   }
-        // }, 1500)); // Esperar 1.5s
-        
-        // console.log('CREATE exitoso.');
-        // this.notificacionService.show('Usuario creado exitosamente.', 'success');
       }
       
-      // 2. Si la llamada es exitosa:
-      // Recargar la lista de usuarios para ver los cambios persistidos
       this.loadUsers();
       
-      // Cerrar modal solo después del éxito
       this.handleCloseModal(); 
-      // TODO: Mostrar un toast o notificación de éxito (e.g., "Usuario guardado exitosamente")
 
     } catch (error) {
-      // 3. Si la llamada falla:
-      console.error('Error al guardar el usuario:', error);
-      // Evitar que se cierre el modal para que el usuario pueda corregir o reintentar
-      // Usamos un modal/alert temporal, reemplaza esto con un sistema de notificación profesional
-      alert(`⚠️ Error al guardar el usuario: ${error}`); 
+      //console.error('Error al guardar el usuario:', error);
+      this.notificacionService.show(`Error al guardar el usuario: ${error}`, 'error'); 
 
     } finally {
-      // 4. Detener el estado de guardado
       this.isSaving.set(false); 
     }
   }

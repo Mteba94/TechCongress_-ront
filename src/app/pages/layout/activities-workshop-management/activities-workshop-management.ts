@@ -8,11 +8,11 @@ import { InputComponent } from '../../../shared/components/reusables/input/input
 import { SelectComponent } from '../../../shared/components/reusables/select-component/select-component';
 import { Actividad } from '../../workshop-activity-catalog/services/actividad';
 import { ActivityGrid } from '../../activities-workshop-management/components/activity-grid/activity-grid';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { ActivityList } from '../../activities-workshop-management/components/activity-list/activity-list';
-import { CreateActivityWizard } from '../../activities-workshop-management/components/create-activity-wizard/create-activity-wizard';
 import { NotificacionService } from '../../../shared/services/notificacion-service';
+import { CreateActivityWizard } from '../../activities-workshop-management/components/create-activity-wizard/create-activity-wizard';
 
 /** Interface for component filter values. */
 interface Filters {
@@ -285,10 +285,45 @@ export class ActivitiesWorkshopManagement implements OnDestroy {
     this.viewMode.set(mode);
   }
 
-  handleCreateSave(activity: any): void {
+  handleSave(activity: any): void {
     this.showCreateWizard.set(false);
+    if (this.selectedActivity()) {
+      // Update
+      this.notificationService.show('La actividad ha sido actualizada exitosamente.', 'success');
+    } else {
+      // Create
+      this.notificationService.show('La actividad ha sido creada exitosamente.', 'success');
+    }
     this._fetchActivities();
-    this.notificationService.show('La actividad ha sido creada exitosamente.', 'success');
+    this.selectedActivity.set(null);
   }
 
+  
+
+  async handleDeleteActivity(activityId: string) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta actividad?')) return;
+
+    try {
+      const response = await firstValueFrom(this.actividadService.deleteActividad(Number(activityId)));
+
+      if(response.isSuccess){
+        this.notificationService.show('Actividad eliminada exitosamente.', 'success');
+        this._fetchActivities();
+      }else{
+        this.notificationService.show(response.message, 'error');
+      }
+    } catch (error) {
+      this.notificationService.show('Error al eliminar la actividad.', 'error');
+    }
+  }
+
+  handleEditActivity(activity: ActivityInterface) {
+    this.selectedActivity.set(activity);
+    this.showCreateWizard.set(true);
+  }
+
+  handleCreateActivity() {
+    this.selectedActivity.set(null);
+    this.showCreateWizard.set(true);
+  }
 }

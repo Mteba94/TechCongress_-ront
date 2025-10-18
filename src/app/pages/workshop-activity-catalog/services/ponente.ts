@@ -13,7 +13,7 @@ export class Ponente {
   private readonly httpClient = inject(HttpClient);
 
   getAllPonente(): Observable<BaseApiResponse<PonenteResponse[]>> {
-        const requestUrl = `${env.api}${endpoint.LIST_PONENTES}?StateFilter=${1}`;
+        const requestUrl = `${env.api}${endpoint.LIST_PONENTES}?StateFilter=${1}&download=true`;
     
         return this.httpClient
           .get<BaseApiResponse<PonenteResponse[]>>(requestUrl)

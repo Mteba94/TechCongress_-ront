@@ -17,4 +17,5 @@ export interface ActividadResponse {
   imagen?: string | null;
   estado: number;
   estadoDescripcion?: string | null;
+  estadoActividad: string;
 }

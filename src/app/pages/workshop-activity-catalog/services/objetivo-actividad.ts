@@ -14,7 +14,7 @@ export class ObjetivoActividad {
   private readonly httpClient = inject(HttpClient);
 
   getAllObjetivoActividad(): Observable<BaseApiResponse<ObjetivoActividadResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.LIST_OBJETIVO_ACTIVIDAD}`;
+    const requestUrl = `${env.api}${endpoint.LIST_OBJETIVO_ACTIVIDAD}?download=true`;
       
     return this.httpClient
       .get<BaseApiResponse<ObjetivoActividadResponse[]>>(requestUrl)

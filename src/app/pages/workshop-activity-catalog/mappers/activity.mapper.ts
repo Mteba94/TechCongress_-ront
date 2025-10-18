@@ -32,6 +32,21 @@ export function mapActividadResponseToActivity(
     return `${hours}h ${minutes}m`;
   };
 
+  const mapStatusActivity = (statusAct: string): 'Pendiente' | 'Completado' | 'En Curso' | 'cancelled' =>{
+    switch (statusAct) {
+      case 'p':
+        return 'Pendiente';
+      case 'f':
+        return 'Completado';
+      case 'i':
+        return 'En Curso';
+      case 'Cancelled':
+        return 'cancelled';
+      default:
+        return 'Pendiente';
+    }
+  }
+
   const mapDifficulty = (difficultyId: number): 'beginner' | 'intermediate' | 'advanced' => {
     switch (difficultyId) {
       case 1:
@@ -70,5 +85,6 @@ export function mapActividadResponseToActivity(
     learningObjectives: objetivoActividadMap.get(response.actividadId) || [],
     materials: materialActividadMap.get(response.actividadId) || [],
     conflictingActivities: [],
+    statusActivity: mapStatusActivity(response.estadoActividad)
   };
 }

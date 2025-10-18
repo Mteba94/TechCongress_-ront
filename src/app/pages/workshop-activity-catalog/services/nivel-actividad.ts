@@ -13,7 +13,7 @@ export class NivelActividad {
   private readonly httpClient = inject(HttpClient);
 
   getAllNivelActividad(): Observable<BaseApiResponse<nivelActividadResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.LIST_NIVEL_ACTIVIDAD}`;
+    const requestUrl = `${env.api}${endpoint.LIST_NIVEL_ACTIVIDAD}?download=true`;
       
     return this.httpClient
       .get<BaseApiResponse<nivelActividadResponse[]>>(requestUrl)

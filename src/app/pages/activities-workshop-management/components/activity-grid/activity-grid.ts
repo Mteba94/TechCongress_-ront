@@ -71,12 +71,12 @@ export class ActivityGrid {
    * @returns Clases CSS.
    */
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'active':
+    switch (status.toLowerCase()) {
+      case 'en curso':
         return 'bg-green-100 text-green-700 border-green-200';
-      case 'draft':
+      case 'pendiente':
         return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'completed':
+      case 'completado':
         return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'cancelled':
         return 'bg-red-100 text-red-700 border-red-200';

@@ -1,131 +1,132 @@
-import { Component, computed, signal } from '@angular/core';
-import { User } from '../../user-management-system/models/userResp.interface';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { 
+  Loader, User, Crown, AlertTriangle, Menu, Save, Download, Eye, UserX,
+  Info, Lock, Bell, CreditCard, Shield, Settings, Mail, Phone, Key,
+  LucideIconData
+} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { Header } from '../../../shared/components/layout/header/header';
-import { Breadcrumbs } from '../../../shared/components/reusables/breadcrumbs/breadcrumbs';
-import { AlertTriangle, Crown, LucideAngularModule } from 'lucide-angular';
 import { Button } from '../../../shared/components/reusables/button/button';
+import { Breadcrumbs } from '../../../shared/components/reusables/breadcrumbs/breadcrumbs';
+import { Auth } from '../../login-registration/services/auth';
+import { ProfileTab } from '../../user-settings-profile-management/components/profile-tab/profile-tab';
+import { SecurityTab } from '../../user-settings-profile-management/components/security-tab/security-tab';
+
+interface Tab {
+  id: string;
+  label: string;
+  description: string;
+  icon: LucideIconData;
+}
 
 @Component({
   selector: 'app-user-settings-profile-management',
+  standalone: true,
   imports: [
-    Header,
-    Breadcrumbs,
+    CommonModule,
     LucideAngularModule,
-    Button
+    Header,
+    Button,
+    Breadcrumbs,
+    ProfileTab,
+    SecurityTab
   ],
   templateUrl: './user-settings-profile-management.html',
   styleUrl: './user-settings-profile-management.css'
 })
-export class UserSettingsProfileManagement {
-  user = signal<User | null>(null);
-  activeTab = signal<string>('profile');
-  hasUnsavedChanges = signal<boolean>(false);
-  isLoading = signal<boolean>(true);
-  isLoadingSave = signal<boolean>(false);
-  showSidebar = signal<boolean>(false);
-  //confirmModal = signal<ConfirmModalState>({ open: false, nextTabId: null });
-
+export class UserSettingsProfileManagement implements OnInit {
   readonly icons = {
-    crown: Crown,
-    alertTriangle: AlertTriangle
-  }
+    Loader: Loader,
+    User: User,
+    Crown: Crown,
+    AlertTriangle: AlertTriangle,
+    Menu: Menu,
+    Save: Save,
+    Download: Download,
+    Eye: Eye,
+    UserX: UserX,
+    Info: Info,
+    Lock: Lock,
+    Bell: Bell,
+    CreditCard: CreditCard,
+    Shield: Shield,
+    Settings: Settings,
+    Mail: Mail,
+    Phone: Phone,
+    Key: Key
+  };
 
-  // --- Propiedades Derivadas (Computed) ---
-  // settingsTabs: SettingTab[] = [
-  //   { id: 'profile', label: 'Gestión de Perfil', icon: 'User', description: 'Información personal, foto, datos institucionales' },
-  //   { id: 'preferences', label: 'Preferencias', icon: 'Settings', description: 'Idioma, zona horaria, frecuencia de emails' },
-  //   { id: 'security', label: 'Configuración de Seguridad', icon: 'Shield', description: 'Contraseña, autenticación de doble factor' },
-  //   { id: 'notifications', label: 'Notificaciones', icon: 'Bell', description: 'Alertas por email, notificaciones push' }
-  // ];
+  private readonly authService = inject(Auth);
 
-  // Computed for dynamic header
-  activeTabInfo = computed(() => {
-    //return this.settingsTabs.find(tab => tab.id === this.activeTab()) || this.settingsTabs[0];
-  });
+  user = signal<any>(null);
 
-  //activeTabLabel = computed(() => this.activeTabInfo().label);
-  //activeTabDescription = computed(() => this.activeTabInfo().description);
+  hasUnsavedChanges = signal(false);
+  showSidebar = signal(false);
+  isLoading = signal(false);
+  activeTab = signal('profile');
 
-  // Expose the SVG utility function to the template
-  //getIconSvg = getIconSvg;
-
-  // --- Ciclo de Vida y Inicialización ---
-  ngOnInit(): void {
-    // Simulación de useEffect para cargar datos y autenticación
-    setTimeout(() => {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        try {
-          this.user.set(JSON.parse(userData));
-        } catch (e) {
-          console.error("Error parsing user data from localStorage:", e);
-          // Redirect simulation
-          // window.location.href = '/login-registration';
-        }
-      } else {
-        // Simular redirección si no hay datos de usuario
-        // window.location.href = '/login-registration';
-        this.user.set(null); // Set to null to show fallback message
-      }
-      this.isLoading.set(false);
-    }, 500); // Simular una pequeña latencia de carga
-  }
-
-  // --- Métodos de Control ---
-
-  toggleSidebar(): void {
-    this.showSidebar.update(current => !current);
-  }
-
-  setUnsavedChanges(value: boolean): void {
-    this.hasUnsavedChanges.set(value);
-  }
-
-  handleTabChange(tabId: string): void {
-    if (this.hasUnsavedChanges()) {
-      // Abrir el modal de confirmación en lugar de usar window.confirm()
-      //this.confirmModal.set({ open: true, nextTabId: tabId });
-    } else {
-      this.setActiveTab(tabId);
-    }
-  }
-
-  setActiveTab(tabId: string): void {
-    this.activeTab.set(tabId);
-    this.showSidebar.set(false);
-    this.hasUnsavedChanges.set(false);
-  }
-
-  // Métodos del Modal de Confirmación
-  confirmTabChange(): void {
-    //const nextTabId = this.confirmModal().nextTabId;
-    // if (nextTabId) {
-    //   this.setActiveTab(nextTabId);
+  settingsTabs = signal<Tab[]>([
+    {
+      id: 'profile',
+      label: 'Gestión de Perfil',
+      icon: User,
+      description: 'Información personal, foto, datos institucionales'
+    },
+    // {
+    //   id: 'preferences',
+    //   label: 'Preferencias',
+    //   icon: Settings,
+    //   description: 'Idioma, zona horaria, frecuencia de emails'
+    // },
+    {
+      id: 'security',
+      label: 'Configuración de Seguridad',
+      icon: Shield,
+      description: 'Contraseña, autenticación de doble factor'
+    },
+    // {
+    //   id: 'notifications',
+    //   label: 'Notificaciones',
+    //   icon: Bell,
+    //   description: 'Alertas por email, notificaciones push'
     // }
-    // this.confirmModal.set({ open: false, nextTabId: null });
+  ]);
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.user.set(user);
+      console.log(user)
+    });
   }
 
-  cancelTabChange(): void {
-    // this.confirmModal.set({ open: false, nextTabId: null });
+  setShowSidebar(value: boolean) {
+    this.showSidebar.set(value);
   }
 
-  handleSaveChanges(): void {
-    if (!this.hasUnsavedChanges()) return;
+  handleSaveChanges() {
+    this.isLoading.set(true);
+    // Simulate API call
+    setTimeout(() => {
+      this.isLoading.set(false);
+      this.hasUnsavedChanges.set(false);
+      alert('Cambios guardados exitosamente!');
+    }, 1500);
+  }
 
-    this.isLoadingSave.set(true);
-    // Simular llamada a API
-    new Promise(resolve => setTimeout(resolve, 1500))
-      .then(() => {
-        this.hasUnsavedChanges.set(false);
-        // Aquí se mostraría un toast o mensaje de éxito
-        //console.log('Cambios guardados con éxito!');
-      })
-      .catch(error => {
-        console.error('Error saving changes:', error);
-        // Aquí se mostraría un mensaje de error
-      })
-      .finally(() => {
-        this.isLoadingSave.set(false);
-      });
+  handleTabChange(tabId: string | undefined) {
+    if (this.hasUnsavedChanges()) {
+      if (window.confirm('Tienes cambios sin guardar. ¿Deseas continuar sin guardar?')) {
+        if (tabId) {
+          this.activeTab.set(tabId);
+          this.hasUnsavedChanges.set(false);
+        }
+      }
+    } else {
+      if (tabId) {
+        this.activeTab.set(tabId);
+      }
+    }
+    this.showSidebar.set(false); // Close sidebar on mobile after selection
   }
 }

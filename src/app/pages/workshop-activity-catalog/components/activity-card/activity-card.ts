@@ -56,7 +56,8 @@ export class ActivityCard implements OnChanges {
     code: '',
     learningObjectives: [],
     materials: [],
-    conflictingActivities: []
+    conflictingActivities: [],
+    statusActivity: 'Pendiente'
   });
   _userEnrollments = signal<number[]>([]);
 

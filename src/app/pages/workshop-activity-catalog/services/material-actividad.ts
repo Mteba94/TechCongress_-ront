@@ -13,7 +13,7 @@ export class MaterialActividad {
   private readonly httpClient = inject(HttpClient);
 
   getAllMaterialActividad(): Observable<BaseApiResponse<MaterialActividadDTO[]>> {
-          const requestUrl = `${env.api}${endpoint.LIST_MATERIAL_ACTIVIDAD}?StateFilter=${1}`;
+          const requestUrl = `${env.api}${endpoint.LIST_MATERIAL_ACTIVIDAD}?StateFilter=${1}&download=true`;
       
           return this.httpClient
             .get<BaseApiResponse<MaterialActividadDTO[]>>(requestUrl)

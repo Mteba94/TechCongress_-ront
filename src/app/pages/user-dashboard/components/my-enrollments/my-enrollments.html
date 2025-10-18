@@ -1,0 +1,152 @@
+<div class="bg-card border border-border rounded-lg p-6 shadow-subtle">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-2">
+          <lucide-icon [img]="icons.bookOpen" [size]="24" class="text-primary"></lucide-icon>
+          <h2 class="text-xl font-heading font-semibold text-foreground">
+            Mis Inscripciones
+          </h2>
+        </div>
+        <app-button
+          variant="outline"
+          size="sm"
+          (click)="navigateTo('/workshop-activity-catalog')"
+          iconName="Plus"
+          iconPosition="left"
+          [iconSize]="16"
+        >
+          <span>Ver Más Actividades</span>
+        </app-button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="flex space-x-1 mb-6 bg-muted rounded-lg p-1">
+        <ng-container *ngFor="let tab of tabs">
+          <button
+            (click)="setFilter(tab.key)"
+            [class]="'flex-1 px-3 py-2 text-sm font-body font-medium rounded-md transition-colors duration-200 ' + (filter() === tab.key ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')"
+          >
+            {{tab.label}}
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Enrollments List -->
+      <div class="space-y-4">
+        <ng-container *ngIf="filteredEnrollments().length > 0; else noEnrollments">
+          <div *ngFor="let enrollment of filteredEnrollments()">
+            <div
+              class="border border-border rounded-lg p-4 hover:shadow-subtle transition-shadow duration-200"
+            >
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-2 mb-2">
+                    <h3 class="font-heading font-semibold text-foreground">
+                      {{enrollment.title}}
+                    </h3>
+                    <span [class]="'px-2 py-1 text-xs font-caption rounded-full ' + getTypeColor(enrollment.category)">
+                      {{enrollment.category}}
+                    </span>
+                  </div>
+                  <p class="text-sm font-body text-muted-foreground mb-2">
+                    {{enrollment.description}}
+                  </p>
+                  <div class="flex items-center space-x-4 text-sm font-caption text-muted-foreground">
+                    <div class="flex items-center space-x-1">
+                      <lucide-icon [img]="icons.calendar" [size]="14"></lucide-icon>
+                      <span>{{formatDate(enrollment.date)}}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <lucide-icon [img]="icons.clock" [size]="14"></lucide-icon>
+                      <span>{{enrollment.startTime}} - {{enrollment.endTime}}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <lucide-icon [img]="icons.mapPin" [size]="14"></lucide-icon>
+                      <span>{{enrollment.location}}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2 ml-4">
+                  <lucide-icon [img]="getStatusIcon(enrollment.status).icon" [size]="20" [class]="getStatusIcon(enrollment.status).color"></lucide-icon>
+                  <span [class]="'text-sm font-body ' + getStatusIcon(enrollment.status).color">
+                    {{getStatusText(enrollment.status)}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-3 border-t border-border">
+                <div class="flex items-center space-x-4">
+                  <div class="flex items-center space-x-1">
+                    <lucide-icon [img]="icons.user" [size]="14" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-sm font-caption text-muted-foreground">
+                      {{enrollment.instructor}}
+                    </span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <lucide-icon [img]="icons.users" [size]="14" class="text-muted-foreground"></lucide-icon>
+                    <span class="text-sm font-caption text-muted-foreground">
+                      {{enrollment.enrolled}}/{{enrollment.capacity}} inscritos
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                  <ng-container *ngIf="enrollment.statusActivity === 'Completado'">
+                    <app-button
+                      variant="ghost"
+                      size="sm"
+                      iconName="Download"
+                      iconPosition="left"
+                      [iconSize]="14"
+                    >
+                      <span>Certificado</span>
+                    </app-button>
+                  </ng-container>
+                  <app-button
+                    variant="outline"
+                    size="sm"
+                    iconName="Eye"
+                    iconPosition="left"
+                    [iconSize]="14"
+                    (click)="openDetailsModal(enrollment)"
+                  >
+                    <span>Ver Detalles</span>
+                  </app-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noEnrollments>
+          <div class="text-center py-8">
+            <lucide-icon [img]="icons.bookOpen" [size]="48" class="text-muted-foreground mx-auto mb-4"></lucide-icon>
+            <h3 class="text-lg font-heading font-semibold text-foreground mb-2">
+              No hay inscripciones
+            </h3>
+            <p class="text-muted-foreground font-body mb-4">
+              <ng-container *ngIf="filter() === 'all'; else filteredMessage">
+                Aún no te has inscrito en ninguna actividad
+              </ng-container>
+              <ng-template #filteredMessage>
+                No tienes actividades {{ filter() === 'upcoming' ? 'próximas' : filter() === 'in-progress' ? 'en progreso' : 'completadas' }}
+              </ng-template>
+            </p>
+            <app-button
+              variant="default"
+              (click)="navigateTo('/workshop-activity-catalog')"
+              iconName="Plus"
+              iconPosition="left"
+              [iconSize]="16"
+            >
+              <span>Explorar Actividades</span>
+            </app-button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+<app-activity-detail-modal
+  [isOpen]="isModalOpen()"
+  [activity]="selectedActivity()"
+  [userEnrollments]="userEnrolledIds()"
+  (onClose)="closeDetailsModal()"
+></app-activity-detail-modal>

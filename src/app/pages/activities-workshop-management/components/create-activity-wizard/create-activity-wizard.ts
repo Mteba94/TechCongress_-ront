@@ -1,15 +1,18 @@
-import { Component, EventEmitter, OnInit, Output, signal, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
+import { UpdateActividadCommand } from '../../../workshop-activity-catalog/models/actividad.commands';
+import { Activity as ActivityInterface } from '../../../workshop-activity-catalog/models/activity.interface';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Info, Calendar, User, BookOpen, Settings, CheckCircle, X, ChevronRight, Monitor, MapPin, Combine, Gift, CreditCard, PlusCircle, Trash2 } from 'lucide-angular';
-
+import { BookOpen, Calendar, CheckCircle, ChevronRight, Combine, CreditCard, Gift, Info, LucideAngularModule, MapPin, Monitor, PlusCircle, Settings, Trash2, User, X } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { InputComponent } from '../../../../shared/components/reusables/input/input';
 import { SelectComponent, SelectOption } from '../../../../shared/components/reusables/select-component/select-component';
+import { CongresoResponse } from '../../../homepage/models/congreso-resp.interface';
+import { CongresoService } from '../../../homepage/services/congreso-service';
+import { Actividad } from '../../../workshop-activity-catalog/services/actividad';
+import { Categoria } from '../../../workshop-activity-catalog/services/categoria';
 import { NivelActividad } from '../../../workshop-activity-catalog/services/nivel-actividad';
 import { Ponente } from '../../../workshop-activity-catalog/services/ponente';
-import { Categoria } from '../../../workshop-activity-catalog/services/categoria';
-import { Actividad } from '../../../workshop-activity-catalog/services/actividad';
 
 @Component({
   selector: 'app-create-activity-wizard',
@@ -28,11 +31,13 @@ import { Actividad } from '../../../workshop-activity-catalog/services/actividad
 export class CreateActivityWizard implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
+  @Input() activity: ActivityInterface | null = null;
 
   private _nivelActividadService = inject(NivelActividad);
   private _ponenteService = inject(Ponente);
   private _categoriaService = inject(Categoria);
   private _actividadService = inject(Actividad);
+  private _congresoService = inject(CongresoService);
 
 
   readonly icons = {
@@ -77,8 +82,13 @@ export class CreateActivityWizard implements OnInit {
     nivelDificultadId: '',
     // Settings
     status: 'draft',
+    permitirInscripcion: 1
   });
   errors = signal<any>({});
+  congressData = signal<CongresoResponse | null>(null);
+  isDateDisabled = signal<boolean>(false);
+  minDate = signal<string>('');
+  maxDate = signal<string>('');
 
   // --- DATA () ---
   typeOptions = [
@@ -103,6 +113,58 @@ export class CreateActivityWizard implements OnInit {
     this.loadDifficultyLevels();
     this.loadInstructors();
     this.loadCategories();
+    this.loadCongressData();
+
+    if (this.activity) {
+      this.formData.set({
+        ...this.activity,
+        titulo: this.activity.title,
+        descripcion: this.activity.description,
+        descripcionTotal: this.activity.fullDescription,
+        tipoActividadId: this.categoryOptions.find(opt => opt.label === this.activity?.category)?.value || '', // Map category string to ID
+        fecha: this.activity.date,
+        horaInicio: this.activity.startTime,
+        horaFin: this.activity.endTime,
+        cuposTotal: this.activity.capacity,
+        ubicacion: this.activity.location,
+        requisitos: this.activity.prerequisites,
+        nivelDificultadId: this.difficultyOptions.find(opt => opt.label === this.activity?.difficulty)?.value || '', // Map difficulty string to ID
+        ponenteId: this.instructorOptions.find(opt => opt.label === this.activity?.instructor)?.value || '', // Map instructor string to ID
+        objetivosActividad: this.activity.learningObjectives || [''],
+        materialesActividad: this.activity.materials || [''],
+        imagen: this.activity.image,
+      });
+    }
+  }
+
+  loadCongressData(): void {
+    this._congresoService.getAllCongreso().subscribe({
+      next: (response) => {
+        const mainCongress = response.data && response.data.length > 0 ? response.data[0] : null;
+        if (mainCongress) {
+          this.congressData.set(mainCongress);
+          const startDate = new Date(mainCongress.fechaInicio);
+          const endDate = new Date(mainCongress.fechaFin);
+
+          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            console.error('Invalid date received from API for congress fechaInicio or fechaFin');
+            return;
+          }
+
+          const minDateStr = startDate.toISOString().split('T')[0];
+          this.minDate.set(minDateStr);
+          this.maxDate.set(endDate.toISOString().split('T')[0]);
+
+          this.formData.update(prev => ({ ...prev, fecha: minDateStr }));
+
+          if (startDate.toDateString() === endDate.toDateString()) {
+            this.formData.update(prev => ({ ...prev, fecha: this.minDate() }));
+            this.isDateDisabled.set(true);
+          }
+        }
+      },
+      error: (err) => console.error('Error loading congress data', err)
+    });
   }
 
   loadDifficultyLevels(): void {
@@ -160,6 +222,7 @@ export class CreateActivityWizard implements OnInit {
   }
 
   handleInputChange(field: string, value: any) {
+    console.log(field, value);
     let actualValue = value;
 
     if (value && value.target && typeof value.target.value !== 'undefined') {
@@ -264,6 +327,7 @@ export class CreateActivityWizard implements OnInit {
   validateStep(step: number): boolean {
     const newErrors: any = {};
     const data = this.formData();
+    const congress = this.congressData();
 
     switch (step) {
       case 1:
@@ -272,8 +336,28 @@ export class CreateActivityWizard implements OnInit {
         if (!data.tipoActividadId) newErrors.tipoActividadId = 'Categoría es requerida';
         break;
       case 2:
-        if (!data.fecha) newErrors.fecha = 'Fecha de inicio es requerida';
+        if (!data.fecha) {
+          newErrors.fecha = 'Fecha es requerida';
+        } else if (congress) {
+          const activityDateParts = data.fecha.split('-');
+          const activityDate = new Date(Date.UTC(Number(activityDateParts[0]), Number(activityDateParts[1]) - 1, Number(activityDateParts[2])));
+
+          const congressStartDate = new Date(congress.fechaInicio);
+          congressStartDate.setUTCHours(0, 0, 0, 0);
+          const congressEndDate = new Date(congress.fechaFin);
+          congressEndDate.setUTCHours(0, 0, 0, 0);
+
+          if (activityDate.getTime() < congressStartDate.getTime() || activityDate.getTime() > congressEndDate.getTime()) {
+            newErrors.fecha = `La fecha debe estar entre ${congressStartDate.toLocaleDateString('es-ES', { timeZone: 'UTC' })} y ${congressEndDate.toLocaleDateString('es-ES', { timeZone: 'UTC' })}`;
+          }
+        }
+
         if (!data.horaInicio) newErrors.horaInicio = 'Hora de inicio es requerida';
+        
+        if (data.horaInicio && data.horaFin && data.horaInicio >= data.horaFin) {
+          newErrors.horaFin = 'La hora de fin debe ser posterior a la hora de inicio.';
+        }
+
         if (data.locationType === 'virtual' && !data.platform) {
           newErrors.platform = 'Plataforma es requerida para eventos virtuales';
         }
@@ -321,15 +405,47 @@ export class CreateActivityWizard implements OnInit {
       }
     }
 
-    this._actividadService.createActividad(this.formData()).subscribe({
-      next: (response) => {
-        console.log('Actividad creada exitosamente', response);
-        this.save.emit(this.formData());
-        this.close.emit();
-      },
-      error: (error) => {
-        console.error('Error al crear la actividad', error);
-      }
-    });
+    if (this.activity) {
+      const command: UpdateActividadCommand = {
+        actividadId: this.activity.id,
+        titulo: this.formData().titulo,
+        descripcion: this.formData().descripcion,
+        descripcionTotal: this.formData().descripcionTotal,
+        tipoActividadId: this.formData().tipoActividadId,
+        fechaActividad: this.formData().fecha,
+        horaInicio: this.formData().horaInicio,
+        horaFin: this.formData().horaFin,
+        cuposTotales: this.formData().cuposTotal,
+        ubicacion: this.formData().ubicacion,
+        requisitosPrevios: this.formData().requisitos,
+        nivelDificultadId: this.formData().nivelDificultadId,
+      };
+      this._actividadService.updateActividad(command).subscribe({
+        next: (response) => {
+          console.log('Actividad actualizada exitosamente', response);
+          this.save.emit(this.formData());
+          this.close.emit();
+        },
+        error: (error) => {
+          console.error('Error al actualizar la actividad', error);
+        }
+      });
+    } else {
+      const dataToSend = {
+        ...this.formData(),
+        titulo: this.formData().titulo,
+        descripcionTotal: this.formData().descripcionTotal,
+      };
+      this._actividadService.createActividad(dataToSend).subscribe({
+        next: (response) => {
+          console.log('Actividad creada exitosamente', response);
+          this.save.emit(this.formData());
+          this.close.emit();
+        },
+        error: (error) => {
+          console.error('Error al crear la actividad', error);
+        }
+      });
+    }
   }
 }

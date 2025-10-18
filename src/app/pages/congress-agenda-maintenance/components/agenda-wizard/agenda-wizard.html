@@ -1,0 +1,356 @@
+<!-- Main container. The structure and CSS classes are preserved from the original design. -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-card border border-border rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <!-- Header -->
+    <div class="p-6 border-b border-border">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-heading font-semibold text-foreground">
+            Asistente de Creación de Agenda
+          </h2>
+          <p class="text-sm text-muted-foreground mt-1">
+            Paso {{ currentStep }} de {{ steps.length }}: {{ getCurrentStepTitle() }}
+          </p>
+        </div>
+        <!-- Replaced Button component with a standard button and lucide-icon -->
+        <button (click)="onClose()" class="variant-ghost">
+          <lucide-icon [img]="icons.x" [size]="16"></lucide-icon>
+        </button>
+      </div>
+
+      <!-- Progress Steps -->
+      <div class="flex items-center space-x-4 mt-6">
+        <ng-container *ngFor="let step of steps; let i = index">
+          <div class="flex items-center">
+            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors"
+                 [class.bg-primary]="currentStep >= step.id"
+                 [class.border-primary]="currentStep >= step.id"
+                 [class.text-primary-foreground]="currentStep >= step.id"
+                 [class.border-border]="currentStep < step.id"
+                 [class.text-muted-foreground]="currentStep < step.id">
+              <!-- Replaced Icon component with lucide-icon and used *ngIf for conditional logic -->
+              <lucide-icon *ngIf="currentStep > step.id; else stepIcon" [img]="icons.check" [size]="16"></lucide-icon>
+              <ng-template #stepIcon>
+                <lucide-icon [name]="step.icon" [size]="16"></lucide-icon>
+              </ng-template>
+            </div>
+            
+            <div *ngIf="i < steps.length - 1" class="w-12 h-0.5 mx-2 transition-colors"
+                 [class.bg-primary]="currentStep > step.id"
+                 [class.bg-border]="currentStep <= step.id">
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Content: Switched from conditional function calls to ngSwitch for Angular compatibility -->
+    <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]" [ngSwitch]="currentStep">
+      
+      <!-- Step 1 -->
+      <div *ngSwitchCase="1" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-2">
+            Plantilla de Agenda
+          </label>
+          <!-- Replaced Select component with a hypothetical app-select. Logic is preserved via event binding. -->
+          <app-select
+            [options]="templates"
+            [value]="wizardData.template"
+            (valueChange)="updateWizardData('template', $event)"
+            placeholder="Selecciona una plantilla">
+          </app-select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Número de días
+            </label>
+            <app-select
+              [options]="dayOptions"
+              [value]="wizardData.days"
+              (valueChange)="updateWizardData('days', $event)">
+            </app-select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Programación automática
+            </label>
+            <div class="flex items-center space-x-2 mt-3">
+              <!-- Replaced Checkbox component with a hypothetical app-checkbox -->
+              <app-checkbox
+                [checked]="wizardData.autoSchedule"
+                (checkedChange)="updateWizardData('autoSchedule', $event)">
+              </app-checkbox>
+              <span class="text-sm text-foreground">
+                Generar horarios automáticamente
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Hora de inicio
+            </label>
+            <!-- Replaced Input with app-input as requested -->
+            <app-input
+              type="time"
+              [value]="wizardData.startTime"
+              (input)="updateWizardData('startTime', $any($event.target).value)">
+            </app-input>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Hora de fin
+            </label>
+            <app-input
+              type="time"
+              [value]="wizardData.endTime"
+              (input)="updateWizardData('endTime', $any($event.target).value)">
+            </app-input>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div *ngSwitchCase="2" class="space-y-6">
+        <div>
+          <h4 class="text-sm font-medium text-foreground mb-4">
+            Selecciona las actividades para incluir en la agenda
+          </h4>
+          
+          <div class="max-h-64 overflow-y-auto space-y-2 border border-border rounded-lg p-4">
+            <!-- Replaced .map with *ngFor for iteration -->
+            <div *ngFor="let activity of activities" class="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded">
+              <app-checkbox
+                [checked]="wizardData.selectedActivities.includes(activity.id + '')"
+                (checkedChange)="toggleActivitySelection(activity.id + '', $any($event.target).checked)">
+              </app-checkbox>
+              
+              <div class="flex-1">
+                <p class="text-sm font-medium text-foreground">{{ activity.title }}</p>
+                <div class="flex items-center space-x-4 text-xs text-muted-foreground">
+                  <span>{{ activity.category }}</span>
+                  <!-- <span>{{ formatDuration(activity.duration) }}</span> -->
+                  <span *ngIf="activity.instructor">{{ activity.instructor }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+          <span class="text-sm text-muted-foreground">
+            Actividades seleccionadas: {{ wizardData.selectedActivities.length }}
+          </span>
+          
+          <div class="space-x-2">
+            <!-- Replaced Button component with standard button -->
+            <button (click)="selectAllActivities()" class="variant-outline size-sm">
+              Seleccionar todas
+            </button>
+            <button (click)="clearActivitySelection()" class="variant-outline size-sm">
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div *ngSwitchCase="3" class="space-y-6">
+        <div>
+          <h4 class="text-sm font-medium text-foreground mb-4">
+            Preferencias de horario por tipo de actividad
+          </h4>
+          
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  Conferencias magistrales
+                </label>
+                <app-select
+                  [options]="timePreferenceOptions"
+                  [value]="wizardData.priorities.keynotes"
+                  (valueChange)="updatePriority('keynotes', $event)">
+                </app-select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  Talleres técnicos
+                </label>
+                <app-select
+                  [options]="timePreferenceOptions"
+                  [value]="wizardData.priorities.workshops"
+                  (valueChange)="updatePriority('workshops', $event)">
+                </app-select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  Competencias
+                </label>
+                <app-select
+                  [options]="timePreferenceOptions"
+                  [value]="wizardData.priorities.competitions"
+                  (valueChange)="updatePriority('competitions', $event)">
+                </app-select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  Eventos de networking
+                </label>
+                <app-select
+                  [options]="timePreferenceOptions"
+                  [value]="wizardData.priorities.networking"
+                  (valueChange)="updatePriority('networking', $event)">
+                </app-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Duración de descansos (minutos)
+            </label>
+            <app-input
+              type="number"
+              min="5"
+              max="60"
+              [value]="wizardData.breakDuration"
+              (input)="updateWizardData('breakDuration', $any($event.target).value)">
+            </app-input>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Duración de almuerzo (minutos)
+            </label>
+            <app-input
+              type="number"
+              min="30"
+              max="120"
+              [value]="wizardData.lunchDuration"
+              (input)="updateWizardData('lunchDuration', $any($event.target).value)">
+            </app-input>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div *ngSwitchCase="4" class="space-y-6">
+        <div class="text-center">
+          <lucide-icon [img]="icons.sparkles" [size]="48" class="text-primary mx-auto mb-4"></lucide-icon>
+          <h4 class="text-lg font-semibold text-foreground mb-2">
+            Revisión de Configuración
+          </h4>
+          <p class="text-muted-foreground">
+            Revisa la configuración y genera la agenda automáticamente
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <h5 class="font-medium text-foreground mb-2">Configuración General</h5>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Plantilla:</span>
+                  <span class="text-foreground">
+                    {{ getTemplateLabel(wizardData.template) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Días:</span>
+                  <span class="text-foreground">{{ wizardData.days }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Horario:</span>
+                  <span class="text-foreground">{{ wizardData.startTime }} - {{ wizardData.endTime }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h5 class="font-medium text-foreground mb-2">Actividades</h5>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Seleccionadas:</span>
+                  <span class="text-foreground">{{ wizardData.selectedActivities.length }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Programación:</span>
+                  <span class="text-foreground">
+                    {{ wizardData.autoSchedule ? 'Automática' : 'Manual' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h5 class="font-medium text-foreground mb-2">Vista Previa de Actividades</h5>
+            <div class="max-h-40 overflow-y-auto space-y-2">
+              <div *ngFor="let activityId of wizardData.selectedActivities" class="p-2 bg-muted/50 rounded text-sm">
+                <ng-container *ngIf="getActivityById(activityId) as activity">
+                  <div class="font-medium text-foreground">{{ activity.title }}</div>
+                  <!-- <div class="text-muted-foreground">{{ activity.category }} • {{ formatDuration(activity.duration) }}</div> -->
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <div class="flex items-start space-x-2">
+            <lucide-icon [img]="icons.info" [size]="16" class="text-primary mt-0.5"></lucide-icon>
+            <div>
+              <p class="text-sm font-medium text-primary">
+                Generación Automática de Agenda
+              </p>
+              <p class="text-xs text-primary/80 mt-1">
+                Se creará una agenda optimizada basada en tus preferencias. Podrás hacer ajustes manuales después de la generación.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-6 border-t border-border">
+      <div class="flex items-center justify-between">
+        <button (click)="handlePrevious()" [disabled]="currentStep === 1" class="variant-outline">
+          <lucide-icon [img]="icons.arrowLeft" [size]="16"></lucide-icon>
+          Anterior
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <ng-container *ngIf="currentStep < 4; else generateButton">
+            <button (click)="handleNext()" [disabled]="isNextDisabled()" class="icon-right">
+              Siguiente
+              <lucide-icon [img]="icons.arrowRight" [size]="16"></lucide-icon>
+            </button>
+          </ng-container>
+          <ng-template #generateButton>
+            <button (click)="handleGenerate()">
+              <lucide-icon [img]="icons.zap" [size]="16"></lucide-icon>
+              Generar Agenda
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

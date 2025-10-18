@@ -66,6 +66,11 @@ export class Breadcrumbs {
       { label: 'Panel Admin', path: '/admin-dashboard' },
       { label: 'Gestión de Actividades', path: '/activities-workshop-management' }
     ],
+    '/congress-agenda-maintenance': [
+      { label: 'Inicio', path: '/congress-homepage' },
+      { label: 'Panel Admin', path: '/admin-dashboard' },
+      { label: 'Gestión de Agenda', path: '/congress-agenda-maintenance' }  
+    ],
 
   };
 

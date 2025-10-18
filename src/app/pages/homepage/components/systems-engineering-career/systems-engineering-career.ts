@@ -1,6 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ArrowUpRight, BarChart3, BookOpen, Building, Cloud, Code, DollarSign, Globe, GraduationCap, Lightbulb, LucideAngularModule, LucideIconData, Shield, TrendingUp, UserPlus, Users } from 'lucide-angular';
+import { CommonModule } from '@angular/common';
+
+// Import Auth service
+import { Auth } from '../../../login-registration/services/auth';
 
 interface CareerPath {
   title: string;
@@ -24,13 +28,15 @@ interface Skill {
 
 @Component({
   selector: 'app-systems-engineering-career',
+  standalone: true, // Make it standalone
   imports: [
-    LucideAngularModule
+    LucideAngularModule,
+    CommonModule // Add CommonModule to imports
   ],
   templateUrl: './systems-engineering-career.html',
   styleUrl: './systems-engineering-career.css'
 })
-export class SystemsEngineeringCareer {
+export class SystemsEngineeringCareer implements OnInit {
   // Los datos se definen como señales para un manejo de estado eficiente
   careerPaths = signal<CareerPath[]>([]);
   testimonials = signal<Testimonial[]>([]);
@@ -38,7 +44,9 @@ export class SystemsEngineeringCareer {
   whySection = signal<any[]>([]);
 
   private readonly router = inject(Router);
+  private readonly authService = inject(Auth); // Inject Auth service
 
+  isLoggedIn: boolean = false; // Property to hold auth state
 
   readonly icons = {
     graduationCap: GraduationCap,
@@ -48,7 +56,17 @@ export class SystemsEngineeringCareer {
     code: Code
   };
 
+  constructor() { // Use constructor to set initial auth state
+    this.isLoggedIn = this.authService.isAuthenticated;
+  }
+
   ngOnInit() {
+    // You can also subscribe to changes if the auth state can change during the component's lifetime
+    this.authService.currentUser$.subscribe(() => {
+        this.isLoggedIn = this.authService.isAuthenticated;
+    });
+
+    // ... rest of the ngOnInit logic from the original file
     // Inicialización de los datos de la sección "Especialidades y Oportunidades"
     this.careerPaths.set([
       {
@@ -95,21 +113,21 @@ export class SystemsEngineeringCareer {
         name: "Andrea López",
         role: "Software Engineer en Google",
         year: "Graduada 2020",
-        image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
         quote: "La ingeniería de sistemas me abrió las puertas a trabajar en una de las empresas tecnológicas más importantes del mundo. Las bases que aprendí fueron fundamentales para mi carrera."
       },
       {
         name: "Miguel Rodríguez",
         role: "CTO en Startup Fintech",
         year: "Graduado 2018",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
         quote: "Estudiar ingeniería de sistemas me dio la versatilidad para entender tanto la parte técnica como el negocio. Ahora lidero el desarrollo tecnológico de una fintech en crecimiento."
       },
       {
         name: "Carmen Silva",
         role: "Data Scientist en Microsoft",
         year: "Graduada 2019",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+        image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
         quote: "La formación integral en sistemas me permitió especializarme en ciencia de datos. Trabajo con algoritmos de machine learning que impactan a millones de usuarios."
       }
     ]);

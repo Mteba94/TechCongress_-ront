@@ -1,39 +1,143 @@
-<div class="min-h-screen bg-background">
-    <app-header></app-header>
-    <div class="container mx-auto px-4 py-6">
-        <app-breadcrumbs />
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
-            <div class="mb-6 lg:mb-0">
-                <h1 class="text-3xl font-heading font-bold text-foreground mb-2">
-                    Configuración de Usuario y Perfil
-                </h1>
-                <p class="text-muted-foreground font-body">
-                    Gestiona tu información personal, preferencias y configuración de seguridad
-                </p>
-                <div class="flex items-center space-x-4 mt-4">
-                    <div class="flex items-center space-x-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-full">
-                        <lucide-icon [img]="icons.crown" [size]="16" class="text-purple-600"></lucide-icon>
-                        <span class="text-sm font-medium text-purple-600">
-                            <!-- {{ user.role === 'administrador' ? 'Administrador' : 'Participante' }} -->
-                              role
-                        </span>
+<ng-container *ngIf="!user()">
+    <div class="min-h-screen bg-background flex items-center justify-center">
+        <div class="text-center">
+            <lucide-icon [img]="icons.Loader" [size]="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
+            <p class="text-muted-foreground">Cargando configuración...</p>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="user()">
+    <div class="min-h-screen bg-background">
+        <app-header />
+        <div class="container mx-auto px-4 py-6">
+            <app-breadcrumbs />
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+                <div class="mb-6 lg:mb-0">
+                    <h1 class="text-3xl font-heading font-bold text-foreground mb-2">
+                        Configuración de Usuario y Perfil
+                    </h1>
+                    <p class="text-muted-foreground font-body">
+                        Gestiona tu información personal, preferencias y configuración de seguridad
+                    </p>
+                    <div class="flex items-center space-x-4 mt-4">
+                        <div class="flex items-center space-x-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-full">
+                            <lucide-icon [img]="icons.User" [size]="16" class="text-blue-600"></lucide-icon>
+                            <span class="text-sm font-medium text-blue-600">{{user()?.name}}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 px-3 py-1 bg-purple-100 border border-purple-200 rounded-full">
+                            <lucide-icon [img]="icons.Crown" [size]="16" class="text-purple-600"></lucide-icon>
+                            <span class="text-sm font-medium text-purple-600">{{user()?.role === 'administrador' ? 'administrador' : user()?.role === 'student' ? 'Estudiante' : 'Externo'}}</span> 
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <ng-container *ngIf="hasUnsavedChanges()">
+                        <div class="flex items-center space-x-2 px-3 py-2 bg-warning/10 border border-warning/20 rounded-lg">
+                            <lucide-icon [img]="icons.AlertTriangle" [size]="16" class="text-warning"></lucide-icon>
+                            <span class="text-sm font-medium text-warning">Cambios sin guardar</span>
+                        </div>
+                    </ng-container>
+                    <app-button
+                        variant="outline"
+                        (btnClick)="setShowSidebar(!showSidebar())"
+                        iconName="Menu"
+                        iconPosition="left"
+                        [iconSize]="18"
+                        class="lg:hidden"
+                    >
+                        <span>Menú</span>
+                    </app-button>
+                    <app-button
+                        variant="default"
+                        (btnClick)="handleSaveChanges()"
+                        [loading]="isLoading()"
+                        [disabled]="!hasUnsavedChanges()"
+                        iconName="Save"
+                        iconPosition="left"
+                        [iconSize]="18"
+                    >
+                        <span>Guardar Cambios</span>
+                    </app-button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div [ngClass]="{'lg:col-span-1': true, 'block': showSidebar(), 'hidden lg:block': !showSidebar()}">
+                    <div class="bg-card border border-border rounded-lg p-6 sticky top-24">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Secciones</h3>
+                        <nav class="space-y-2">
+                            <ng-container *ngFor="let tab of settingsTabs()">
+                                <button
+                                    (click)="handleTabChange(tab?.id)"
+                                    [ngClass]="{'w-full flex items-start space-x-3 p-3 rounded-lg text-left transition-colors duration-200 cursor-pointer': true,
+                                      'bg-primary/10 text-primary border border-primary/20': activeTab() === tab?.id,
+                                      'text-muted-foreground hover:text-foreground hover:bg-muted': activeTab() !== tab?.id
+                                    }"
+                                >
+                                    <lucide-icon [img]="tab.icon" [size]="20" class="mt-0.5 flex-shrink-0"></lucide-icon>
+                                    <div>
+                                        <p class="font-medium text-sm">{{tab?.label}}</p>
+                                        <p class="text-xs text-muted-foreground mt-0.5">{{tab?.description}}</p>
+                                    </div>
+                                </button>
+                            </ng-container>
+                        </nav>
+
+                        <!-- <div class="mt-8 pt-6 border-t border-border">
+                            <h4 class="text-sm font-semibold text-foreground mb-3">Acciones Rápidas</h4>
+                            <div class="space-y-2">
+                                <button class="w-full flex items-center space-x-2 p-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200">
+                                    <lucide-icon [img]="icons.Download" [size]="16"></lucide-icon>
+                                    <span>Exportar Datos</span>
+                                </button>
+                                <button class="w-full flex items-center space-x-2 p-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200">
+                                    <lucide-icon [img]="icons.Eye" [size]="16"></lucide-icon>
+                                    <span>Vista Privacidad</span>
+                                </button>
+                                <button class="w-full flex items-center space-x-2 p-2 rounded-md text-sm text-destructive hover:bg-destructive/10 transition-colors duration-200">
+                                    <lucide-icon [img]="icons.UserX" [size]="16"></lucide-icon>
+                                    <span>Desactivar Cuenta</span>
+                                </button>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3">
+                    <div class="bg-card border border-border rounded-lg overflow-hidden">
+                        <div [ngSwitch]="activeTab()">
+                            <div *ngSwitchCase="'profile'" class="p-6">
+                                <app-profile-tab [user]="user()" />
+                            </div>
+                            <!-- <div *ngSwitchCase="'preferences'" class="p-6">
+                                <h2 class="text-2xl font-semibold text-foreground mb-4">Seguridad y Acceso</h2>
+                                <p class="text-muted-foreground">Contenido de la sección de Seguridad y Acceso.</p>
+                            </div> -->
+                            <div *ngSwitchCase="'security'" class="p-6">
+                                <app-security-tab [user]="user()" />
+                            </div>
+                            <!-- <div *ngSwitchCase="'notifications'" class="p-6">
+                                <h2 class="text-2xl font-semibold text-foreground mb-4">Facturación y Pagos</h2>
+                                <p class="text-muted-foreground">Contenido de la sección de Facturación y Pagos.</p>
+                            </div> -->
+                            <div *ngSwitchCase="'privacy'" class="p-6">
+                                <h2 class="text-2xl font-semibold text-foreground mb-4">Privacidad</h2>
+                                <p class="text-muted-foreground">Contenido de la sección de Privacidad.</p>
+                            </div>
+                            <div *ngSwitchCase="'advanced'" class="p-6">
+                                <h2 class="text-2xl font-semibold text-foreground mb-4">Configuraciones Avanzadas</h2>
+                                <p class="text-muted-foreground">Contenido de la sección de Configuraciones Avanzadas.</p>
+                            </div>
+                            <div *ngSwitchDefault class="p-6">
+                                <h2 class="text-2xl font-semibold text-foreground mb-4">Selecciona una sección</h2>
+                                <p class="text-muted-foreground">Por favor, selecciona una sección del menú lateral.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="flex items-center space-x-4">
-                @if(!hasUnsavedChanges){
-                    <div class="flex items-center space-x-2 px-3 py-2 bg-warning/10 border border-warning/20 rounded-lg">
-                        <lucide-icon [img]="icons.alertTriangle" [size]="16" class="text-warning"></lucide-icon>
-                        <span class="text-sm font-medium text-warning">Cambios sin guardar</span>
-                    </div>
-                }
-                <app-button
-                    variant="outline"
-                    (click)="showSidebar()"
-                >
-                <span>Menú</span>
-                </app-button>
-            </div>
         </div>
     </div>
-</div>
+</ng-container>

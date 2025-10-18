@@ -1,4 +1,4 @@
-@if(!user){
+@if(!user()){
 <div class="min-h-screen bg-background flex items-center justify-center">
     <div class="text-center">
         <lucide-icon [img]="icons.loader" [size]="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
@@ -51,7 +51,7 @@
                     (click)="handleBulkApply()" iconName="Settings" iconPosition="left">
                     <span>Operaciones en Lote</span>
                 </app-button>
-                <app-button iconName="Plus" iconPosition="left" [iconSize]="16" (click)="showCreateWizard.set(true)">
+                <app-button iconName="Plus" iconPosition="left" [iconSize]="16" (click)="handleCreateActivity()">
                     <span>Nueva Actividad</span>
                 </app-button>
             </div>
@@ -157,7 +157,8 @@
                         [activities]="processedActivities()"
                         [loading]="loading()"
                         [selectedActivities]="selectedActivities()"
-                        (editActivity)="handleViewDetails($event)"
+                        (editActivity)="handleEditActivity($event)"
+                        (deleteActivity)="handleDeleteActivity($event)"
                     />
                 }@else {
                 <!-- <ActivityList
@@ -184,8 +185,10 @@
           onSave={handleCreateSave}
         /> -->
         <app-create-activity-wizard
+          [activity]="selectedActivity()"
           (close)="showCreateWizard.set(false)"
-          (save)="handleCreateSave($event)"></app-create-activity-wizard>
+          (save)="handleSave($event)">
+        </app-create-activity-wizard>
      }
 
      <!-- Modals -->

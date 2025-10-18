@@ -14,6 +14,7 @@ import { PonenteResponse } from '../../homepage/models/ponente-response.interfac
 import { NivelActividad } from './nivel-actividad';
 import { ObjetivoActividad } from './objetivo-actividad';
 import { MaterialActividad } from './material-actividad';
+import { UpdateActividadCommand } from '../models/actividad.commands';
 
 @Injectable({
   providedIn: 'root'
@@ -106,11 +107,17 @@ export class Actividad {
                 materialesActividad
               )
             );
-
-            console.log(mappedData)
+            console.log(actividades)
             return { ...actividades, data: mappedData };
           })
         )
+  }
+
+  getById(actividadId: number){
+    const requestUrl = `${env.api}${endpoint.ACTIVIDAD_BY_ID}${actividadId}`;
+
+    
+
   }
 
   createActividad(activityData: any): Observable<any> {
@@ -125,6 +132,7 @@ export class Actividad {
     formData.append('HoraInicio', activityData.horaInicio);
     formData.append('HoraFin', activityData.horaFin);
     formData.append('CuposTotal', activityData.cuposTotal);
+    formData.append('permitirInscripcion', activityData.permitirInscripcion);
 
     let ubicacion = '';
     if (activityData.locationType === 'virtual') {
@@ -158,5 +166,25 @@ export class Actividad {
     
     const requestUrl = `${env.api}${endpoint.CREATE_ACTIVIDAD}`;
     return this.httpClient.post(requestUrl, formData);
+  }
+
+  updateActividad(request: UpdateActividadCommand): Observable<BaseApiResponse<boolean>>{
+    const requestUrl = `${env.api}${endpoint.UPDATE_ACTIVIDAD}`;
+
+    return this.httpClient.put<BaseApiResponse<boolean>>(requestUrl, request).pipe(
+      map((response: BaseApiResponse<boolean>) => {
+        return response;
+      })
+    )
+  }
+
+  deleteActividad(id: number): Observable<BaseApiResponse<boolean>>{
+    const requestUrl = `${env.api}${endpoint.DELETE_ACTIVIDAD}/${id}`;
+
+    return this.httpClient.delete<BaseApiResponse<boolean>>(requestUrl).pipe(
+      map((response: BaseApiResponse<boolean>) => {
+        return response;
+      })
+    )
   }
 }

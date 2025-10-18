@@ -1,7 +1,10 @@
 export const endpoint = {
     //ACTIVIDAD
     LIST_ACTIVIDAD: 'Actividad',
+    ACTIVIDAD_BY_ID: 'Actividad/',
     CREATE_ACTIVIDAD: 'Actividad/Create',
+    UPDATE_ACTIVIDAD: 'Actividad/Update',
+    DELETE_ACTIVIDAD: 'Actividad/Delete/',
 
     //ACTIVIDAD-PONENTE
     LIST_ACTIVIDAD_PONENTE: 'ActividadPonente',
@@ -13,6 +16,8 @@ export const endpoint = {
     MENU_BY_USER: 'Menu/MenuByUser',
 
     //INSCRIPCION
+    LIST_INSCRIPCION: 'Inscripcion',
+    BY_USER_ID: 'Inscripcion/User/',
     CREATE_INSCRIPCION: 'Inscripcion/Create',
 
     //ROLE
@@ -35,6 +40,10 @@ export const endpoint = {
 
     //PARTICIPANTE
     CREATE_PARTICIPANTE: 'Participante/Create',
+    DELETE_PARTICIPANTE: 'Participante/Delete',
+    UPDATE_PARTICIPANTE: 'Participante/Update',
+    LIST_PARTICIPANTE: 'Participante',
+    PARTICIPANTE_BY_ID: 'Participante/',
 
     //MATERIAL-ACTIVIDAD
     LIST_MATERIAL_ACTIVIDAD: 'MaterialActividad',
@@ -66,10 +75,15 @@ export const endpoint = {
     SELECT_TIPO_IDENTIFICACION: 'TipoIdentificacion/Select',
 
     //CONGRESO
+    LIST_CONGRESO: 'Congreso',
     CONGRESO_SELECT: 'Congreso/Select',
 
     //USUARIO
     LIST_USER: 'User',
+    USER_BY_ID: 'User/',
     CREATE_USER: 'User/Create',
+    UPDATE_USER: 'User/Update',
+    DELETE_USER: 'User/Delete',
+    SUMMARY_USER: 'User/Summary',
 
 }

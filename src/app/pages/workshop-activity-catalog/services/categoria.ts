@@ -15,7 +15,7 @@ export class Categoria {
 
 
   getAllCategoria(): Observable<BaseApiResponse<CategoryResponse[]>> {
-      const requestUrl = `${env.api}${endpoint.LIST_CATEGORIA}`;
+      const requestUrl = `${env.api}${endpoint.LIST_CATEGORIA}?download=true`;
   
       return this.httpClient
         .get<BaseApiResponse<CategoryResponse[]>>(requestUrl)

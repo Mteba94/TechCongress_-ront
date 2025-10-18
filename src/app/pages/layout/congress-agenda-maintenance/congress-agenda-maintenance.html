@@ -1,0 +1,138 @@
+<!-- Loader while checking user permissions -->
+<ng-container *ngIf="!user(); else mainContent">
+  <div class="min-h-screen bg-background flex items-center justify-center">
+    <div class="text-center">
+      <lucide-icon name="Loader" size="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
+      <p class="text-muted-foreground">Verificando permisos...</p>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Main Content -->
+<ng-template #mainContent>
+  <div class="min-h-screen bg-background">
+    <!-- TODO: Add app-header component if it exists -->
+    <app-header></app-header>
+    <div class="container mx-auto px-4 py-6">
+      <app-breadcrumbs></app-breadcrumbs>
+
+      <!-- Header Section -->
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+        <div class="mb-6 lg:mb-0">
+          <div class="flex items-center space-x-3 mb-2">
+            <lucide-icon [img]="icons.calendar" size="24" class="text-primary"></lucide-icon>
+            <h1 class="text-3xl font-heading font-bold text-foreground">
+              Mantenimiento de Agenda del Congreso
+            </h1>
+          </div>
+          <p class="text-muted-foreground font-body">
+            Interfaz administrativa para crear, modificar y gestionar la agenda oficial del congreso
+          </p>
+          <div class="flex items-center space-x-4 mt-4">
+            <div class="flex items-center space-x-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+              <lucide-icon [img]="icons.calendar" size="16" class="text-primary"></lucide-icon>
+              <span class="text-sm font-medium text-primary">
+                Día {{ selectedDay() }} - {{ activitiesForSelectedDayCount() }} actividades
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 px-3 py-1 rounded-full border"
+                 [ngClass]="{
+                   'bg-warning/10 border-warning/20 text-warning': agendaStatus() === 'draft',
+                   'bg-info/10 border-info/20 text-info': agendaStatus() === 'review',
+                   'bg-success/10 border-success/20 text-success': agendaStatus() === 'published'
+                 }">
+              <lucide-icon [img]="agendaStatus() === 'draft' ? icons.edit : agendaStatus() === 'review' ? icons.eye : icons.checkCircle" size="16"></lucide-icon>
+              <span class="text-sm font-medium">
+                {{ agendaStatus() === 'draft' ? 'Borrador' : agendaStatus() === 'review' ? 'En Revisión' : 'Publicado' }}
+              </span>
+            </div>
+            <ng-container *ngIf="conflicts().length > 0">
+              <div class="flex items-center space-x-2 px-3 py-1 bg-destructive/10 border border-destructive/20 rounded-full">
+                <lucide-icon [img]="icons.alertTriangle" size="16" class="text-destructive"></lucide-icon>
+                <span class="text-sm font-medium text-destructive">
+                  {{ conflicts().length }} Conflictos
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <app-button
+            variant="outline"
+            (click)="showWizard.set(true)"
+            iconName="Wand2"
+            iconPosition="left"
+            [iconSize]="16"
+          >
+            <span>Asistente de Agenda</span>
+          </app-button>
+          
+          <!-- Assuming app-select component exists -->
+          <app-select
+            [options]="[
+              { value: 1, label: 'Día 1 - Inauguración' },
+              { value: 2, label: 'Día 2 - Talleres' },
+              { value: 3, label: 'Día 3 - Competencias' },
+              { value: 4, label: 'Día 4 - Clausura' }
+            ]"
+            [value]="selectedDay()"
+            (valueChange)="selectedDay.set($event)"
+            placeholder="Seleccionar día"
+          ></app-select>
+        </div>
+      </div>
+
+      <!-- Conflict Detection Panel -->
+      <!-- <app-conflict-detection *ngIf="conflicts().length > 0"
+        [conflicts]="conflicts()"
+        [agendaItems]="agendaItems()"
+        [activities]="activities()"
+        (resolve)="handleUpdateAgendaItem($event.id, $event.updates)"
+      ></app-conflict-detection> -->
+
+      <!-- Main Layout - Dual Pane -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6" cdkDropListGroup>
+        <!-- Left Pane - Activity Library -->
+        <div class="lg:col-span-4">
+          <app-activity-library
+            [activities]="filteredActivities()"
+            [filters]="libraryFilters()"
+            (filterChange)="handleFilterChange($any($event))"
+            [loading]="loading()"
+          ></app-activity-library>
+        </div>
+
+        <!-- Right Pane - Timeline Calendar -->
+        <div class="lg:col-span-8">
+          <!-- <app-timeline-calendar
+            [day]="selectedDay()"
+            [timeSlots]="timeSlots"
+            [rooms]="rooms"
+            [agendaItems]="agendaItems().filter(item => item.day === selectedDay())"
+            [activities]="activities()"
+            [conflicts]="conflicts()"
+            (removeItem)="handleRemoveFromAgenda($event)"
+            (updateItem)="handleUpdateAgendaItem($event.id, $event.updates)"
+            (cdkDropListDropped)="handleDragEnd($event)"
+          ></app-timeline-calendar> -->
+        </div>
+      </div>
+
+      <!-- Publishing Controls -->
+      <!-- <app-publishing-controls
+        [agendaStatus]="agendaStatus()"
+        [conflicts]="conflicts()"
+        (publish)="handlePublishAgenda()"
+        (changeStatus)="agendaStatus.set($event)"
+      ></app-publishing-controls> -->
+    </div>
+
+    <!-- Agenda Creation Wizard -->
+    <app-agenda-wizard *ngIf="showWizard()"
+      [activities]="activities()"
+      (close)="showWizard.set(false)"
+      (save)="agendaItems.set($event); showWizard.set(false)"
+    ></app-agenda-wizard>
+  </div>
+</ng-template>
