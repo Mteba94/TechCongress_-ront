@@ -113,11 +113,76 @@ export class Actividad {
         )
   }
 
-  getById(actividadId: number){
+  getById(actividadId: number): Observable<BaseApiResponse<Activity>>{
     const requestUrl = `${env.api}${endpoint.ACTIVIDAD_BY_ID}${actividadId}`;
 
-    
+    return forkJoin({
+      actividad: this.httpClient.get<BaseApiResponse<ActividadResponse>>(requestUrl),
+      categorias: this.categoriaActividad.getAllCategoria(),
+      ponentes: this.ponenteService.getAllPonente(),
+      actividadPonentes: this.actividadPonenteService.getAllActividadPonente(),
+      nivelActividad: this.nivelActividad.getAllNivelActividad(),
+      objetivoActividad: this.objetivoActividad.getAllObjetivoActividad(),
+      materialActividad: this.materialActividad.getAllMaterialActividad()
+    })
+      .pipe(
+        map(({ 
+          actividad, 
+          categorias, 
+          ponentes, 
+          actividadPonentes,
+          nivelActividad,
+          objetivoActividad,
+          materialActividad
+        }) => {
+          const tipoCategoria = new Map<number, string>();
+          categorias.data.forEach((tipo: any) => {
+              tipoCategoria.set(tipo.tipoActividadId, tipo.nombre);
+          });
 
+          const ponenteMap = new Map<number, PonenteResponse>();
+          ponentes.data.forEach(ponente => {
+            ponenteMap.set(ponente.ponenteId, ponente);
+          });
+
+          const actividadPonenteMap = new Map<number, number>();
+          actividadPonentes.data.forEach(ap => {
+            actividadPonenteMap.set(ap.actividadId, ap.ponenteId);
+          });
+
+          const nivelesActividad = new Map<number, string>();
+          nivelActividad.data.forEach(nivel => {
+            nivelesActividad.set(nivel.nivelId, nivel.nombre);
+          });
+
+          const objetivosActividad = new Map<number, string[]>();
+          objetivoActividad.data.forEach(objetivo => {
+            if (!objetivosActividad.has(objetivo.actividadId)) {
+              objetivosActividad.set(objetivo.actividadId, []);
+            }
+            objetivosActividad.get(objetivo.actividadId)!.push(objetivo.objetivoDescripcion);
+          });
+
+          const materialesActividad = new Map<number, string[]>();
+          materialActividad.data.forEach(material => {
+            if (!materialesActividad.has(material.actividadId)) {
+              materialesActividad.set(material.actividadId, []);
+            }
+            materialesActividad.get(material.actividadId)!.push(material.materialDesc);
+          });
+
+          const mappedData = mapActividadResponseToActivity(
+            actividad.data,
+            tipoCategoria,
+            ponenteMap,
+            actividadPonenteMap,
+            nivelesActividad,
+            objetivosActividad,
+            materialesActividad
+          );
+          return { ...actividad, data: mappedData };
+        })
+      )
   }
 
   createActividad(activityData: any): Observable<any> {

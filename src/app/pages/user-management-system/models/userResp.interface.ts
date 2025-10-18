@@ -54,7 +54,7 @@ export interface InscriptionByUser{
 
 export interface CertificatesByUser{
   userId: number;
-  certificatesCount: number;
+  certificateCount: number;
 }
 
 export interface UserSummary{

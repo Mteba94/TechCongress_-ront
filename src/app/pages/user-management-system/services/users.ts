@@ -10,6 +10,7 @@ import { NivelAcademico } from '../../login-registration/services/nivel-academic
 import { TipoParticipante } from '../../login-registration/services/tipo-participante';
 import { UserRole } from '../../login-registration/services/user-role';
 import { CreateParticipanteCommand, UpdateParticipanteCommand } from '../models/participante.commands';
+import { AttendancePercentage } from '../../user-dashboard/models/user-resp.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -174,6 +175,16 @@ export class Users {
 
     return this.httpClient.get<BaseApiResponse<UserSummary[]>>(requestUrl).pipe(
       map((response: BaseApiResponse<UserSummary[]>) => {
+        return response;
+      })
+    )
+  }
+
+  AttendancePercentage(userId: number): Observable<BaseApiResponse<AttendancePercentage>>{
+    const requestUrl = `${env.api}${endpoint.USER_BY_ID}${userId}/AttendancePercentage`;
+
+    return this.httpClient.get<BaseApiResponse<AttendancePercentage>>(requestUrl).pipe(
+      map((response: BaseApiResponse<AttendancePercentage>) => {
         return response;
       })
     )

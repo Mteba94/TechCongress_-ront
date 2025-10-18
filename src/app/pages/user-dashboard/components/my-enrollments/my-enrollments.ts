@@ -1,17 +1,22 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Activity } from '../../../workshop-activity-catalog/models/activity.interface';
-import { BookOpen, Calendar, CheckCircle, Circle, Clock, LucideAngularModule, LucideIconData, MapPin, User, Users } from 'lucide-angular';
+import { BookOpen, Calendar, CheckCircle, Circle, Clock, Loader, LucideAngularModule, LucideIconData, MapPin, User, Users } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { Router } from '@angular/router';
 import { Actividad } from '../../../workshop-activity-catalog/services/actividad';
 import { ActivityDetailModal } from '../../../workshop-activity-catalog/components/activity-detail-modal/activity-detail-modal';
+import { firstValueFrom, forkJoin, map } from 'rxjs';
+import { Auth } from '../../../login-registration/services/auth';
+import { InscripcionService } from '../../../workshop-activity-catalog/services/inscripcion-service';
+import { NotificacionService } from '../../../../shared/services/notificacion-service';
 
 type FilterType = 'all' | 'completed' | 'in-progress' | 'upcoming';
 
 // Extend the Activity interface to include the status property used in this component
 interface EnrollmentActivity extends Activity {
-  status: 'completed' | 'in-progress' | 'upcoming';
+  inscripcionId: number;
+  esGanador: boolean;
 }
 
 @Component({
@@ -33,6 +38,7 @@ export class MyEnrollments implements OnInit {
   selectedActivity = signal<EnrollmentActivity | null>(null);
   isModalOpen = signal<boolean>(false);
   userEnrolledIds = computed(() => this.enrollments().map(e => e.id));
+  loading = signal(false);
 
   readonly icons = {
     checkCircle: CheckCircle,
@@ -42,11 +48,16 @@ export class MyEnrollments implements OnInit {
     bookOpen: BookOpen,
     mapPin: MapPin,
     user: User,
-    users: Users
+    users: Users,
+    loader: Loader
   }
 
   private router = inject(Router);
   private actividadService = inject(Actividad);
+  private auth = inject(Auth);
+  private inscripcionService = inject(InscripcionService);
+  private notificationService = inject(NotificacionService);
+
 
   tabs: { key: FilterType; label: string }[] = [
     { key: 'all', label: 'Todas' },
@@ -56,46 +67,74 @@ export class MyEnrollments implements OnInit {
   ];
 
   ngOnInit() {
-    this.loadEnrollments();
+    this.loadMyEnrollments();
+    this.loading.set(false);
   }
 
-  loadEnrollments() {
-    const size = 100;
-    const sort = 'Titulo';
-    const order = 'asc';
-    const numPage = 0;
-    const getInputs = '';
+  async loadMyEnrollments() {
+    this.loading.set(true);
+    const user = await firstValueFrom(this.auth.currentUser$);
+    if (user) {
+      try {
+        const response = await firstValueFrom(this.inscripcionService.ByUser(user.id));
+        this.loading.set(false);
+        if (response.isSuccess) {
+          const inscriptionResponses = response.data;
+          
+          if (inscriptionResponses.length === 0) {
+            this.enrollments.set([]);
+            this.applyFilter();
+            return;
+          }
 
-    this.actividadService.getAll(size, sort, order, numPage, getInputs).subscribe(response => {
-      const activities = response.data.map(activity => {
-        const now = new Date();
-        const datePart = activity.date.split('T')[0];
-        const activityStartDate = new Date(`${datePart}T${activity.startTime}`);
-        const activityEndDate = new Date(`${datePart}T${activity.endTime}`);
+          const activityRequests = inscriptionResponses.map(inscripcion =>
+            this.actividadService.getById(inscripcion.actividadId).pipe(
+              map(activityResp => ({ ...activityResp, inscripcionId: inscripcion.inscripcionId, esGanador: inscripcion.esGanador }))
+            )
+          );
 
-        let status: 'completed' | 'in-progress' | 'upcoming';
+          firstValueFrom(forkJoin(activityRequests))
+            .then(activityResponses => {
+              const enrollmentActivities: EnrollmentActivity[] = activityResponses.map((activityResp, index) => {
+                const activity = activityResp.data;
+                const now = new Date();
+                const activityDate = new Date(activity.date);
 
-        if (now > activityEndDate) {
-          status = 'completed';
-        } else if (now >= activityStartDate && now <= activityEndDate) {
-          status = 'in-progress';
-        } else {
-          status = 'upcoming';
+                return {
+                  ...activity,
+                  inscripcionId: activityResp.inscripcionId,
+                  esGanador: activityResp.esGanador,
+                } as EnrollmentActivity;
+              });
+              this.enrollments.set(enrollmentActivities);
+              this.applyFilter();
+            })
+            .catch(error => {
+              console.error('Error fetching activity details for enrollments:', error);
+            });
         }
-        
-        return { ...activity, status };
-      });
-      this.enrollments.set(activities);
-      this.applyFilter();
-    });
+      } catch (error) {
+        console.error('Error fetching user enrollments:', error);
+      } finally {
+        this.loading.set(false);
+      }
+    } else {
+      this.loading.set(false); // Also set to false if no user
+    }
   }
 
   applyFilter() {
     const currentFilter = this.filter();
     if (currentFilter === 'all') {
       this.filteredEnrollments.set(this.enrollments());
-    } else {
-      this.filteredEnrollments.set(this.enrollments().filter(e => e.status === currentFilter));
+    }
+    else {
+      this.filteredEnrollments.set(this.enrollments().filter(e => {
+        if (currentFilter === 'completed') return e.statusActivity === 'Completado';
+        if (currentFilter === 'in-progress') return e.statusActivity === 'En Curso';
+        if (currentFilter === 'upcoming') return e.statusActivity === 'Pendiente'; // Assuming 'Pendiente' means upcoming
+        return false;
+      }));
     }
   }
 
@@ -104,31 +143,31 @@ export class MyEnrollments implements OnInit {
     this.applyFilter();
   }
 
-  getStatusIcon(status: string): { icon: LucideIconData; color: string } {
-    switch (status) {
-      case 'p':
+  getStatusIcon(statusActivity: string): { icon: LucideIconData; color: string } {
+    switch (statusActivity) {
+      case 'Completado':
         return { icon: CheckCircle, color: 'text-green-600' };
-      case 'in-progress':
+      case 'En Curso':
         return { icon: Clock, color: 'text-yellow-600' };
-      case 'upcoming':
+      case 'Pendiente':
         return { icon: Calendar, color: 'text-blue-600' };
       default:
         return { icon: Circle, color: 'text-gray-400' };
     }
   }
 
-  getStatusText(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'Pendiente':
+  getStatusText(statusActivity: string): string {
+    switch (statusActivity.toLowerCase()) {
+      case 'pendiente':
         return 'Pendiente';
-      case 'Completado':
-         return 'Completado';
-      case 'En Curso':
-         return 'En Curso';
-      case 'Cancelled':
-        return 'cancelled';
+      case 'completado':
+        return 'Completado';
+      case 'en curso':
+        return 'En Curso';
+      case 'cancelled':
+        return 'Cancelado';
       default:
-        return 'Pendiente';
+        return 'Desconocido';
     }
   }
 
@@ -149,9 +188,9 @@ export class MyEnrollments implements OnInit {
     if (!dateString) {
       return 'Invalid Date';
     }
-  
+
     let year: number, month: number, day: number;
-  
+
     if (dateString.includes('T')) {
       // Handle ISO-like strings, e.g., "2025-10-18T..."
       const datePart = dateString.split('T')[0];
@@ -174,14 +213,14 @@ export class MyEnrollments implements OnInit {
     } else {
       return 'Invalid Date Format';
     }
-  
+
     if (isNaN(year) || isNaN(month) || isNaN(day)) {
       return 'Invalid Date';
     }
-  
+
     // months are 0-indexed in JavaScript Date
     const date = new Date(Date.UTC(year, month - 1, day));
-  
+
     return date.toLocaleDateString('es-ES', {
       weekday: 'short',
       month: 'short',
@@ -202,5 +241,44 @@ export class MyEnrollments implements OnInit {
 
   navigateTo(url: string) {
     this.router.navigate([url]);
+  }
+
+  async handleGenerateDiploma(inscripcionId: number) {
+    try {
+      const request = {
+        inscripcionId: inscripcionId,
+        nombrePersonalizado: '' // Set to null if not provided
+      };
+      const response = await firstValueFrom(this.inscripcionService.GenerateDiploma(request));
+      if (response.isSuccess) {
+        this.notificationService.show('Diploma generado exitosamente.', 'success');
+        if (response.data) {
+          // Assuming response.data is the base64 PDF string
+          const base64Pdf = response.data;
+          const byteCharacters = atob(base64Pdf);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `diploma_${inscripcionId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }
+      } else {
+        console.error('Error generating diploma (API response):', response.message);
+        this.notificationService.show(response.message, 'error');
+      }
+    } catch (error) {
+      this.notificationService.show('Error al generar el diploma.', 'error');
+      console.error('Error generating diploma (exception):', error);
+    }
   }
 }

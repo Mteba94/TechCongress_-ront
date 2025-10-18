@@ -8,6 +8,7 @@ import { QuickStats } from '../../user-dashboard/components/quick-stats/quick-st
 import { firstValueFrom } from 'rxjs';
 import { Auth } from '../../login-registration/services/auth';
 import { MyEnrollments } from '../../user-dashboard/components/my-enrollments/my-enrollments';
+import { CertificatesSection } from '../../user-dashboard/components/certificates-section/certificates-section';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -17,7 +18,8 @@ import { MyEnrollments } from '../../user-dashboard/components/my-enrollments/my
     Breadcrumbs,
     WelcomeHeader,
     QuickStats,
-    MyEnrollments
+    MyEnrollments,
+    CertificatesSection
   ],
   templateUrl: './user-dashboard.html',
   styleUrl: './user-dashboard.css'
@@ -26,7 +28,6 @@ export class UserDashboard {
   isAuthenticated = false;
   isLoading = true;
   isAdmin = false;
-
 
   private readonly router = inject(Router);
   private readonly authService = inject(Auth)

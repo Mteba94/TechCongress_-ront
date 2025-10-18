@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { InscripcionRequest } from '../models/inscripcion-req.interface';
+import { DiplomaReq, InscripcionRequest } from '../models/inscripcion-req.interface';
 import { BaseApiResponse } from '../../../shared/models/reusables/base-api-response.interface';
 import { map, Observable } from 'rxjs';
 import { endpoint } from '../../../shared/utils/endpoints.util';
@@ -28,6 +28,16 @@ export class InscripcionService {
 
     return this.httpClient.post<BaseApiResponse<boolean>>(requestUrl, request).pipe(
       map((response: BaseApiResponse<boolean>) => {
+        return response;
+      })
+    )
+  }
+
+  GenerateDiploma(request: DiplomaReq): Observable<BaseApiResponse<string>>{
+    const requestUrl = `${env.api}${endpoint.GENERATE_DIPLOMA}`;
+
+    return this.httpClient.post<BaseApiResponse<string>>(requestUrl, request).pipe(
+      map((response: BaseApiResponse<string>) => {
         return response;
       })
     )

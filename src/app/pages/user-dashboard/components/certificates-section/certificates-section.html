@@ -1,0 +1,144 @@
+<div class="bg-card border border-border rounded-lg p-6 shadow-subtle">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-2">
+            <lucide-icon [img]="icons.Award" [size]="24" class="text-primary"></lucide-icon>
+            <h2 class="text-xl font-heading font-semibold text-foreground">
+                Mis Certificados
+            </h2>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm font-caption text-muted-foreground">
+                {{availableCertificates.length}} disponibles
+            </span>
+            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-xs font-bold text-green-800">
+                    {{availableCertificates.length}}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if (certificates().length > 0) {
+        <div class="space-y-4">
+            @for (certificate of certificates(); track certificate.inscripcionId) {
+                <div
+                    class="border border-border rounded-lg p-4 hover:shadow-subtle transition-shadow duration-200"
+                >
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h3 class="font-heading font-semibold text-foreground">
+                                    {{certificate.title}}
+                                </h3>
+                                <span [class]="'px-2 py-1 text-xs font-caption rounded-full ' + getTypeColor(certificate.category)">
+                                    {{certificate.category}}
+                                </span>
+                                @if (certificate.achievement) {
+                                    <span class="px-2 py-1 text-xs font-caption rounded-full bg-yellow-100 text-yellow-800">
+                                        {{certificate.achievement}}
+                                    </span>
+                                }
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 text-sm font-caption text-muted-foreground mb-2">
+                                <div class="flex items-center space-x-1">
+                                    <lucide-icon [img]="icons.User" [size]="14"></lucide-icon>
+                                    <span>{{certificate.instructor}}</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <lucide-icon [img]="icons.Clock" [size]="14"></lucide-icon>
+                                    <span>{{certificate.duration}}</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <lucide-icon [img]="icons.Calendar" [size]="14"></lucide-icon>
+                                    <span>{{formatDate(certificate.issueDate)}}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs font-caption text-muted-foreground">
+                                ID: {{certificate.credentialId}}
+                            </p>
+                        </div>
+                        
+                        <div [class]="'flex items-center space-x-2 px-3 py-1 rounded-full ' + getStatusInfo(certificate.status).bgColor">
+                            <lucide-icon [img]="getStatusInfo(certificate.status).icon" [size]="16" [class]="getStatusInfo(certificate.status).color"></lucide-icon>
+                            <span [class]="'text-sm font-body ' + getStatusInfo(certificate.status).color">
+                                {{getStatusInfo(certificate.status).text}}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-border">
+                        <div class="flex items-center space-x-2">
+                            <lucide-icon [img]="icons.Shield" [size]="16" class="text-green-600"></lucide-icon>
+                            <span class="text-sm font-caption text-muted-foreground">
+                                Certificado verificado digitalmente
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            @if (certificate.status === 'available') {
+                                <app-button
+                                    variant="ghost"
+                                    size="sm"
+                                    (btnClick)="handleShare(certificate)"
+                                    iconName="Share2"
+                                    iconPosition="left"
+                                    [iconSize]="14"
+                                >
+                                    <span>Compartir</span>
+                                </app-button>
+                                <app-button
+                                    variant="default"
+                                    size="sm"
+                                    (btnClick)="handleDownload(certificate)"
+                                    [loading]="isDownloading()[certificate.inscripcionId]"
+                                    iconName="Download"
+                                    iconPosition="left"
+                                    [iconSize]="14"
+                                >
+                                    <span>Descargar</span>
+                                </app-button>
+                            }
+                            @if (certificate.status === 'processing') {
+                                <span class="text-sm font-caption text-muted-foreground">
+                                    Disponible en 24-48 horas
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    } @else {
+        <div class="text-center py-8">
+            <lucide-icon [img]="icons.Award" [size]="48" class="text-muted-foreground mx-auto mb-4"></lucide-icon>
+            <h3 class="text-lg font-heading font-semibold text-foreground mb-2">
+                No hay certificados disponibles
+            </h3>
+            <p class="text-muted-foreground font-body mb-4">
+                Completa actividades para obtener certificados digitales
+            </p>
+            <app-button
+                variant="default"
+                (btnClick)="navigateTo('/workshop-activity-catalog')"
+                iconName="BookOpen"
+                iconPosition="left"
+                [iconSize]="16"
+            >
+                <span>Ver Actividades</span>
+            </app-button>
+        </div>
+    }
+
+    @if (processingCertificates.length > 0) {
+        <div class="mt-6 pt-4 border-t border-border">
+            <div class="flex items-center space-x-2 text-sm font-caption text-muted-foreground">
+                <lucide-icon [img]="icons.Clock" [size]="16" class="text-yellow-600"></lucide-icon>
+                <span>
+                    {{processingCertificates.length}} certificado{{processingCertificates.length > 1 ? 's' : ''}} en procesamiento
+                </span>
+            </div>
+        </div>
+    }
+</div>

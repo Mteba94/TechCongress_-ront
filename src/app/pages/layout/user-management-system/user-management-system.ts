@@ -414,7 +414,7 @@ export class UserManagementSystem {
           numeroIdentificacion: 'N/A', // Assuming a default value
           schoolId: Number(newUserData.schoolId),
           schoolName: newUserData.institution,
-          nivelAcademicoId: newUserData.nivelAcademico,
+          nivelAcademicoId: newUserData.nivelAcademicoId,
           semestre: 1, // Assuming a default value
           password: '' // Assuming autogen is used for password
         };

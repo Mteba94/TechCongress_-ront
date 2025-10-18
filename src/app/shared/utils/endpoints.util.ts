@@ -19,6 +19,7 @@ export const endpoint = {
     LIST_INSCRIPCION: 'Inscripcion',
     BY_USER_ID: 'Inscripcion/User/',
     CREATE_INSCRIPCION: 'Inscripcion/Create',
+    GENERATE_DIPLOMA: 'Inscripcion/GenerateDiploma',
 
     //ROLE
     ROLE_BY_USER: 'UserRole/Role/',
@@ -85,5 +86,6 @@ export const endpoint = {
     UPDATE_USER: 'User/Update',
     DELETE_USER: 'User/Delete',
     SUMMARY_USER: 'User/Summary',
+    ATTENDANCE_USER: 'User/'
 
 }

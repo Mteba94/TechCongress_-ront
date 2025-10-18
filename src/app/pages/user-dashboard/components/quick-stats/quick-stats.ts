@@ -1,6 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Award, Calendar, CheckCircle, LucideAngularModule, TrendingUp } from 'lucide-angular';
+import { Auth } from '../../../login-registration/services/auth';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Users } from '../../../user-management-system/services/users';
 
 interface Stat {
   label: string;
@@ -19,10 +22,10 @@ interface Stat {
   templateUrl: './quick-stats.html',
   styleUrl: './quick-stats.css'
 })
-export class QuickStats {
+export class QuickStats implements OnInit {
   public stats = {
     enrolledActivities: 0,
-    completedActivities: 0,
+    // completedActivities: 0,
     earnedCertificates: 0,
     attendanceRate: 0
   };
@@ -37,15 +40,32 @@ export class QuickStats {
     trendingUp: TrendingUp
   };
 
-  ngOnInit(): void {
-    // Mock data - in real app this would come from API
-    const mockStats = {
-      enrolledActivities: 8,
-      completedActivities: 5,
-      earnedCertificates: 3,
-      attendanceRate: 87
-    };
-    this.stats = mockStats;
+  private readonly usersService = inject(Users);
+  private readonly authService = inject(Auth);
+
+  async ngOnInit(): Promise<void> {
+    const user = await firstValueFrom(this.authService.currentUser$);
+    if (user) {
+      try {
+        const [inscriptions, certificates, attendance] = await firstValueFrom(forkJoin([
+          this.usersService.InscriptionsByUser(user.id),
+          this.usersService.CertificatesByUser(user.id),
+          this.usersService.AttendancePercentage(user.id)
+        ]));
+
+        this.stats = {
+          enrolledActivities: inscriptions.isSuccess ? inscriptions.data.inscriptionsCount : 0,
+          // completedActivities: 0, // Not directly available, keep as 0 or derive if possible
+          earnedCertificates: certificates.isSuccess ? certificates.data.certificateCount : 0,
+          attendanceRate: attendance.isSuccess ? attendance.data.attendancePercentage : 0
+        }
+
+        //console.log('User Stats:', this.stats);
+
+      } catch (error) {
+        console.error('Error fetching user stats:', error);
+      }
+    }
 
     this.statItems = [
       {
@@ -55,13 +75,13 @@ export class QuickStats {
         color: 'text-blue-600',
         bgColor: 'bg-blue-50'
       },
-      {
-        label: 'Completadas',
-        value: this.stats.completedActivities,
-        icon: this.icons.checkCircle,
-        color: 'text-green-600',
-        bgColor: 'bg-green-50'
-      },
+      // {
+      //   label: 'Completadas',
+      //   value: this.stats.completedActivities,
+      //   icon: this.icons.checkCircle,
+      //   color: 'text-green-600',
+      //   bgColor: 'bg-green-50'
+      // },
       {
         label: 'Certificados',
         value: this.stats.earnedCertificates,
