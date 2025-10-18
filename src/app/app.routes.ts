@@ -26,31 +26,31 @@ export const routes: Routes = [
     },
     {
         path:'user-dashboard',
-        component: UserDashboard
+        loadComponent: () => import('./pages/layout/user-dashboard/user-dashboard').then(m => m.UserDashboard)
     },
     {
         path: 'workshop-activity-catalog',
-        component: WorkshopActivityCatalog
+        loadComponent: () => import('./pages/layout/workshop-activity-catalog/workshop-activity-catalog').then(m => m.WorkshopActivityCatalog)
     },
     {
         path: 'admin-dashboard',
-        component: AdminDashboard
+        loadComponent: () => import('./pages/layout/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard)
     },
     {
         path: 'user-management-system',
-        component: UserManagementSystem
+        loadComponent: () => import('./pages/layout/user-management-system/user-management-system').then(m => m.UserManagementSystem)
     },
     {
         path: 'user-settings-profile-management',
-        component: UserSettingsProfileManagement
+        loadComponent: () => import('./pages/layout/user-settings-profile-management/user-settings-profile-management').then(m => m.UserSettingsProfileManagement)
     },
     {
         path: 'activities-workshop-management',
-        component: ActivitiesWorkshopManagement
+        loadComponent: () => import('./pages/layout/activities-workshop-management/activities-workshop-management').then(m => m.ActivitiesWorkshopManagement)
     },
     {
         path: 'congress-agenda-maintenance',
-        component: CongressAgendaMaintenance
+        loadComponent: () => import('./pages/layout/congress-agenda-maintenance/congress-agenda-maintenance').then(m => m.CongressAgendaMaintenance)
     },
     {
         path: '**',
