@@ -252,4 +252,14 @@ export class Actividad {
       })
     )
   }
+
+  changeStatusActividad(actividadId: number, newEstadoActividad: string): Observable<BaseApiResponse<boolean>>{
+    const requestUrl = `${env.api}${endpoint.CHANGE_STATUS_ACTIVIDAD}`;
+    const body = { actividadId, newEstadoActividad };
+    return this.httpClient.put<BaseApiResponse<boolean>>(requestUrl, body).pipe(
+      map((response: BaseApiResponse<boolean>) => {
+        return response;
+      })
+    )
+  }
 }

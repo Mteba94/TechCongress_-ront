@@ -53,6 +53,14 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/layout/congress-agenda-maintenance/congress-agenda-maintenance').then(m => m.CongressAgendaMaintenance)
     },
     {
+        path: 'competition-results-winners',
+        loadComponent: () => import('./pages/layout/competition-results-winners/competition-results-winners').then(m => m.CompetitionResultsWinners)
+    },
+    {
+        path: 'attendance-reports-dashboard',
+        loadComponent: () => import('./pages/layout/attendance-reports-dashboard/attendance-reports-dashboard').then(m => m.AttendanceReportsDashboard)
+    },
+    {
         path: '**',
         component: NotFound
     }

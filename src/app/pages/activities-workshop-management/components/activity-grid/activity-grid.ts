@@ -2,16 +2,18 @@ import { CommonModule, formatDate } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { 
     BookOpen, Calendar, CheckSquare, Clock, DollarSign, Edit, Gift, LucideAngularModule, 
-    LucideIconData, MapPin, Monitor, Square, Trophy, Trash2, User, Users 
+    LucideIconData, MapPin, Monitor, MoreVertical, Play, PlayCircle, QrCode, Square, StopCircle, Trophy, Trash2, Undo2, User, Users 
 } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
+import { ActionMenu } from '../../../../shared/components/reusables/action-menu/action-menu';
 
 @Component({
   selector: 'app-activity-grid',
   imports: [
     LucideAngularModule,
     Button,
-    CommonModule
+    CommonModule,
+    ActionMenu
   ],
   templateUrl: './activity-grid.html',
   styleUrl: './activity-grid.css'
@@ -31,18 +33,26 @@ export class ActivityGrid {
     dollarSign: DollarSign,
     bookOpen: BookOpen,
     trophy: Trophy,
-    users: Users
+    users: Users,
+    play: Play,
+    stopCircle: StopCircle,
+    undo2: Undo2,
+    qrCode: QrCode,
+    moreVertical: MoreVertical
   }
 
-  // Inputs (simulando los props de React)
+  // Inputs
   activities = input<any[]>([]);
   loading = input<boolean>(false);
   selectedActivities = input<string[]>([]);
 
-  // Outputs (simulando los callbacks de React)
+  // Outputs
   activitySelect = output<{ id: string, isSelected: boolean }>();
   editActivity = output<any>();
   deleteActivity = output<string>();
+  changeStatus = output<{ activity: any; newStatus: string }>();
+  generateQr = output<any>();
+  viewEnrolled = output<any>();
 
   // Placeholder para el estado de carga
   loadingPlaceholder = new Array(6);
@@ -71,17 +81,27 @@ export class ActivityGrid {
    * @returns Clases CSS.
    */
   getStatusColor(status: string): string {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'en curso':
         return 'bg-green-100 text-green-700 border-green-200';
       case 'pendiente':
         return 'bg-yellow-100 text-yellow-700 border-yellow-200';
       case 'completado':
         return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'cancelled':
+      case 'c':
         return 'bg-red-100 text-red-700 border-red-200';
       default:
         return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'pendiente': return 'Pendiente';
+      case 'en curso': return 'Iniciado';
+      case 'completado': return 'Finalizado';
+      case 'c': return 'Cancelado';
+      default: return 'Desconocido';
     }
   }
 

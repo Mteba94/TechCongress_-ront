@@ -1,0 +1,241 @@
+<div class="bg-card border border-border rounded-lg shadow-subtle">
+      <div class="p-6 border-b border-border">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <h3 class="text-lg font-heading font-semibold text-foreground">
+            Registros de Asistencia
+          </h3>
+          
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+            <div class="relative">
+              <lucide-icon 
+                [name]="icons.Search" 
+                [size]="16" 
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
+              ></lucide-icon>
+              <app-input
+                type="text"
+                placeholder="Buscar participante, actividad..."
+                [value]="searchTerm()"
+                (valueChange)="handleInputChange('pnombre', $event)"
+                class="pl-10 pr-4 py-2 border border-border rounded-md bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64"
+              ></app-input>
+            </div>
+            
+            @if (selectedRows().length > 0) {
+              <div class="flex items-center space-x-2">
+                <span class="text-sm font-body text-muted-foreground">
+                  {{selectedRows().length}} seleccionados
+                </span>
+                <app-button
+                  variant="outline"
+                  size="sm"
+                  (click)="onBulkAction.emit({ action: 'certificate', selectedIds: selectedRows() })"
+                  iconName="Award"
+                  iconPosition="left"
+                  [iconSize]="14"
+                >
+                  Generar Certificados
+                </app-button>
+                <app-button
+                  variant="outline"
+                  size="sm"
+                  (click)="onBulkAction.emit({ action: 'email', selectedIds: selectedRows() })"
+                  iconName="Mail"
+                  iconPosition="left"
+                  [iconSize]="14"
+                >
+                  Enviar Email
+                </app-button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-muted">
+            <tr>
+              <th class="px-6 py-3 text-left">
+                <input
+                  type="checkbox"
+                  [checked]="selectedRows().length === paginatedData().length && paginatedData().length > 0"
+                  (change)="handleSelectAll($event.target.checked)"
+                  class="w-4 h-4 text-primary border-border rounded focus:ring-primary focus:ring-2"
+                />
+              </th>
+              <th class="px-6 py-3 text-left">
+                <button
+                  (click)="handleSort('participantName')"
+                  class="flex items-center space-x-2 text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors duration-200"
+                >
+                  <span>Participante</span>
+                  <lucide-icon [img]="getSortIcon('participantName')" [size]="14" [ngClass]="{'text-primary': sortConfig().key === 'participantName'}"></lucide-icon>
+                </button>
+              </th>
+              <th class="px-6 py-3 text-left">
+                <button
+                  (click)="handleSort('activity')"
+                  class="flex items-center space-x-2 text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors duration-200"
+                >
+                  <span>Actividad</span>
+                  <lucide-icon [name]="getSortIcon('activity')" [size]="14" [ngClass]="{'text-primary': sortConfig().key === 'activity'}"></lucide-icon>
+                </button>
+              </th>
+              <th class="px-6 py-3 text-left">
+                <button
+                  (click)="handleSort('checkInTime')"
+                  class="flex items-center space-x-2 text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors duration-200"
+                >
+                  <span>Hora de Entrada</span>
+                  <lucide-icon [name]="getSortIcon('checkInTime')" [size]="14" [ngClass]="{'text-primary': sortConfig().key === 'checkInTime'}"></lucide-icon>
+                </button>
+              </th>
+              <th class="px-6 py-3 text-left">
+                <span class="text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider">
+                  Estado
+                </span>
+              </th>
+              <th class="px-6 py-3 text-left">
+                <span class="text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider">
+                  Tipo
+                </span>
+              </th>
+              <th class="px-6 py-3 text-left">
+                <span class="text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider">
+                  Institución
+                </span>
+              </th>
+              <th class="px-6 py-3 text-right">
+                <span class="text-xs font-caption font-medium text-muted-foreground uppercase tracking-wider">
+                  Acciones
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (record of paginatedData(); track record.id) {
+              <tr class="hover:bg-muted/50 transition-colors duration-200">
+                <td class="px-6 py-4">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedRows().includes(record.id)"
+                    (change)="handleSelectRow(record.id, $event.target.checked)"
+                    class="w-4 h-4 text-primary border-border rounded focus:ring-primary focus:ring-2"
+                  />
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <lucide-icon [img]="icons.User" [size]="16" class="text-primary"></lucide-icon>
+                    </div>
+                    <div>
+                      <p class="text-sm font-body font-medium text-foreground">
+                        {{record.participant}}
+                      </p>
+                      <p class="text-xs font-caption text-muted-foreground">
+                        {{record.email}}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm font-body text-foreground">{{record.activity}}</p>
+                  <p class="text-xs font-caption text-muted-foreground">{{record.activityType}}</p>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm font-body text-foreground">
+                    {{record.checkInTime | date: 'dd/MM/yyyy HH:mm'}}
+                  </p>
+                  <p class="text-xs font-caption text-muted-foreground">
+                    {{record.checkInTime | date: 'dd/MM/yyyy HH:mm'}}
+                  </p>
+                </td>
+                <td class="px-6 py-4">
+                  <span
+                    [ngClass]="getStatusBadgeClasses(record.status)"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  >
+                    {{record.status}}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <span
+                    [ngClass]="getStudentTypeBadgeClasses(record.studentType)"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  >
+                    {{record.studentType}}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm font-body text-foreground">{{record.institution}}</p>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end space-x-2">
+                    <button class="p-1 text-muted-foreground hover:text-foreground transition-colors duration-200">
+                      <lucide-icon [name]="icons.Eye" [size]="16"></lucide-icon>
+                    </button>
+                    <button class="p-1 text-muted-foreground hover:text-foreground transition-colors duration-200">
+                      <lucide-icon [name]="icons.Download" [size]="16"></lucide-icon>
+                    </button>
+                    <button class="p-1 text-muted-foreground hover:text-foreground transition-colors duration-200">
+                      <lucide-icon [name]="icons.MoreHorizontal" [size]="16"></lucide-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- {/* Pagination */} -->
+      <div class="px-6 py-4 border-t border-border">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <p class="text-sm font-body text-muted-foreground">
+            Mostrando {{startIndex() + 1}} a {{Math.min(startIndex() + itemsPerPage, sortedData().length)}} de {{sortedData().length}} registros
+          </p>
+          
+          <div class="flex items-center space-x-2">
+            <app-button
+              variant="outline"
+              size="sm"
+              (click)="setCurrentPage(Math.max(1, currentPage() - 1))"
+              [disabled]="currentPage() === 1"
+              iconName="ChevronLeft"
+              iconPosition="left"
+              [iconSize]="14"
+            >
+              <span>Anterior</span>
+            </app-button>
+            
+            <div class="flex items-center space-x-1">
+              @for (page of paginationPages; track page) {
+                <button
+                  (click)="setCurrentPage(page)"
+                  [ngClass]="{
+                    'bg-primary text-primary-foreground': currentPage() === page,
+                    'text-muted-foreground hover:text-foreground hover:bg-muted': currentPage() !== page
+                  }"
+                  class="px-3 py-1 text-sm font-body rounded-md transition-colors duration-200"
+                >
+                  {{page}}
+                </button>
+              }
+            </div>
+            
+            <app-button
+              variant="outline"
+              size="sm"
+              (click)="setCurrentPage(Math.min(totalPages(), currentPage() + 1))"
+              [disabled]="currentPage() === totalPages()"
+              iconName="ChevronRight"
+              iconPosition="right"
+              [iconSize]="14"
+            >
+              <span>Siguiente</span>
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>

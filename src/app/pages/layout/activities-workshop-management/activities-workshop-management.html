@@ -159,6 +159,9 @@
                         [selectedActivities]="selectedActivities()"
                         (editActivity)="handleEditActivity($event)"
                         (deleteActivity)="handleDeleteActivity($event)"
+                        (changeStatus)="handleChangeStatus($event)"
+                        (generateQr)="handleGenerateQr($event)"
+                        (viewEnrolled)="handleViewEnrolledUsers($event)"
                     />
                 }@else {
                 <!-- <ActivityList
@@ -169,11 +172,36 @@
                                 onEditActivity={handleEditActivity}
                                 onDeleteActivity={handleDeleteActivity}
                             /> -->
-                    <app-activity-list
-                        [activities]="processedActivities()"
-                        [loading]="loading()"
-                        ></app-activity-list>
+        <app-activity-list
+          [activities]="processedActivities()"
+          [loading]="loading()"
+          [selectedActivities]="selectedActivities()"
+          (activitySelect)="handleSelectAll()"
+          (activitySelectAll)="handleSelectAll()"
+          (editActivity)="handleEditActivity($event)"
+          (deleteActivity)="handleDeleteActivity($event)"
+          (changeStatus)="handleChangeStatus($event)"
+          (generateQr)="handleGenerateQr($event)"
+          (viewEnrolled)="handleViewEnrolledUsers($event)"
+        />
                 }
+                }
+
+                <!-- Load More Button -->
+                @if (hasMore()) {
+                  <div class="text-center mt-8">
+                    <app-button 
+                      variant="outline" 
+                      (click)="loadMoreActivities()" 
+                      [disabled]="loading()">
+                      @if (loading()) {
+                        <lucide-icon [img]="icons.loader" [size]="16" class="animate-spin mr-2"></lucide-icon>
+                        <span>Cargando...</span>
+                      } @else {
+                        <span>Cargar más actividades</span>
+                      }
+                    </app-button>
+                  </div>
                 }
             </div>
         </div>
@@ -243,5 +271,33 @@
             setShowBulkModal(false);
           }}
         /> -->
+      }
+
+      @if (showStatusConfirmModal()) {
+        <app-confirmation-modal
+          [isOpen]="showStatusConfirmModal()"
+          [title]="modalTitle()"
+          [message]="modalMessage()"
+          (confirm)="confirmStatusChange()"
+          (close)="cancelStatusChange()"
+        />
+      }
+
+      @if (showEnrolledUsersModal()) {
+        <app-enrolled-users-modal
+            [isOpen]="showEnrolledUsersModal()"
+            [activityId]="selectedActivityForUsers()?.id ?? null"
+            [activityTitle]="selectedActivityForUsers()?.title ?? ''"
+            (close)="showEnrolledUsersModal.set(false)"
+        />
+      }
+
+      @if (showQrCodeModal()) {
+        <app-qr-code-modal
+          [isOpen]="showQrCodeModal()"
+          [qrCodeBase64]="qrCodeBase64()"
+          [activityTitle]="activityForQr()?.title ?? ''"
+          (close)="showQrCodeModal.set(false)"
+        />
       }
 </div>

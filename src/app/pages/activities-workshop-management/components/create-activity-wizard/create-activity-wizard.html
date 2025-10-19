@@ -70,7 +70,7 @@
             <label class="text-sm font-medium text-foreground">Descripción Detallada</label>
             <textarea
               [value]="formData()?.descripcionTotal"
-            (valueChange)="handleInputChange('fullDescription', $event)"
+              (input)="handleInputChange('descripcionTotal', $event)"
               class="w-full h-32 p-3 border rounded-md resize-none bg-background text-foreground"
               [ngClass]="errors()?.descripcionTotal ? 'border-error' : 'border-input'"
               placeholder="Describe en qué consiste la actividad, qué aprenderán los asistentes, etc."

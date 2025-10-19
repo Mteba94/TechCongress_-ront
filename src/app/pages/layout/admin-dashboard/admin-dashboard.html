@@ -1,13 +1,13 @@
 
-    <div *ngIf="!user && isLoading" class="min-h-screen bg-background flex items-center justify-center">
+    <!-- <div *ngIf="!user && isLoading" class="min-h-screen bg-background flex items-center justify-center">
         <div class="text-center">
             <lucide-icon [img]="icons.loader" [size]="32" class="animate-spin text-primary mx-auto mb-4"></lucide-icon>
             <p class="text-muted-foreground">Verificando permisos...</p>
         </div>
-    </div>
+    </div> -->
 
 
-<div *ngIf="user" class="min-h-screen bg-background">
+<div *ngIf="!user" class="min-h-screen bg-background">
     <app-header/>
     <div class="container mx-auto px-4 py-6">
         <app-breadcrumbs />
@@ -74,6 +74,7 @@
 
                  <!-- Metrics Cards -->
                   <!-- <MetricsCards timeRange={selectedTimeRange} /> -->
+                   <app-metrics-cards/>
 
                   <!-- Charts Section -->
                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">

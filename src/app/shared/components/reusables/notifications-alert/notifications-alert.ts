@@ -13,7 +13,7 @@ import { CheckCircle, LucideAngularModule, LucideIconData, X, XCircle } from 'lu
 })
 export class NotificationsAlert {
   @Input() message: string | null = null;
-  @Input() type: 'success' | 'error' = 'success';
+  @Input() type: 'success' | 'error' | 'info' = 'success';
   @Output() close = new EventEmitter<void>();
 
   X = X

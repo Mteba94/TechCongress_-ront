@@ -5,10 +5,10 @@ import { Injectable, signal } from '@angular/core';
 })
 export class NotificacionService {
   message = signal<string | null>(null);
-  type = signal<'success' | 'error'>('success');
+  type = signal<'success' | 'error' | 'info'>('success');
   private timeoutId: any;
 
-  show(message: string, type: 'success' | 'error' = 'success') {
+  show(message: string, type: 'success' | 'error' | 'info' = 'success') {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

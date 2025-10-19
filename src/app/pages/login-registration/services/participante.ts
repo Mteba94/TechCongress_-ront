@@ -5,6 +5,7 @@ import { map, Observable } from 'rxjs';
 import { BaseApiResponse } from '../../../shared/models/reusables/base-api-response.interface';
 import { environment as env } from '../../../../environments/environment.development';
 import { endpoint } from '../../../shared/utils/endpoints.util';
+import { UserApi } from '../../user-management-system/models/userResp.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,4 +22,14 @@ export class Participante {
       })
     )
   }
+
+  getById(particiapnteId: number): Observable<BaseApiResponse<UserApi>>{
+      const requestUrl = `${env.api}${endpoint.PARTICIPANTE_BY_ID}${particiapnteId}`;
+  
+      return this.httpClient.get<BaseApiResponse<UserApi>>(requestUrl).pipe(
+        map((response: BaseApiResponse<UserApi>) => {
+          return response;
+        })
+      )
+    }
 }

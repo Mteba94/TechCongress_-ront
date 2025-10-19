@@ -1,0 +1,146 @@
+<div class="min-h-screen bg-background">
+    <app-header />
+    <app-registration-call-to-action />
+
+    <main>
+        <!-- Hero Section with Winners Carousel -->
+        <app-winner-hero-carousel
+            [winners]="heroWinners()"
+            [onShare]="handleShare"
+        ></app-winner-hero-carousel>
+
+        <div class="container mx-auto px-4 py-8">
+            <app-breadcrumbs />
+
+            <!-- Search and Filters -->
+            <div class="mb-8">
+                <!-- <app-search-and-filters
+                    (onSearchChange)="handleSearch('d')"
+                    (onFilter)="handleFilter($event)"
+                    [filters]="filters()"
+                    (onClearFilters)="handleClearFilters()"
+                ></app-search-and-filters> -->
+            </div>
+
+            <!-- Category Navigation -->
+            <!-- <app-category-tabs
+                [categories]="categories"
+                [activeCategory]="activeCategory()"
+                (onCategoryChange)="activeCategory.set($event)"
+            ></app-category-tabs> -->
+
+            <!-- Results Section -->
+            <div class="py-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-heading font-bold text-foreground">
+                            <span>{{getActiveCategoryName()}}</span>
+                        </h2>
+                        <p class="text-muted-foreground">
+                            {{filteredWinners().length}} {{filteredWinners().length === 1 ? 'resultado' : 'resultados'}}
+                            @if (searchTerm()) {
+                                <span> para "{{searchTerm()}}"</span>
+                            }
+                        </p>
+                    </div>
+
+                    @if (filteredWinners().length > 0) {
+                        <div class="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <lucide-icon [img]="icons.Users" [size]="16"></lucide-icon>
+                            <span>
+                                {{filteredWinners().length}} participantes destacados
+                            </span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Winners Display -->
+                @if (filteredWinners().length > 0) {
+                    <!-- <app-winner-podium
+                        [winners]="getCurrentCategoryWinners()"
+                        (onWinnerClick)="handleWinnerClick($event)"
+                        [onShare]="handleShare"
+                    ></app-winner-podium> -->
+                } @else {
+                    <div class="text-center py-12">
+                        <lucide-icon [img]="icons.Search" [size]="48" class="mx-auto mb-4 text-muted-foreground"></lucide-icon>
+                        <h3 class="text-lg font-heading font-semibold text-foreground mb-2">
+                            No se encontraron resultados
+                        </h3>
+                        <p class="text-muted-foreground mb-4">
+                            @if (searchTerm()) {
+                                <span>No hay ganadores que coincidan con "{{searchTerm()}}"</span>
+                            } @else {
+                                <span>No hay resultados disponibles para los filtros seleccionados</span>
+                            }
+                        </p>
+                        @if (searchTerm() || hasActiveFilters()) {
+                            <button
+                                (click)="handleClearFilters()"
+                                class="text-primary hover:text-primary/80 font-body font-medium"
+                            >
+                                Limpiar filtros y mostrar todos los resultados
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Historical Archive -->
+            <div class="mt-12">
+                <!-- <app-historical-archive (onWinnerClick)="handleWinnerClick($event)"></app-historical-archive> -->
+            </div>
+
+            <!-- Call to Action -->
+            <div class="mt-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-2xl p-8 text-center">
+                <lucide-icon [img]="icons.Zap" [size]="48" class="mx-auto mb-4"></lucide-icon>
+                <h3 class="text-2xl font-heading font-bold mb-2">
+                    ¿Listo para ser el próximo ganador?
+                </h3>
+                <p class="text-primary-foreground/90 mb-6 max-w-2xl mx-auto">
+                    Únete al TechCongress 2025 y demuestra tus habilidades tecnológicas.
+                    Compite con los mejores, aprende de expertos y forma parte de la próxima generación de innovadores.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                        (click)="navigateTo('/login-registration')"
+                        class="bg-white text-primary px-6 py-3 rounded-lg font-body font-semibold hover:bg-white/90 transition-colors duration-200"
+                    >
+                        Registrarse Ahora
+                    </button>
+                    <button
+                        (click)="navigateTo('/workshop-activity-catalog')"
+                        class="bg-white/20 text-white border border-white/20 px-6 py-3 rounded-lg font-body font-semibold hover:bg-white/30 transition-colors duration-200"
+                    >
+                        Ver Actividades
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- <app-winner-modal
+        [winner]="selectedWinner()"
+        [isOpen]="isWinnerModalOpen()"
+        (onClose)="isWinnerModalOpen.set(false)"
+        [onShare]="handleShare"
+    ></app-winner-modal> -->
+
+    <!-- <app-social-share-modal
+        [winner]="shareWinner()"
+        [isOpen]="isShareModalOpen()"
+        (onClose)="isShareModalOpen.set(false)"
+    ></app-social-share-modal> -->
+
+    <!-- Footer -->
+    <footer class="bg-card border-t border-border mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <p class="text-muted-foreground">
+                    © {{getCurrentYear()}} TechCongress. Celebrando la excelencia tecnológica estudiantil.
+                </p>
+            </div>
+        </div>
+    </footer>
+</div>

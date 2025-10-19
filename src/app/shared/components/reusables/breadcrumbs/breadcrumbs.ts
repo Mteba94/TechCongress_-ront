@@ -41,6 +41,7 @@ export class Breadcrumbs {
     ],
     '/attendance-reports-dashboard': [
       { label: 'Inicio', path: '/congress-homepage' },
+      { label: 'Panel Admin', path: '/admin-dashboard' },
       { label: 'Reportes', path: '/attendance-reports-dashboard' }
     ],
     '/login-registration': [

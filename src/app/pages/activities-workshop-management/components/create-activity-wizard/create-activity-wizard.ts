@@ -222,7 +222,7 @@ export class CreateActivityWizard implements OnInit {
   }
 
   handleInputChange(field: string, value: any) {
-    console.log(field, value);
+    //console.log(field, value);
     let actualValue = value;
 
     if (value && value.target && typeof value.target.value !== 'undefined') {

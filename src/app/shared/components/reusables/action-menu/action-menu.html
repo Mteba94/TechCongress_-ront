@@ -1,0 +1,22 @@
+<div class="relative inline-block text-left">
+  <div>
+    <app-button variant="ghost" size="sm" (click)="toggle()">
+        <lucide-icon [img]="icons.moreVertical" [size]="16"></lucide-icon>
+    </app-button>
+  </div>
+
+  @if (isOpen()) {
+    <div 
+      (click)="close()"
+      class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-[var(--color-popover)] border border-[var(--color-border)] shadow-elevation-2 animate-fade-in-fast"
+      role="menu" 
+      aria-orientation="vertical" 
+      aria-labelledby="menu-button" 
+      tabindex="-1">
+      <div class="py-1" role="none">
+        <!-- Content projection for menu items -->
+        <ng-content></ng-content>
+      </div>
+    </div>
+  }
+</div>

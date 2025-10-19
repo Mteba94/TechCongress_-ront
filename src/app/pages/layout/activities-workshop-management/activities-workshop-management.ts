@@ -13,6 +13,10 @@ import { takeUntil, finalize } from 'rxjs/operators';
 import { ActivityList } from '../../activities-workshop-management/components/activity-list/activity-list';
 import { NotificacionService } from '../../../shared/services/notificacion-service';
 import { CreateActivityWizard } from '../../activities-workshop-management/components/create-activity-wizard/create-activity-wizard';
+import { ConfirmationModal } from '../../../shared/components/reusables/confirmation-modal/confirmation-modal';
+import { EnrolledUsersModal } from '../../activities-workshop-management/components/enrolled-users-modal/enrolled-users-modal';
+import { AsistenciaService } from '../../activities-workshop-management/services/asistencia.service';
+import { QrCodeModal } from '../../activities-workshop-management/components/qr-code-modal/qr-code-modal';
 
 /** Interface for component filter values. */
 interface Filters {
@@ -41,7 +45,10 @@ interface Filters {
     SelectComponent,
     ActivityGrid,
     ActivityList,
-    CreateActivityWizard
+    CreateActivityWizard,
+    ConfirmationModal,
+    EnrolledUsersModal,
+    QrCodeModal
   ],
   templateUrl: './activities-workshop-management.html',
   styleUrl: './activities-workshop-management.css'
@@ -60,6 +67,7 @@ export class ActivitiesWorkshopManagement implements OnDestroy {
   /** Service for fetching activity data. */
   private readonly actividadService = inject(Actividad);
   private readonly notificationService = inject(NotificacionService);
+  private readonly asistenciaService = inject(AsistenciaService);
   
   /** Subject to manage subscription cleanup on component destruction. */
   private readonly destroy$ = new Subject<void>();
@@ -85,15 +93,35 @@ export class ActivitiesWorkshopManagement implements OnDestroy {
   showCreateWizard = signal(false);
   /** Toggles the visibility of the activity detail modal. */
   showActivityModal = signal(false);
+  /** Toggles the visibility of the enrolled users modal. */
+  showEnrolledUsersModal = signal(false);
+  /** Toggles the visibility of the QR code modal. */
+  showQrCodeModal = signal(false);
   /** Toggles the visibility of the bulk operations modal. */
   showBulkModal = signal(false);
+  /** Toggles the visibility of the confirmation modal for status changes. */
+  showStatusConfirmModal = signal(false);
   /** Current sorting criteria for the activities list. */
   sortBy = signal('popularity');
 
-  // --- SELECTION STATE SIGNALS ---
+  // --- SELECTION AND DATA SIGNALS ---
 
   /** The currently selected activity for viewing or editing details. */
   selectedActivity = signal<ActivityInterface | null>(null);
+  /** The activity selected to view its enrolled users. */
+  selectedActivityForUsers = signal<ActivityInterface | null>(null);
+  /** The activity that is pending a status change confirmation. */
+  activityForStatusChange = signal<ActivityInterface | null>(null);
+  /** The activity for which a QR code is being generated. */
+  activityForQr = signal<ActivityInterface | null>(null);
+  /** The Base64 content of the generated QR code. */
+  qrCodeBase64 = signal<string | null>(null);
+  /** The new status code for the pending status change. */
+  newStatusForChange = signal<string>('');
+  /** The dynamic title for the confirmation modal. */
+  modalTitle = signal<string>('');
+  /** The dynamic message for the confirmation modal. */
+  modalMessage = signal<string>('');
   /** List of IDs of all selected activities for bulk operations. */
   selectedActivities = signal<string[]>([]);
 
@@ -325,5 +353,89 @@ export class ActivitiesWorkshopManagement implements OnDestroy {
   handleCreateActivity() {
     this.selectedActivity.set(null);
     this.showCreateWizard.set(true);
+  }
+
+  handleChangeStatus(event: { activity: ActivityInterface; newStatus: string }) {
+    const { activity, newStatus } = event;
+    this.activityForStatusChange.set(activity);
+    this.newStatusForChange.set(newStatus);
+
+    // Set dynamic modal content
+    switch (newStatus) {
+      case 'i':
+        this.modalTitle.set('Iniciar Actividad');
+        this.modalMessage.set(`¿Estás seguro de que deseas iniciar la actividad "${activity.title}"?`);
+        break;
+      case 'c':
+        this.modalTitle.set('Cancelar Actividad');
+        this.modalMessage.set(`¿Estás seguro de que deseas cancelar la actividad "${activity.title}"? Esta acción no se puede deshacer fácilmente.`);
+        break;
+      case 'f':
+        this.modalTitle.set('Finalizar Actividad');
+        this.modalMessage.set(`¿Estás seguro de que deseas finalizar la actividad "${activity.title}"?`);
+        break;
+      case 'p':
+        this.modalTitle.set('Reabrir Actividad');
+        this.modalMessage.set(`¿Estás seguro de que deseas marcar la actividad "${activity.title}" como pendiente nuevamente?`);
+        break;
+    }
+
+    this.showStatusConfirmModal.set(true);
+  }
+
+  async confirmStatusChange() {
+    const activity = this.activityForStatusChange();
+    const newStatus = this.newStatusForChange();
+    if (!activity || !newStatus) return;
+
+    try {
+      const response = await firstValueFrom(this.actividadService.changeStatusActividad(Number(activity.id), newStatus));
+
+      if(response.isSuccess){
+        this.notificationService.show('Estado de la actividad actualizado exitosamente.', 'success');
+        this._fetchActivities();
+      }else{
+        this.notificationService.show(response.message, 'error');
+      }
+    } catch (error) {
+      this.notificationService.show('Error al actualizar el estado de la actividad.', 'error');
+    }
+    this.cancelStatusChange();
+  }
+
+  cancelStatusChange(): void {
+    this.showStatusConfirmModal.set(false);
+    this.activityForStatusChange.set(null);
+    this.newStatusForChange.set('');
+    this.modalTitle.set('');
+    this.modalMessage.set('');
+  }
+
+  handleGenerateQr(activity: ActivityInterface): void {
+    this.activityForQr.set(activity);
+    this.qrCodeBase64.set(null); // Reset to show loading state
+    this.showQrCodeModal.set(true);
+
+    this.asistenciaService.generateQrCode(Number(activity.id)).subscribe({
+      next: (response) => {
+        //console.log('QR Code API Response Data:', response.data);
+        if (response.isSuccess) {
+          this.qrCodeBase64.set(response.data);
+        } else {
+          this.notificationService.show(response.message || 'No se pudo generar el código QR.', 'error');
+          this.showQrCodeModal.set(false);
+        }
+      },
+      error: (err) => {
+        console.error('Error generating QR code:', err);
+        this.notificationService.show('Ocurrió un error al generar el código QR.', 'error');
+        this.showQrCodeModal.set(false);
+      }
+    });
+  }
+
+  handleViewEnrolledUsers(activity: ActivityInterface): void {
+    this.selectedActivityForUsers.set(activity);
+    this.showEnrolledUsersModal.set(true);
   }
 }

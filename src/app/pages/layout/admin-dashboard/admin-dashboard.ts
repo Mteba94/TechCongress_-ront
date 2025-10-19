@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { UserLog } from '../../../shared/models/commons/user.interface';
+import { MetricsCards } from '../../admin-dashboard/components/metrics-cards/metrics-cards';
 
 
 
@@ -35,7 +36,8 @@ interface ActivityItem {
     Breadcrumbs,
     LucideAngularModule,
     Button,
-    AdminNavigation
+    AdminNavigation,
+    MetricsCards
   ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
@@ -80,7 +82,7 @@ export class AdminDashboard {
 
   // --- Hook de Ciclo de Vida (Reemplaza a useEffect con dependencia []) ---
   async ngOnInit() {
-    await this.checkAdminAccess();
+    //await this.checkAdminAccess();
   }
 
   private async checkAdminAccess() {

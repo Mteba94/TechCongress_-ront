@@ -189,4 +189,14 @@ export class Users {
       })
     )
   }
+
+  getById(userId: number): Observable<BaseApiResponse<UserApi>>{
+    const requestUrl = `${env.api}${endpoint.USER_BY_ID}${userId}`;
+
+    return this.httpClient.get<BaseApiResponse<UserApi>>(requestUrl).pipe(
+      map((response: BaseApiResponse<UserApi>) => {
+        return response;
+      })
+    )
+  }
 }

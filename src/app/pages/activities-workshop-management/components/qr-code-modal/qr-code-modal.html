@@ -1,0 +1,53 @@
+<div 
+  *ngIf="isOpen()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
+  (click)="onClose()">
+
+  <div 
+    class="relative bg-card text-foreground rounded-lg shadow-xl w-full max-w-sm m-4 animate-scale-in flex flex-col"
+    (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="flex items-start justify-between p-5 border-b border-border rounded-t-lg">
+      <div class="flex items-center space-x-3">
+        <lucide-icon [img]="icons.qrCode" [size]="20" class="text-primary"></lucide-icon>
+        <div>
+            <h3 class="text-lg font-semibold leading-6">
+              Código QR de Asistencia
+            </h3>
+            <p class="text-sm text-muted-foreground line-clamp-1">{{ activityTitle() }}</p>
+        </div>
+      </div>
+      <button 
+        type="button" 
+        class="p-1 text-muted-foreground rounded-full hover:bg-muted cursor-pointer"
+        (click)="onClose()">
+        <lucide-icon [img]="icons.x" [size]="20"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 flex items-center justify-center min-h-[300px]">
+      @if (qrCodeUrl()) {
+        <img [src]="qrCodeUrl()" alt="Código QR para {{ activityTitle() }}" class="rounded-lg border border-border"/>
+      } @else {
+        <div class="flex flex-col items-center text-muted-foreground">
+            <lucide-icon [img]="icons.loader" [size]="32" class="animate-spin"></lucide-icon>
+            <p class="mt-2 text-sm">Generando código QR...</p>
+        </div>
+      }
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex items-center justify-end gap-3 p-4 bg-muted/50 border-t border-border rounded-b-lg">
+        <button 
+            (click)="downloadQrCode()"
+            [disabled]="!qrCodeUrl()"
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 cursor-pointer">
+            <lucide-icon [img]="icons.download" [size]="16" class="mr-2"></lucide-icon>
+            Descargar
+        </button>
+    </div>
+
+  </div>
+</div>

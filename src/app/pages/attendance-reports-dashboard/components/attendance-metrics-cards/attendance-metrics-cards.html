@@ -1,0 +1,44 @@
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+      @for (metric of metrics(); track metric.id) {
+        <div
+          class="bg-card border border-border rounded-lg p-6 shadow-subtle hover:shadow-elevation-1 transition-shadow duration-200"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div 
+              [ngClass]="{
+                'bg-success/10 text-success': metric.changeType === 'positive',
+                'bg-warning/10 text-warning': metric.changeType !== 'positive'
+              }"
+              class="p-3 rounded-lg"
+            >
+              <lucide-icon [img]="metric.icon" [size]="24"></lucide-icon>
+            </div>
+            <!-- <div 
+              [ngClass]="{
+                'text-success': metric.changeType === 'positive',
+                'text-warning': metric.changeType !== 'positive'
+              }"
+              class="flex items-center space-x-1 text-sm font-body"
+            >
+              <lucide-icon 
+                [name]="metric.changeType === 'positive' ? icons.TrendingUp : icons.TrendingDown" 
+                [size]="16"
+              ></lucide-icon>
+              <span>{{metric.change}}</span>
+            </div> -->
+          </div>
+          
+          <div class="space-y-2">
+            <h3 class="text-2xl font-heading font-bold text-foreground">
+              {{metric.value}}
+            </h3>
+            <p class="text-sm font-body font-medium text-foreground">
+              {{metric.title}}
+            </p>
+            <p class="text-xs font-caption text-muted-foreground">
+              {{metric.description}}
+            </p>
+          </div>
+        </div>
+      }
+    </div>

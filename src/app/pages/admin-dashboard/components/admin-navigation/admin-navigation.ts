@@ -37,14 +37,14 @@ export class AdminNavigation {
       badge: '125',
       href: '/user-management-system'
     },
-    { 
-      id: 'activity_logging',
-      label: 'Registro de Actividades',
-      icon: Shield,
-      description: 'Auditoría y monitoreo',
-      badge: '3',
-      href: '/user-activity-logging-management'
-    },
+    // { 
+    //   id: 'activity_logging',
+    //   label: 'Registro de Actividades',
+    //   icon: Shield,
+    //   description: 'Auditoría y monitoreo',
+    //   badge: '3',
+    //   href: '/user-activity-logging-management'
+    // },
     { 
       id: 'agenda',
       label: 'Mantenimiento de Agenda',
@@ -62,8 +62,13 @@ export class AdminNavigation {
       href: '/activities-workshop-management'
     },
     { 
-      id: 'speakers', label: 'Gestión de Ponentes', icon: Mic, description: 'Ponentes e instructores', badge: '24', href: '/speaker-instructor-management' },
-    { id: 'catalog', label: 'Sistema de Catálogo', icon: Database, description: 'Gestión de contenido', badge: '156', href: '/catalog-management-system' },
+      id: 'speakers',
+      label: 'Gestión de Ponentes',
+      icon: Mic, description: 'Ponentes e instructores', badge: '24', href: '/speaker-instructor-management' 
+    },
+    { id: 'catalog', label: 'Sistema de Catálogo', icon: Database, description: 'Gestión de contenido', badge: '156', 
+      href: '/catalog-management-system'
+    },
     { 
       id: 'attendance', label: 'Control de Asistencia', icon: Clock, description: 'Reportes y seguimiento', badge: null, href: '/attendance-reports-dashboard' },
     { 
@@ -78,6 +83,14 @@ export class AdminNavigation {
       description: 'Resultados y rankings',
       badge: null,
       href: '/competition-results-winners' 
+    },
+    {
+      id: 'competitions_management',
+      label: 'Gestión de Resultados',
+      icon: Settings,
+      description: 'Administrar competencias',
+      badge: null,
+      href: '/competition-results-management'
     },
     { 
       id: 'analytics',

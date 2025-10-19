@@ -1,0 +1,130 @@
+<!-- @if (!isAuthenticated() || !user() || user()?.role !== 'administrador') {
+  <div class="min-h-screen bg-background flex items-center justify-center">
+    <div class="text-center">
+      <lucide-icon name="Shield" [size]="48" class="text-muted-foreground mx-auto mb-4" />
+      <h2 class="text-xl font-heading font-semibold text-foreground mb-2">
+        Acceso Restringido
+      </h2>
+      <p class="text-muted-foreground mb-4">
+        Esta página requiere permisos de administrador.
+      </p>
+      <app-button
+        variant="default"
+        (click)="navigateToUserDashboard()"
+        iconName="ArrowLeft"
+        iconPosition="left"
+        [iconSize]="16"
+      >
+        Volver al Panel
+      </app-button>
+    </div>
+  </div>
+} @else { -->
+  <div class="min-h-screen bg-background">
+    <app-header />
+    <app-registration-call-to-action />
+    
+    <main class="container mx-auto px-4 py-8">
+      <app-breadcrumbs />
+      
+      <!-- Page Header -->
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+        <div class="mb-6 lg:mb-0">
+          <div class="flex items-center space-x-3 mb-2">
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <lucide-icon [img]="icons.BarChart3" [size]="24" class="text-primary" />
+            </div>
+            <div>
+              <h1 class="text-3xl font-heading font-bold text-foreground">
+                Reportes de Asistencia
+              </h1>
+              <p class="text-muted-foreground font-body">
+                Dashboard completo de análisis y métricas de participación
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          <app-button
+            variant="outline"
+            iconName="Download"
+            iconPosition="left"
+            [iconSize]="16"
+            (click)="handleExport($event)"
+          >
+            <span>Exportar Reporte</span>
+          </app-button>
+          <app-button
+            variant="default"
+            iconName="RefreshCw"
+            iconPosition="left"
+            [iconSize]="16"
+            (click)="refreshData()"
+          >
+            <span>Actualizar Datos</span>
+          </app-button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:col-cols-4 gap-8">
+        <!-- Main Content Area -->
+        <div class="xl:col-span-3 space-y-8">
+          <!-- Metrics Cards -->
+          <app-attendance-metrics-cards [metricsData]="metrics()" />
+
+          <!-- Charts Section -->
+          <app-attendance-charts [chartsData]="chartsData()" />
+          <br>
+          <!-- Data Table -->
+          <app-attendance-data-table 
+            [details]="attendanceDetails()"
+            (onBulkAction)="handleBulkAction($event)"
+          />
+        </div>
+
+        <!-- Sidebar -->
+        <div class="xl:col-span-1 space-y-6">
+          <!-- Role-based Navigation -->
+          <!-- <app-role-based-navigation [currentPath]="'/attendance-reports-dashboard'" /> -->
+          
+          <!-- Report Filters -->
+          <!-- <app-report-filters 
+            (onFiltersChange)="handleFiltersChange($event)"
+            (onExport)="handleExport($event)"
+          /> -->
+          
+          <!-- Real-time Updates -->
+          <!-- <app-real-time-updates 
+            (onToggleAutoRefresh)="handleToggleAutoRefresh($event)"
+          /> -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-card border-t border-border mt-16">
+      <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div class="flex items-center space-x-3 mb-4 md:mb-0">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <lucide-icon [img]="icons.Zap" [size]="16" color="white" />
+            </div>
+            <div>
+              <h3 class="font-heading font-semibold text-foreground">Congreso UMG</h3>
+              <p class="text-xs font-caption text-muted-foreground">
+                Sistema de gestión de congreso
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-6 text-sm font-body text-muted-foreground">
+            <span>© {{getCurrentYear()}} Congreso UMG</span>
+            <span>•</span>
+            <span>Panel Administrativo</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+<!-- } -->

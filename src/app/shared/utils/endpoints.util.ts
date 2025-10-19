@@ -5,12 +5,21 @@ export const endpoint = {
     CREATE_ACTIVIDAD: 'Actividad/Create',
     UPDATE_ACTIVIDAD: 'Actividad/Update',
     DELETE_ACTIVIDAD: 'Actividad/Delete/',
+    CHANGE_STATUS_ACTIVIDAD: 'Actividad/UpdateEstado',
+    PARTICIPANTS_BY_ACTIVIDAD: 'Actividad/',
 
     //ACTIVIDAD-PONENTE
     LIST_ACTIVIDAD_PONENTE: 'ActividadPonente',
 
     //OBJETIVO-ACTIVIDAD
     LIST_OBJETIVO_ACTIVIDAD: 'ObjetivoActividad',
+
+    //DASHBOARD
+    TOP_WINNERS_LAST_ACTIVITIES: 'Dashboard/TopWinnersLastActivities',
+    METRICS_CARDS: 'Dashboard/GlobalSummary',
+    SPECIFIC_METRICS: 'Dashboard/SpecificMetrics',
+    CHARTS_DATA: 'Dashboard/ChartsData',
+
 
     //MENU
     MENU_BY_USER: 'Menu/MenuByUser',
@@ -86,6 +95,10 @@ export const endpoint = {
     UPDATE_USER: 'User/Update',
     DELETE_USER: 'User/Delete',
     SUMMARY_USER: 'User/Summary',
-    ATTENDANCE_USER: 'User/'
+    ATTENDANCE_USER: 'User/',
+
+    //ASISTENCIA
+    GENERATE_ATTENDANCE_QR: 'Asistencia/GenerateAttendanceQrCode',
+    ASISTENCIA_DETAILS: 'Asistencia/Details'
 
 }

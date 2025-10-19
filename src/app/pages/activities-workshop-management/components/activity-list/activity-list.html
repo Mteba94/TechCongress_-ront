@@ -78,10 +78,11 @@
         <tbody class="bg-card divide-y divide-border">
           @for (activity of activities(); track activity.id) {
             <tr 
-              class="hover:bg-muted/50 transition-colors"
+              (click)="viewEnrolled.emit(activity)"
+              class="hover:bg-muted/50 transition-colors cursor-pointer"
               [class.bg-primary]="isSelected(activity.id)">
               <td class="px-6 py-4 whitespace-nowrap">
-                <button (click)="onToggleSelect(activity.id)" class="flex items-center">
+                <button (click)="$event.stopPropagation(); onToggleSelect(activity.id)" class="flex items-center">
                   <lucide-icon [img]="isSelected(activity.id) ? icons.checkSquare : icons.square" [size]="16" [class]="isSelected(activity.id) ? 'text-primary' : ''"></lucide-icon>
                 </button>
               </td>
@@ -97,8 +98,8 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ' + getStatusColor(activity.status)">
-                  {{ activity.status?.toUpperCase() }}
+                <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ' + getStatusColor(activity.statusActivity)">
+                  {{ getStatusLabel(activity.statusActivity) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -109,13 +110,40 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                 {{ formatDates(activity.date) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-1">
-                  <app-button variant="ghost" size="sm" (click)="editActivity.emit(activity)" iconName="Edit" [iconSize]="16">
-                  </app-button>
-                  <app-button variant="ghost" size="sm" (click)="deleteActivity.emit(activity.id)" iconName="Trash2" [iconSize]="16">
-                  </app-button>
-                </div>
+              <td (click)="$event.stopPropagation()" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <app-action-menu>
+                  <!-- Conditional Actions based on status -->
+                  @if (activity.statusActivity.toLowerCase() === 'pendiente') {
+                    <button (click)="changeStatus.emit({ activity: activity, newStatus: 'i' })" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer">
+                      <lucide-icon [img]="icons.play" [size]="16" class="mr-2"></lucide-icon> Iniciar
+                    </button>
+                    <button (click)="changeStatus.emit({ activity: activity, newStatus: 'c' })" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer">
+                      <lucide-icon [img]="icons.stopCircle" [size]="16" class="mr-2"></lucide-icon> Cancelar
+                    </button>
+                  }
+                  @if (activity.statusActivity.toLowerCase() === 'en curso') {
+                    <button (click)="changeStatus.emit({ activity: activity, newStatus: 'f' })" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer">
+                      <lucide-icon [img]="icons.checkSquare" [size]="16" class="mr-2"></lucide-icon> Finalizar
+                    </button>
+                  }
+                  @if (activity.statusActivity === 'c') {
+                    <button (click)="changeStatus.emit({ activity: activity, newStatus: 'p' })" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer">
+                      <lucide-icon [img]="icons.undo2" [size]="16" class="mr-2"></lucide-icon> Reabrir
+                    </button>
+                  }
+    
+                  <!-- Common Actions -->
+                  <button (click)="generateQr.emit(activity)" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer">
+                    <lucide-icon [img]="icons.qrCode" [size]="16" class="mr-2"></lucide-icon> Generar QR
+                  </button>
+                  <div class="my-1 h-px bg-border"></div> <!-- Separator -->
+                  <button (click)="editActivity.emit(activity)" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200 cursor-pointer">
+                    <lucide-icon [img]="icons.edit" [size]="16" class="mr-2"></lucide-icon> Editar
+                  </button>
+                  <button (click)="deleteActivity.emit(activity.id)" class="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm font-body text-red-600 hover:bg-red-500/10 transition-colors duration-200 cursor-pointer">
+                    <lucide-icon [img]="icons.trash2" [size]="16" class="mr-2"></lucide-icon> Eliminar
+                  </button>
+                </app-action-menu>
               </td>
             </tr>
           }
