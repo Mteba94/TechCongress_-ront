@@ -23,4 +23,16 @@ export class AsistenciaService {
     const requestUrl = `${env.api}${endpoint.GENERATE_ATTENDANCE_QR}?actividadId=${actividadId}`;
     return this.httpClient.get<BaseApiResponse<string>>(requestUrl);
   }
+
+  generateQRuser(userId: number, activityId?: number): Observable<BaseApiResponse<any>> {
+    const requestUrl = `${env.api}${endpoint.GENERATE_USER_QR}${userId}/GenerateQrCode/${activityId}`;
+
+    return this.httpClient.get<BaseApiResponse<string>>(requestUrl);
+  }
+
+  markAttendance(data: any): Observable<any> {
+    const requestUrl = `${env.api}${endpoint.MARK_ATTENDANCE}`;
+    return this.httpClient.post(requestUrl, data);
+  }
+
 }

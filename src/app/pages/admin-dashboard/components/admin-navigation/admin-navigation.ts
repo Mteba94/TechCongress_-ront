@@ -1,6 +1,6 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { NavigationItem } from '../../models/navigationItems.interface';
-import { Award, BarChart, Calendar, CalendarDays, Clock, Database, ExternalLink, LucideAngularModule, Mic, Settings, Shield, TrendingUp, Trophy, Users } from 'lucide-angular';
+import { Award, BarChart, Calendar, CalendarDays, Clock, Database, ExternalLink, LucideAngularModule, Mic, QrCode, Settings, Shield, TrendingUp, Trophy, Users } from 'lucide-angular';
 import { Button } from '../../../../shared/components/reusables/button/button';
 import { Router } from '@angular/router';
 
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   selector: 'app-admin-navigation',
   imports: [
     LucideAngularModule,
-    Button
+    //Button
   ],
   templateUrl: './admin-navigation.html',
   styleUrl: './admin-navigation.css'
@@ -34,7 +34,7 @@ export class AdminNavigation {
       label: 'Gestión de Usuarios',
       icon: Users,
       description: 'Administrar cuentas',
-      badge: '125',
+      badge: '',
       href: '/user-management-system'
     },
     // { 
@@ -58,24 +58,32 @@ export class AdminNavigation {
       label: 'Gestión de Actividades',
       icon: Calendar,
       description: 'Talleres y competencias',
-      badge: '8',
+      badge: '',
       href: '/activities-workshop-management'
     },
-    { 
-      id: 'speakers',
-      label: 'Gestión de Ponentes',
-      icon: Mic, description: 'Ponentes e instructores', badge: '24', href: '/speaker-instructor-management' 
-    },
-    { id: 'catalog', label: 'Sistema de Catálogo', icon: Database, description: 'Gestión de contenido', badge: '156', 
-      href: '/catalog-management-system'
-    },
+    // { 
+    //   id: 'speakers',
+    //   label: 'Gestión de Ponentes',
+    //   icon: Mic, description: 'Ponentes e instructores', badge: '24', href: '/speaker-instructor-management' 
+    // },
+    // { id: 'catalog', label: 'Sistema de Catálogo', icon: Database, description: 'Gestión de contenido', badge: '156', 
+    //   href: '/catalog-management-system'
+    // },
     { 
       id: 'attendance', label: 'Control de Asistencia', icon: Clock, description: 'Reportes y seguimiento', badge: null, href: '/attendance-reports-dashboard' },
-    { 
-      id: 'certificates',
-      label: 'Certificaciones',
-      icon: Award,
-      description: 'Generar y gestionar', badge: '45' },
+      {
+      id: 'qr_validation',
+      label: 'Validación QR',
+      icon: QrCode,
+      description: 'Escaneo de asistencia',
+      badge: null,
+      href: '/qr-code-attendance-validation'
+    },
+    // { 
+    //   id: 'certificates',
+    //   label: 'Certificaciones',
+    //   icon: Award,
+    //   description: 'Generar y gestionar', badge: '45' },
     { 
       id: 'competitions',
       label: 'Competencias',
@@ -92,20 +100,20 @@ export class AdminNavigation {
       badge: null,
       href: '/competition-results-management'
     },
-    { 
-      id: 'analytics',
-      label: 'Analíticas',
-      icon: TrendingUp,
-      description: 'Métricas avanzadas',
-      badge: null
-    },
-    { 
-      id: 'settings',
-      label: 'Configuración',
-      icon: Settings,
-      description: 'Sistema y preferencias',
-      badge: null
-    }
+    // { 
+    //   id: 'analytics',
+    //   label: 'Analíticas',
+    //   icon: TrendingUp,
+    //   description: 'Métricas avanzadas',
+    //   badge: null
+    // },
+    // { 
+    //   id: 'settings',
+    //   label: 'Configuración',
+    //   icon: Settings,
+    //   description: 'Sistema y preferencias',
+    //   badge: null
+    // }
   ];
 
   quickActions = [

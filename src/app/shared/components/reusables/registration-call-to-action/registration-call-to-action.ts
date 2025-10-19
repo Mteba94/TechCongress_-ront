@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { ArrowRight, Calendar, LucideAngularModule, UserPlus, X, Zap } from 'lucide-angular';
 import { Button } from '../button/button';
 import { filter, Subscription } from 'rxjs';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Auth } from '../../../../pages/login-registration/services/auth';
 
 @Component({
   selector: 'app-registration-call-to-action',
@@ -15,13 +16,15 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
   templateUrl: './registration-call-to-action.html',
   styleUrl: './registration-call-to-action.css'
 })
-export class RegistrationCallToAction {
-  isAuthenticated = false;
+export class RegistrationCallToAction implements OnInit, OnDestroy {
+  isAuthenticated = signal(false);
   isVisible = true;
   isSticky = false;
   private routerSubscription!: Subscription;
+  private authSubscription!: Subscription;
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly authService = inject(Auth);
 
   icons = {
     x: X,
@@ -32,7 +35,10 @@ export class RegistrationCallToAction {
   };
 
   ngOnInit(): void {
-    this.checkVisibilityAndAuth();
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
+      this.isAuthenticated.set(!!user);
+      this.checkVisibilityAndAuth();
+    });
 
     // Revisa la visibilidad cada vez que cambia la ruta
     this.routerSubscription = this.router.events.pipe(
@@ -46,6 +52,9 @@ export class RegistrationCallToAction {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
     }
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   // Escuchar el evento de scroll para el CTA pegajoso
@@ -55,14 +64,11 @@ export class RegistrationCallToAction {
   }
 
   private checkVisibilityAndAuth(): void {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    this.isAuthenticated = authStatus === 'true';
-
     const hiddenPages = ['/login-registration', '/user-dashboard'];
     const currentPath = this.router.url;
     
     // El CTA debe ser visible si no estás en una página oculta Y si no estás autenticado
-    this.isVisible = !hiddenPages.includes(currentPath) && authStatus !== 'true';
+    this.isVisible = !hiddenPages.includes(currentPath) && !this.isAuthenticated();
 
     // Si ya fue descartado, tampoco debe ser visible
     const isDismissed = localStorage.getItem('ctaDismissed');

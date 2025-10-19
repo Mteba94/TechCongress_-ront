@@ -57,7 +57,7 @@ const schoolInputValidator = (control: AbstractControl): ValidationErrors | null
     LucideAngularModule,
     ReactiveFormsModule,
     InputComponent,
-    CheckPointComponent,
+    //CheckPointComponent,
     Button,
     UserTypeSelector,
     SelectComponent,

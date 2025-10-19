@@ -81,7 +81,7 @@ Para talleres específicos, enviaremos una lista detallada de software a instala
     {
       id: 6,
       question: "¿Hay oportunidades de networking y empleo?",
-      answer: `¡Absolutamente! El TechCongress incluye múltiples oportunidades de networking:
+      answer: `¡Absolutamente! El Congreso UMG incluye múltiples oportunidades de networking:
 
 • Sesiones dedicadas de networking con empresas patrocinadoras
 • Feria de empleo con más de 20 empresas tecnológicas

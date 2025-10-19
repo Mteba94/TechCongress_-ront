@@ -48,21 +48,46 @@ export class Auth {
 
   constructor() {
     const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    this.userTokenSubject = new BehaviorSubject<string | null>(storedToken);
+    const sessionToken = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+    const tokenToUse = storedToken || sessionToken;
 
-    let user = null;
-    if (storedToken) {
-      try {
-        const parsedToken = JSON.parse(storedToken);
-        user = this.decodeToken(parsedToken);
-      } catch (error) {
-        user = this.decodeToken(storedToken);
-      }
+    // console.log('Auth Service Constructor:');
+    // console.log('  storedToken:', storedToken);
+    // console.log('  sessionToken:', sessionToken);
+    // console.log('  tokenToUse:', tokenToUse);
+
+    this.userTokenSubject = new BehaviorSubject<string | null>(tokenToUse);
+
+    let initialUser: CurrentUser | null = null;
+    if (tokenToUse) {
+      initialUser = this.decodeToken(tokenToUse);
     }
-    this.currentUserSubject = new BehaviorSubject<CurrentUser | null>(user);
+    this.currentUserSubject = new BehaviorSubject<CurrentUser | null>(initialUser);
+    // console.log('  initialUser (from decodeToken):', initialUser);
+    // console.log('  currentUserSubject after initial setup:', this.currentUserSubject.value);
+
+    if (tokenToUse && initialUser) {
+      this.roleService.getUserRole(initialUser.id).pipe(
+        map(roleResp => {
+          if (roleResp.isSuccess && initialUser) {
+            initialUser.role = roleResp.data.nombre.toLowerCase();
+            this.currentUserSubject.next(initialUser);
+            //console.log('  currentUserSubject after role fetch success:', this.currentUserSubject.value);
+          } else {
+            //console.warn('Failed to fetch application role, clearing session.');
+            this.logout();
+          }
+        }),
+        catchError(err => {
+          //console.error('Error fetching user role on reload, clearing session.', err);
+          this.logout();
+          return of(null);
+        })
+      ).subscribe();
+    }
   }
 
-  login(request: LoginRequest): Observable<BaseApiResponse<string>> {
+  login(request: LoginRequest, rememberMe: boolean = false): Observable<BaseApiResponse<string>> {
     const requestUrl = `${env.api}${endpoint.LOGIN}`;
 
     return this.http.post<BaseApiResponse<string>>(requestUrl, request).pipe(
@@ -70,13 +95,18 @@ export class Auth {
         if (response.isSuccess && response.accessToken && response.message !== 'Recovery') {
           const token = response.accessToken;
 
-          localStorage.setItem('token', token);
+          if (rememberMe) {
+            localStorage.setItem('token', token);
+            sessionStorage.removeItem('token'); // Clear session storage if rememberMe is true
+          } else {
+            sessionStorage.setItem('token', token);
+            localStorage.removeItem('token'); // Clear local storage if rememberMe is false
+          }
           this.userTokenSubject.next(token);
 
           const decodedUser = this.decodeToken(token);
 
           if (decodedUser) {
-            //console.log(decodedUser);
             return this.roleService.getUserRole(decodedUser.id).pipe(
               map(roleResp => {
                 if (roleResp.isSuccess) {
@@ -93,13 +123,17 @@ export class Auth {
           this.userTokenSubject.next(null);
           this.currentUserSubject.next(null);
           localStorage.removeItem('token');
-          localStorage.removeItem('isAuthenticated');
+          sessionStorage.removeItem('token');
         }
         this.currentUserSubject.next(null);
         return of(response);
       }),
       catchError(err => {
         console.error('Login failed', err);
+        this.userTokenSubject.next(null);
+        this.currentUserSubject.next(null);
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         return throwError(() => err);
       })
     );
@@ -107,8 +141,9 @@ export class Auth {
 
   logout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('isAuthenticated');
+    sessionStorage.removeItem('token');
+    localStorage.removeItem('userData'); // This is not used anywhere else
+    localStorage.removeItem('isAuthenticated'); // This is not used anywhere else
     this.userTokenSubject.next(null);
     this.currentUserSubject.next(null);
     this.router.navigate(['/congress-homepage']);

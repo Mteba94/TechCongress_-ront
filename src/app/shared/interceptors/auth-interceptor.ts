@@ -1,10 +1,7 @@
 import { HttpInterceptorFn } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { Auth } from "../../pages/login-registration/services/auth";
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(Auth);
-  const token = authService.userToken;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   if (token) {
     const authReq = req.clone({

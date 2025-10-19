@@ -42,4 +42,18 @@ export class User {
         })
       )
     }
+
+    onQrScanned(qrData: string) {
+    // qrData = "user:123,actividad:45"
+    const parts = qrData.split(',');
+    const userId = Number(parts[0].split(':')[1]);
+    const actividadId = Number(parts[1].split(':')[1]);
+
+    // Llamada POST para marcar asistencia
+    this.httpClient.post('/api/users/MarkByQrCode', { userId, actividadId, qrCodeContent: qrData })
+      .subscribe({
+        next: () => alert('Asistencia registrada ✅'),
+        error: () => alert('No estás inscrito o ya marcaste ❌')
+    });
+}
 }

@@ -14,7 +14,7 @@ export class CongresoService {
   private readonly httpClient = inject(HttpClient);
 
   getAllCongreso(): Observable<BaseApiResponse<CongresoResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.LIST_TAG}`;
+    const requestUrl = `${env.api}${endpoint.LIST_TAG}?download=true`;
 
     return this.httpClient
       .get<BaseApiResponse<CongresoResponse[]>>(requestUrl)

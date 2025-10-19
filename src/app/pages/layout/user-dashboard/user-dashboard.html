@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-[var(--color-background)]">
   <app-header />
 
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="container mx-auto px-4 py-8">
       <div class="flex items-center justify-center min-h-[400px]">
         <div class="text-center">
@@ -12,7 +12,7 @@
     </div>
   }
 
-  @if (!isLoading && !isAuthenticated) {
+  @if (!isLoading() && !isAuthenticated()) {
     <div class="container mx-auto px-4 py-8">
       <div class="text-center py-16">
         <h1 class="text-2xl font-heading font-bold text-[var(--color-foreground)] mb-4">
@@ -31,7 +31,7 @@
     </div>
   }
 
-  @if (!isLoading && isAuthenticated) {
+  @if (!isLoading() && isAuthenticated()) {
     <app-registration-call-to-action />
     
     <main class="container mx-auto px-4 py-8">
@@ -41,7 +41,7 @@
       
       <app-quick-stats />
       
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
         <div class="lg:col-span-3 space-y-6">
           <app-my-enrollments />
           
@@ -49,13 +49,13 @@
         </div>
         
         <div class="space-y-6">
-          <!-- <app-qrcode-card /> -->
+          <app-qrcode-card />
           
           <!-- <app-notifications-panel /> -->
         </div>
       </div>
       
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <div id="certificates">
           <app-certificates-section />
         </div>

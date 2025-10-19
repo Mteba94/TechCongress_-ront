@@ -13,7 +13,7 @@ export class TagService {
   private readonly httpClient = inject(HttpClient);
 
   getAllTags(): Observable<BaseApiResponse<SelectResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.LIST_TAG}`;
+    const requestUrl = `${env.api}${endpoint.LIST_TAG}?download=true`;
 
     return this.httpClient
       .get<BaseApiResponse<SelectResponse[]>>(requestUrl)

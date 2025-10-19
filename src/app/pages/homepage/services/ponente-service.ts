@@ -13,7 +13,7 @@ export class PonenteService {
   private readonly httpClient = inject(HttpClient);
 
   ponentePopular(): Observable<BaseApiResponse<PonenteResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.POPULAR_PONENTES}`;
+    const requestUrl = `${env.api}${endpoint.POPULAR_PONENTES}?download=true`;
 
     return this.httpClient
       .get<BaseApiResponse<PonenteResponse[]>>(requestUrl)

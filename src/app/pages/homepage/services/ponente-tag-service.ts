@@ -16,7 +16,7 @@ export class PonenteTagService {
   private readonly tagService = inject(TagService)
 
   GetPonenteTagsByPonenteId(ponenteId: number): Observable<BaseApiResponse<PonenteTagByPonenteIdResponse[]>> {
-    const requestUrl = `${env.api}${endpoint.PONENTES_TAG_BY_PONENTE_ID}${ponenteId}`;
+    const requestUrl = `${env.api}${endpoint.PONENTES_TAG_BY_PONENTE_ID}${ponenteId}?download=true`;
 
     return forkJoin({
       ponenteTags: this.httpClient.get<BaseApiResponse<PonenteTagByPonenteIdResponse[]>>(requestUrl, {}),

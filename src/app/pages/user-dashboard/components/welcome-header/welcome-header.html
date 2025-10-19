@@ -2,10 +2,10 @@
   <div class="flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="w-16 h-16 bg-[var(--color-primary-foreground)]/20 rounded-full flex items-center justify-center">
-        @if (user?.avatar) {
+        @if (user()?.avatar) {
           <app-image
-            [src]="user?.avatar || ''"
-            [alt]="'Avatar de ' + (user?.name || '')"
+            [src]="user()?.avatar || ''"
+            [alt]="'Avatar de ' + (user()?.name || '')"
             className="w-14 h-14 rounded-full object-cover"
           ></app-image>
         } @else {
@@ -14,7 +14,7 @@
       </div>
       <div>
         <h1 class="text-2xl font-heading font-bold">
-          {{ getGreeting() }}, {{ user?.name || 'Participante' }}
+          {{ getGreeting() }}, {{ user()?.name || 'Participante' }}
         </h1>
         <p class="text-[var(--color-primary-foreground)]/90 font-body">
           {{ formatDate() }}

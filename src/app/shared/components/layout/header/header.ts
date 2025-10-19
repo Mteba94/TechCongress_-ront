@@ -118,29 +118,10 @@ export class Header {
   }
 
   ngOnInit(): void {
-    this.loadUser()
-
     this.authService.currentUser$.subscribe(user => {
       this.user = user ? { ...user } : null;
       this.isAuthenticated = !!user;
     });
-  }
-
-  async loadUser(){
-    if(this.authService.isAuthenticated){
-      try {
-        const user = await firstValueFrom(this.authService.currentUser$);
-      if (user) {
-        this.user = {
-          name: user.name,
-          email: user.email,
-          role: user.role
-        };
-      }
-      } catch (error) {
-        
-      }
-    }
   }
 
   get filteredNavItems() {

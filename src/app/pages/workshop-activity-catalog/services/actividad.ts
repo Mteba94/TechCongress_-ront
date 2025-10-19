@@ -107,7 +107,7 @@ export class Actividad {
                 materialesActividad
               )
             );
-            console.log(actividades)
+            //console.log(actividades)
             return { ...actividades, data: mappedData };
           })
         )

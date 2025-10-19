@@ -133,7 +133,7 @@ export class LoginForm {
 
   async login(request: LoginRequest): Promise<boolean> {
     const response = await firstValueFrom(
-      this.authService.login(request)
+      this.authService.login(request, this.formData.rememberMe)
     );
 
     if(response.isSuccess){
@@ -143,15 +143,6 @@ export class LoginForm {
       }else{
         const token = this.authService.userToken;
         if (!token) { return false; }
-          localStorage.setItem('isAuthenticated', 'true');
-          var dataUser = JSON.parse(atob(token.split(".")[1]));
-          
-          localStorage.setItem('userData', JSON.stringify({
-            email: this.formData.email,
-            name: `${dataUser.given_name} ${dataUser.family_name}`.trim(),
-            role: 'credentials.role'
-          }));
-
           return false
       }
 

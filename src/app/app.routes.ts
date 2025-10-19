@@ -61,6 +61,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/layout/attendance-reports-dashboard/attendance-reports-dashboard').then(m => m.AttendanceReportsDashboard)
     },
     {
+        path: 'qr-code-attendance-validation',
+        loadComponent: () => import('./pages/layout/qrcode-attendance-validation/qrcode-attendance-validation').then(m => m.QRCodeAttendanceValidation)
+    
+    },
+    {
         path: '**',
         component: NotFound
     }

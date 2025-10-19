@@ -1,16 +1,10 @@
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      @if (loading()) {
-        @for (item of [1,2,3,4]; track $index) {
-          <div class="bg-card border border-border rounded-lg p-6 animate-pulse">
-            <div class="flex items-start justify-between mb-4">
-              <div class="w-12 h-12 bg-muted rounded-lg"></div>
-              <div class="w-1/4 h-6 bg-muted rounded-full"></div>
-            </div>
-            <div class="h-8 bg-muted rounded mb-2"></div>
-            <div class="h-4 bg-muted rounded mb-1"></div>
-            <div class="h-3 bg-muted rounded"></div>
-          </div>
-        }
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      @if (metrics().length === 0) {
+        <div class="col-span-full text-center py-8">
+          <lucide-icon [img]="icons.BarChart3" [size]="48" class="text-muted-foreground mx-auto mb-4"></lucide-icon>
+          <h3 class="text-xl font-semibold text-foreground mb-2">No hay métricas disponibles</h3>
+          <p class="text-muted-foreground">No se encontraron datos para el rango de tiempo seleccionado.</p>
+        </div>
       } @else {
         @for (metric of metrics(); track metric.id) {
           <div
@@ -30,7 +24,8 @@
                   'bg-success/10 text-success': metric?.changeType === 'positive',
                   'bg-error/10 text-error': metric?.changeType !== 'positive'
                 }"
-                class="flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium">
+                class="flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium"
+              >
                 <lucide-icon 
                   [img]="metric?.changeType === 'positive' ? icons.TrendingUp : icons.TrendingDown" 
                   [size]="12"

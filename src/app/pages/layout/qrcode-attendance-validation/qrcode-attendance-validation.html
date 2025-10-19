@@ -1,0 +1,237 @@
+<div class="min-h-screen bg-background">
+  <!-- Minimal Header -->
+  <div class="bg-card border-b border-border p-4">
+    <div class="container mx-auto">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <!-- Icono fijo para el encabezado -->
+          <lucide-icon [img]="icons.QrCode" [size]="24" class="text-primary" />
+          <h1 class="text-lg font-heading font-semibold text-foreground">
+            Validación de Asistencia
+          </h1>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Indicador de Sin Conexión -->
+          @if (isOffline()) {
+            <div class="flex items-center space-x-2 px-3 py-1 bg-warning/10 border border-warning/20 rounded-full">
+              <lucide-icon [img]="icons.WifiOff" [size]="14" class="text-warning" />
+              <span class="text-xs font-medium text-warning">Sin conexión</span>
+            </div>
+          }
+
+          <!-- Indicador de Cola Offline -->
+          @if (offlineQueue().length > 0) {
+            <div class="flex items-center space-x-2 px-3 py-1 bg-info/10 border border-info/20 rounded-full">
+              <lucide-icon [img]="icons.Upload" [size]="14" class="text-info" />
+              <span class="text-xs font-medium text-info">
+                {{ offlineQueue().length }} pendientes
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-6 max-w-md">
+    <!-- Scanner Step -->
+    @if (step() === 'scanner') {
+      <div class="space-y-6">
+        <div class="text-center">
+          <lucide-icon [img]="icons.QrCode" [size]="48" class="text-primary mx-auto mb-4" />
+          <h2 class="text-xl font-heading font-semibold text-foreground mb-2">
+            Escanea el Código QR
+          </h2>
+          <p class="text-muted-foreground">
+            Apunta tu cámara al código QR de la actividad para validar tu asistencia
+          </p>
+        </div>
+
+        <!-- Permission Status Indicator -->
+        @if (permissionStatus() !== 'unknown') {
+          <div class="flex items-center justify-center">
+            <div class="flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium"
+              [class]="permissionStatus() === 'granted' 
+                ? 'bg-success/10 text-success border border-success/20' 
+                : 'bg-warning/10 text-warning border border-warning/20'"
+            >
+              <lucide-icon 
+                [img]="permissionStatus() === 'granted' ? icons.CheckCircle : icons.AlertTriangle" 
+                [size]="12" 
+              />
+              <span>
+                @if (permissionStatus() === 'granted') {
+                  Cámara disponible
+                } @else if (permissionStatus() === 'denied') {
+                  Sin acceso a cámara
+                } @else if (permissionStatus() === 'blocked') {
+                  Permisos bloqueados
+                } @else if (permissionStatus() === 'not_supported') {
+                  Cámara no soportada
+                }
+              </span>
+            </div>
+          </div>
+        }
+
+        <!-- QR Scanner Component or Fallback -->
+        @if (cameraSupported() && !showManualEntry()) {
+          <!-- Asume que tienes un componente app-qr-scanner -->
+          <app-qrscanner 
+            (onScanSuccess)="handleScanSuccess($event)"
+            (onScanError)="handleScanError($event)"
+          />
+        } @else {
+          <div class="text-center py-8 space-y-4">
+            <lucide-icon [img]="icons.CameraOff" [size]="48" class="text-muted-foreground mx-auto" />
+            <div>
+              <h3 class="font-medium text-foreground mb-2">
+                Escáner QR no disponible
+              </h3>
+              <p class="text-sm text-muted-foreground mb-4">
+                @if (permissionStatus() === 'not_supported') {
+                  Tu navegador no soporta acceso a la cámara
+                } @else if (permissionStatus() === 'blocked') {
+                  Los permisos de cámara están bloqueados
+                } @else if (permissionStatus() === 'denied') {
+                  Acceso a la cámara denegado
+                } @else if (permissionStatus() === 'unknown') {
+                  No se pudo acceder a la cámara
+                }
+              </p>
+            </div>
+            
+            <app-button
+              variant="default"
+              (click)="forceManualEntry()"
+              iconName="Keyboard"
+              [iconSize]="16"
+            >
+              <span>Continuar con entrada manual</span>
+            </app-button>
+          </div>
+        }
+
+        <!-- Botón de Entrada Manual (Solo si el escáner funciona) -->
+        @if (!showManualEntry()) {
+          <div class="text-center">
+            <app-button
+              variant="outline"
+              (click)="showManualEntry.set(true)"
+              iconName="Keyboard"
+              [iconSize]="16"
+            >
+              <span>Entrada Manual</span>
+            </app-button>
+          </div>
+        }
+        
+
+        <!-- Manual Entry Modal/Component -->
+        @if (showManualEntry()) {
+          <!-- Asume un componente de entrada manual -->
+          <!-- <app-manual-entry
+            (onSubmit)="handleManualEntry($event.activityCode, $event.email)"
+            (onClose)="showManualEntry.set(false)"
+          /> -->
+        }
+      </div>
+    }
+
+    <!-- Email Verification Step -->
+    @if (step() === 'verification') {
+      <!-- <app-email-verification-form
+        [activity]="mockActivity"
+        (onSubmit)="handleEmailVerification($event)"
+        (onBack)="resetScanner()" 
+        [loading]="false" 
+      /> -->
+    }
+
+    <!-- Confirmation Step -->
+    @if (step() === 'confirmation') {
+      <!-- <app-attendance-confirmation
+        [attendanceData]="attendanceData()"
+        [nextSession]="getNextSession()"
+        (onDone)="resetScanner()"
+      /> -->
+    }
+
+    <!-- Enhanced Error Display -->
+    @if (error()) {
+      <div class="mt-6 p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+        <div class="flex items-start space-x-3">
+          <lucide-icon [img]="icons.AlertCircle" [size]="20" class="text-destructive mt-0.5" />
+          <div class="flex-1">
+            <h4 class="font-medium text-destructive mb-1">
+              @switch (error()?.type) {
+                @case ('invalid_qr') { Código QR Inválido }
+                @case ('time_window') { Fuera del Horario de Validación }
+                @case ('invalid_email') { Email Inválido }
+                @case ('not_registered') { No Registrado }
+                @case ('duplicate') { Asistencia Duplicada }
+                @case ('server_error') { Error del Servidor }
+                @case ('camera_error') { Error de Cámara }
+                @case ('scan_error') { Error de Escaneo }
+                @default { Error Desconocido }
+              }
+            </h4>
+            <p class="text-sm text-destructive/80 mb-3">
+              {{ error()?.message }}
+            </p>
+            
+            <div class="flex flex-wrap gap-2">
+              <app-button
+                variant="outline"
+                size="sm"
+                (click)="resetScanner()"
+              >
+                <span>Reintentar</span>
+              </app-button>
+              
+              <!-- Botón de entrada manual condicional en caso de ciertos errores -->
+              @if (error()?.type === 'invalid_qr' || error()?.type === 'scan_error' || error()?.type === 'camera_error') {
+                <app-button
+                  variant="outline" 
+                  size="sm"
+                  (click)="forceManualEntry()"
+                >
+                  <span>Entrada Manual</span>
+                </app-button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Offline Sync Component -->
+    @if (offlineQueue().length > 0 && !isOffline()) {
+      <!-- Asume un componente de sincronización -->
+      <!-- <app-offline-sync
+        [queueLength]="offlineQueue().length"
+        (onSync)="syncOfflineData()"
+      /> -->
+    }
+
+    <!-- Help Text -->
+    <div class="mt-8 p-4 bg-muted/50 rounded-lg">
+      <div class="flex items-start space-x-2">
+        <lucide-icon [img]="icons.Info" [size]="16" class="text-muted-foreground mt-0.5" />
+        <div>
+          <p class="text-sm text-muted-foreground">
+            <strong>Instrucciones:</strong>
+          </p>
+          <ul class="text-xs text-muted-foreground mt-2 space-y-1">
+            <li>1. Escanea el código QR mostrado en la actividad</li>
+            <li>2. Ingresa tu correo electrónico registrado</li>
+            <li>3. Confirma tu asistencia</li>
+            <li>• Si no tienes cámara, usa la entrada manual</li>
+            <li>• Tu asistencia se guarda aunque no tengas internet</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

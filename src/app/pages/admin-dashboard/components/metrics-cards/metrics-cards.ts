@@ -1,6 +1,6 @@
 import { Component, input, signal, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, TrendingUp, TrendingDown, Users, Calendar, Award, LucideIconData } from 'lucide-angular';
+import { LucideAngularModule, TrendingUp, TrendingDown, Users, Calendar, Award, LucideIconData, BarChart3 } from 'lucide-angular';
 
 interface MetricCardDisplay {
   id: string;
@@ -28,17 +28,18 @@ export class MetricsCards implements OnChanges {
   metricsData = input<MetricCardDisplay[]>([]);
 
   metrics = signal<MetricCardDisplay[]>([]);
-  loading = signal(false);
 
   readonly icons = {
     TrendingUp: TrendingUp,
     TrendingDown: TrendingDown,
     Users: Users,
     Calendar: Calendar,
-    Award: Award
+    Award: Award,
+    BarChart3: BarChart3,
   };
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('dddd')
     if (changes['metricsData'] && this.metricsData()) {
       this.metrics.set(this.metricsData());
     }

@@ -29,6 +29,8 @@ export const endpoint = {
     BY_USER_ID: 'Inscripcion/User/',
     CREATE_INSCRIPCION: 'Inscripcion/Create',
     GENERATE_DIPLOMA: 'Inscripcion/GenerateDiploma',
+    MARK_ATTENDANCE: 'Asistencia/MarkAttendance',
+
 
     //ROLE
     ROLE_BY_USER: 'UserRole/Role/',
@@ -96,6 +98,8 @@ export const endpoint = {
     DELETE_USER: 'User/Delete',
     SUMMARY_USER: 'User/Summary',
     ATTENDANCE_USER: 'User/',
+    GENERATE_USER_QR: 'User/',
+
 
     //ASISTENCIA
     GENERATE_ATTENDANCE_QR: 'Asistencia/GenerateAttendanceQrCode',

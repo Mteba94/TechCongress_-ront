@@ -111,6 +111,7 @@ export class AdminDashboard {
         role: currentUser.role,
         lastAccess: new Date().toLocaleDateString('es-ES')
       };
+      this.isLoading = false;
     } catch (error) {
       console.error('Error verificando usuario admin:', error);
       this.router.navigate(['/login-registration']);
@@ -139,7 +140,7 @@ export class AdminDashboard {
   }
   
   simulateLogOut(): void {
-      localStorage.removeItem('userData');
+      //localStorage.removeItem('userData');
       //this.user.set(null); // Esto dispara la vista de Acceso Denegado/Login
       //console.log('Sesión cerrada simuladamente.');
   }

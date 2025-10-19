@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../login-registration/services/auth';
 import { Header } from '../../../shared/components/layout/header/header';
@@ -14,7 +14,7 @@ import { Actividad } from '../../workshop-activity-catalog/services/actividad';
 import { Activity } from '../../workshop-activity-catalog/models/activity.interface';
 import { MyEnrollmentsFilter } from '../../workshop-activity-catalog/components/my-enrollments-filter/my-enrollments-filter';
 import { InscripcionService } from '../../workshop-activity-catalog/services/inscripcion-service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { InscripcionRequest } from '../../workshop-activity-catalog/models/inscripcion-req.interface';
 import { NotificationsAlert } from '../../../shared/components/reusables/notifications-alert/notifications-alert';
 
@@ -42,7 +42,7 @@ interface Enrollment {
   templateUrl: './workshop-activity-catalog.html',
   styleUrl: './workshop-activity-catalog.css'
 })
-export class WorkshopActivityCatalog {
+export class WorkshopActivityCatalog implements OnInit, OnDestroy {
   readonly icons = {
     calendar: Calendar,
     info: Info
@@ -53,6 +53,7 @@ export class WorkshopActivityCatalog {
   private readonly inscripcionService = inject(InscripcionService)
   private readonly auth = inject(Auth)
 
+  private authSubscription: Subscription | null = null;
 
   paginatorOptions = {
     pageSizeOptions: [6, 12, 24],
@@ -156,22 +157,27 @@ export class WorkshopActivityCatalog {
           const spotsA = a.capacity - a.enrolled;
           const spotsB = b.capacity - b.enrolled;
           return spotsB - spotsA;
-        default:
-          return 0;
+        default: return 0;
       }
     });
   });
 
   ngOnInit() {
-    // Comprobar estado de autenticación y inscripciones
-    const authStatus = localStorage.getItem('isAuthenticated');
-    this.isAuthenticated.set(authStatus === 'true');
-
-    if (this.isAuthenticated()) {
-      this.loadMyEnrollments();
-    }
-
+    this.authSubscription = this.auth.currentUser$.subscribe(user => {
+      this.isAuthenticated.set(!!user);
+      if (user) {
+        this.loadMyEnrollments();
+      } else {
+        this.userEnrollments.set([]); // Clear enrollments if logged out
+      }
+    });
     this.loadInitialActivities();
+  }
+
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   async loadMyEnrollments() {
@@ -274,7 +280,7 @@ export class WorkshopActivityCatalog {
       }else{
         this.isEnrollmentError.set(true);
         this.enrollmentMessage.set(`Error al inscribirte en la actividad "${activity.title}".`);setTimeout(() => this.hideEnrollmentMessage(), 3000)
-      }      
+      }
     } catch (error) {
       this.isEnrollmentError.set(true);
       this.enrollmentMessage.set(`Error al inscribirte en la actividad "${activity.title}".`);

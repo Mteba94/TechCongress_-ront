@@ -1,0 +1,117 @@
+<div class="bg-card border border-border rounded-lg p-6 shadow-subtle">
+      <div class="flex items-center space-x-2 mb-6">
+        <lucide-icon [name]="icons.QrCode" [size]="24" class="text-primary"></lucide-icon>
+        <h2 class="text-xl font-heading font-semibold text-foreground">
+          Mi Código QR
+        </h2>
+      </div>
+
+            <app-select
+              label="Actividad"
+              [value]="selectedActivityId() ?? ''"
+              (valueChange)="onActivityChange($event)"
+              [options]="activityOptions()"
+            ></app-select>
+
+            <!-- <zxing-scanner
+              (scanSuccess)="onQrScanned($event)">
+            </zxing-scanner> -->
+
+            <br>
+      <div class="text-center">
+        <!-- QR Code Display -->
+        <div class="bg-white border-2 border-border rounded-lg p-4 mb-4 inline-block">
+          @if (isLoadingQr()) {
+            <div class="w-48 h-48 mx-auto flex items-center justify-center">
+              <lucide-icon [name]="icons.Loader" [size]="32" class="animate-spin text-muted-foreground"></lucide-icon>
+            </div>
+          } @else if (qrCodeData()) {
+            <img [src]="'data:image/png;base64,' + qrCodeData()" alt="Código QR de Asistencia" class="w-48 h-48 mx-auto" />
+          } @else {
+            <div class="w-48 h-48 mx-auto flex items-center justify-center text-muted-foreground">
+              <lucide-icon [name]="icons.QrCode" [size]="32"></lucide-icon>
+              <p class="text-sm mt-2">No disponible</p>
+            </div>
+          }
+        </div>
+
+        <!-- Participant Info -->
+        <div class="mb-6">
+          <h3 class="font-heading font-semibold text-foreground mb-1">
+            {{user?.name || 'Participante'}}
+          </h3>
+          <p class="text-sm font-caption text-muted-foreground mb-2">
+            ID: {{user?.id || 'TC2025-001'}}
+          </p>
+          <div class="inline-flex items-center space-x-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-caption">
+            <lucide-icon [name]="icons.CheckCircle" [size]="12"></lucide-icon>
+            <span>Verificado</span>
+          </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-muted rounded-lg p-4 mb-6">
+          <div class="flex items-start space-x-2">
+            <lucide-icon [name]="icons.Info" [size]="16" class="text-blue-600 mt-0.5 flex-shrink-0"></lucide-icon>
+            <div class="text-left">
+              <h4 class="font-body font-medium text-foreground mb-1">
+                Instrucciones de Uso
+              </h4>
+              <ul class="text-sm font-caption text-muted-foreground space-y-1">
+                <li>• Presenta este código al ingresar a cada actividad</li>
+                <li>• El personal escaneará tu código para registrar asistencia</li>
+                <li>• Mantén el código visible en tu dispositivo móvil</li>
+                <li>• Descarga una copia como respaldo</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <app-button
+            variant="default"
+            (click)="handleDownload()"
+            [loading]="isDownloading()"
+            iconName="Download"
+            iconPosition="left"
+            [iconSize]="16"
+            [fullWidth]="true"
+          >
+            <span>Descargar QR</span>
+          </app-button>
+          <app-button
+            variant="outline"
+            (click)="handleShare()"
+            iconName="Share2"
+            iconPosition="left"
+            [iconSize]="16"
+            [fullWidth]="true"
+          >
+            <span>Compartir</span>
+          </app-button>
+        </div>
+
+        <!-- Usage Stats -->
+        <!-- <div class="mt-6 pt-4 border-t border-border">
+          <div class="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <p class="text-2xl font-heading font-bold text-foreground">
+                5
+              </p>
+              <p class="text-xs font-caption text-muted-foreground">
+                Escaneos Hoy
+              </p>
+            </div>
+            <div>
+              <p class="text-2xl font-heading font-bold text-foreground">
+                23
+              </p>
+              <p class="text-xs font-caption text-muted-foreground">
+                Total Escaneos
+              </p>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
